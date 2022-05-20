@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>hostname</key>
+	<string>dhcp111.lam.jussieu.fr</string>
+	<key>hostuuid</key>
+	<string>8C4DB9BE-1AC6-5F62-85E1-5A2F68348635</string>
+	<key>pid</key>
+	<integer>722</integer>
+	<key>processname</key>
+	<string>photolibraryd</string>
+	<key>uid</key>
+	<integer>502</integer>
+</dict>
+</plist>

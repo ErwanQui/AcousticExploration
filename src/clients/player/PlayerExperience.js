@@ -2,7 +2,9 @@ import { AbstractExperience } from '@soundworks/core/client';
 import { render, html } from 'lit-html';
 import renderInitializationScreens from '@soundworks/template-helpers/client/render-initialization-screens.js';
 
-import Monster from './Monster.js';
+import Marker from './Marker.js';
+// import Map from 'images/Map.png';
+
 
 class PlayerExperience extends AbstractExperience {
   constructor(client, config = {}, $container) {
@@ -12,36 +14,24 @@ class PlayerExperience extends AbstractExperience {
     this.$container = $container;
     this.rafId = null;
 
-// Require plugins if needed
-    this.audioBufferLoader = this.require('audio-buffer-loader');
-    this.ambisonics = require('ambisonics');
+    // this.filesystem = this.require('filesystem');
+    // console.log(this.filesystem)
+    // console.log(this.filesystem.getValues())
+    // const trees = this.filesystem.getValues();
+    // for (let name in trees) {
+    //   const tree = tree[name];
+    //   console.log(name, tree);
+    // }
 
-// Initial parameters
     this.initialising = true;
-    this.order = 3;
-    this.azimutAim = 180;
-
-// Variable to stop the 'setInterval()' function
-  this.spawnerId = null;
-  this.playerStatutCheckId = null;
-
-// Player data
-    this.player = {Status: "alive", KillCount: 0, AzimutPrecision: 30}; // AzimutPrecision: Azimut Angle in which a monster can be killed
-
-// Monsters parameters
-    this.monsters = {
-      List: [],                   // List: List of current monsters
-      LifeTime: 20,               // LifeTime: Time in second before a monster kill the player
-      AzimutSpeed: 15,            // AzimutSpeed: Azimut range of movement each second
-      SpawnRate: 7,               // SpawnRate: Time between each monster spawn
-      Scream: null,               // Scream: List of possible screams of Monsters (attributed in 'start()')
-      OutToRotator: null,         // OutToRotator: Rotator to connect Monsters screams (attributed in 'start()')
+    this.listenerPosition = {
+      x: 0,
+      y: 0,
     }
-
-// AudioContext creation
-    this.audioContext = new AudioContext();
-    this.playerGain = this.audioContext.createGain();
-    this.playerBinDecoder = new this.ambisonics.binDecoder(this.audioContext, this.order);
+    this.previousClosestPointsId = [0, 1, 2, 3];
+    this.nbPos = 40;
+    this.positions = [];
+    this.sourcesColor = ["gold", "green", "white", "black"]
 
     renderInitializationScreens(client, config, $container);
   }
@@ -49,33 +39,10 @@ class PlayerExperience extends AbstractExperience {
   async start() {
     super.start();
 
-// Assignation of screams sounds
-    this.monsters.Scream = await this.audioBufferLoader.load({
-      'MonsterSound1': 'Audio/Monster1.mp3',
-      'MonsterSound2': 'Audio/Monster2.mp3',
-      'MonsterSound3': 'Audio/Monster3.mp3',
-      'MonsterSound4': 'Audio/Monster4.mp3',
-      'MonsterSound5': 'Audio/Monster5.mp3',
-    }, true);
-
-// Assignation of common sounds in a Soundbank
-    this.soundBank = await this.audioBufferLoader.load({
-      'MonsterDie':'Audio/MonsterDie.wav',
-      'Shoot': 'Audio/Kill.mp3',
-      'GameOver': 'Audio/GameOver.wav',
-      'PlayerDamage': 'Audio/PlayerDamage.wav',
-    }, true);
-
-// Creation of the Rotator
-    this.monsters.OutToRotator = new this.ambisonics.sceneRotator(this.audioContext, this.order);
-
-// Connection between the destination and the gain of common sounds
-    this.playerGain.connect(this.audioContext.destination);
-
-// Connection between the destination and the sounds of monsters
-    this.monsters.OutToRotator.out.connect(this.playerBinDecoder.in);
-    this.playerBinDecoder.out.connect(this.audioContext.destination);
-
+    for (let i = 0; i <= this.nbPos; i++) {
+      this.positions.push({x: Math.round(Math.random()*1000 - 500), y: Math.round(Math.random()*500)});
+    }
+    console.log(this.positions)
     window.addEventListener('resize', () => this.render());
     this.render();
   }
@@ -92,133 +59,111 @@ class PlayerExperience extends AbstractExperience {
         <div>
           <input type="button" id="beginButton" value="Begin Game"/>
         </div>
-        <div id="gameInterface" style="visibility: hidden; position: absolute;">
+        <div id="game" style="visibility: hidden;">
           <div>
-            <input type="button" id="shootButton" value="Shoot" style="width: 350px; height: 200px; font-size: 100px;"/>
+            <input type="range" id="positionInput1" max=500 min=-500 value=0></input>
+            <input type="range" id="positionInput2" max=500 min= 0 value=0></input>
           </div>
-          <br>
           <div>
-            <input type="range" id="sliderAzimAim" min=0 max=360 value=${this.azimutAim}/>${this.azimutAim}
+            ${this.listenerPosition.x}
+            ${this.listenerPosition.y}
           </div>
-          <br>
-          <h2 id="killDiplay" style="visibility: hidden;">
-              You killed ${this.player.KillCount} Monsters
-          </h2>
+          <div id="circleContainer" style="width: 600px; text-align: center; position: absolute; top: 180px; left: 50%">
+            <div id="listener" style="position: absolute; height: 15px; width: 15px; background: blue; text-align: center; transform: translate(${this.listenerPosition.x}px, ${this.listenerPosition.y}px) rotate(45deg)"
+          </div>
         </div>
       `, this.$container);
 
-      // Assign callbacks once
       if (this.initialising) {
+        // Assign callbacks once
         var beginButton = document.getElementById("beginButton");
         beginButton.addEventListener("click", () => {
-          this.onBeginClicked(beginButton, document.getElementById("gameInterface"));
-        });
+          this.onBeginButtonClicked(document.getElementById('circleContainer'))
 
-        var shootButton = document.getElementById("shootButton");
-        shootButton.addEventListener("click", () => {
-          this.onShootClicked();
-        });
+          document.getElementById("game").style.visibility = "visible";
 
-        var yawSlider = document.getElementById("sliderAzimAim");
-        yawSlider.addEventListener("input", () => {
-
-          // Update display
-          this.azimutAim = yawSlider.value;
-          this.render();
-
-          this.onUpdatePlayerOrientation(yawSlider.value);
+          var positionInput1 = document.getElementById("positionInput1");
+          var positionInput2 = document.getElementById("positionInput2");
+          positionInput1.addEventListener("input",() => {
+            this.onPositionChange(positionInput1, positionInput2);
+          })
+          positionInput2.addEventListener("input",() => {
+            this.onPositionChange(positionInput1, positionInput2);
+          })
         });
         this.initialising = false;
       }
+
+      // var shootButton = document.getElementById("shootButton");
+      // shootButton.addEventListener("click", () => {
+      // });
+
+      // var yawSlider = document.getElementById("sliderAzimAim");
+      // yawSlider.addEventListener("input", () => {
+
+      // });
     });
   }
 
-  onBeginClicked(button, gameInterface) {
+  onBeginButtonClicked(container) {
+    var tempCircle
+    for (let i = 0; i < this.positions.length; i++) {
+      tempCircle = document.createElement('div');
+      tempCircle.id = "circle" + i;
+      tempCircle.style = "position: absolute; width: 20px; height: 20px; border-radius: 20px; background: red; text-align: center;";
+      tempCircle.style.transform = "translate(" + this.positions[i].x + "px, " + this.positions[i].y + "px)";
+      container.appendChild(tempCircle)
+    }
+  }
 
-    // Change the display when game begins
-    button.style.visibility = "hidden";
-    button.style.position = "absolute";
-    gameInterface.style.visibility = "visible";
-    gameInterface.style.position = "relative";
+  onPositionChange(valueX, valueY) {
+    this.listenerPosition.x = valueX.value;
+    this.listenerPosition.y = valueY.value;
 
-    // Create the first monster
-    //@note: I can't create a monster template, I need to instatiate a new one once
-    this.monsters.List.push(new Monster(this.monsters, this.audioContext, this.player));
-    this.monsters.List[0].start()
+    var tempSourcesPositions = Object.values(this.positions);
+    // document.getElementById("circle" + this.previousClosestPointsId[0]).style.background = "red";
+    // this.previousClosestPointsId[0] = this.ClosestSource(this.listenerPosition, this.positions);
+    for (let i = 0; i < this.previousClosestPointsId.length; i ++) {
+      document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = "red";
+      // this.previousClosestPointsId[i] = this.IdDiff(this.ClosestSource(this.listenerPosition, tempSourcesPositions), this.previousClosestPointsId.splice(i));
+      this.previousClosestPointsId[i] = this.ClosestSource(this.listenerPosition, tempSourcesPositions);
+      console.log(this.previousClosestPointsId[i])
+      console.log(tempSourcesPositions[this.previousClosestPointsId[i]])
+      console.log(tempSourcesPositions.splice(this.previousClosestPointsId[i], 1))
+    }
+    for (let i = 0; i < this.previousClosestPointsId.length; i ++) {
+      document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = this.sourcesColor[i];
+      console.log(this.previousClosestPointsId);
+    }
 
-    // Set an interval to make spawn each 'SpawnRate' seconds a new monster
-    this.spawnerId = setInterval(() => {
-      this.monsters.List.push(new Monster(this.monsters, this.audioContext, this.player));
-      this.monsters.List[this.monsters.List.length-1].start()
-    }, 1000*this.monsters.SpawnRate);
+    // this.previousClosestPointId = this.ClosestSource(this.listenerPosition, this.positions);
+    // console.log(this.ClosestSource(this.listenerPosition, this.positions));
+    this.render();
+  }
 
-    // Set an interval to check each seconds if the player is dead
-    this.playerStatutCheckId = setInterval(() => {
-      if (this.player.Status == "dead") {
-        clearInterval(this.spawnerId)                                           // Stop spawner
-        clearInterval(this.playerStatutCheckId)                                 // Stop checking if the player is dead
-        for (let i = 1; i < this.monsters.List.length; i++) {
-          this.monsters.List[i].Die();                                          // Do die all remaining monsters
-        }
-        this.Play(this.soundBank.PlayerDamage);                                 // Play Damage sound before player die
-        
-        // Set a TimeOut before the Gameover sound is played
-        setTimeout(() => {
-          this.Play(this.soundBank.GameOver)                                    // Play Gameover sound
-          document.getElementById("killDiplay").style.visibility = "visible";   // Display the killcount
-        ;}, 1000);
+  IdDiff(id, idList) {
+    var count = 0;
+    for (let j = 0; j < idList.length; j++) {
+      if (id > idList[j]) {
+        count += 1;
       }
-    }, 500);
+    }
+    return (count);
   }
 
-  onShootClicked() {
-
-    // Var initialisation
-    var killing = false;
-    var iterator = 0;
-
-    // Play Shoot sound
-    this.Play(this.soundBank.Shoot);
-
-    // Check if there is a monster in azimut range of the shoot
-    while ((iterator < this.monsters.List.length) && (this.monsters.List[iterator].Shoot(this.azimutAim) > this.player.AzimutPrecision)) {
-      iterator += 1
+  ClosestSource(listenerPosition, listOfPoint) {
+    var closestId = 0;
+    for (let i = 1; i < listOfPoint.length; i++) {
+      if (this.Distance(listenerPosition, listOfPoint[i]) < this.Distance(listenerPosition, listOfPoint[closestId])) {
+        closestId = i;
+      }
     }
-
-    // If there is a monster
-    if (iterator < this.monsters.List.length) {
-      console.log("You kill a monster")
-      this.Play(this.soundBank.MonsterDie);     // Play MonsterDie sound
-      this.monsters.List[iterator].Die();       // Do die this monster
-      this.monsters.List.splice(iterator, 1);   // Delete the monster of the active monsters list
-      this.player.KillCount += 1;               // Add a kill to the killcount
-    }
-    else {
-      console.log("You miss your shoot");
-    }
+    // console.log(this.Distance(listenerPosition, listOfPoint[closestId]));
+    return (closestId);
   }
 
-  onUpdatePlayerOrientation(yaw) {
-
-    // Update the player orientation
-    this.monsters.OutToRotator.yaw = yaw;
-    this.monsters.OutToRotator.updateRotMtx();
-  }
-
-
-  // Function to play sound, because we can only play an audio buffer once, and we can't reattribute a buffer...
-  Play(buffer) {
-
-    // Sound initialisation
-    var Sound = this.audioContext.createBufferSource()
-    Sound.loop = false;
-    Sound.buffer = buffer;
-    Sound.connect(this.playerGain)
-
-    // Disconnect the sound when the sound is ended
-    Sound.addEventListener('ended', () => {Sound.disconnect(this.playerGain);})
-
-    Sound.start();
+  Distance(pointA, pointB) {
+    return (Math.sqrt(Math.pow(pointA.x - pointB.x, 2) + Math.pow(pointA.y - pointB.y, 2)));
   }
 }
 

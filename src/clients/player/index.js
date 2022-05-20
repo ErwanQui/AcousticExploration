@@ -3,11 +3,9 @@ import 'regenerator-runtime/runtime';
 import { Client } from '@soundworks/core/client';
 import initQoS from '@soundworks/template-helpers/client/init-qos.js';
 
-import pluginFilesystemFactory from '@soundworks/plugin-filesystem/client';
-// import pluginAudioBufferLoaderFactory from '@soundworks/plugin-audio-buffer-loader/client';
-
 // Import plugin
 import pluginAudioBufferLoaderFactory from '@soundworks/plugin-audio-buffer-loader/client';
+// import pluginFilesystemFactory from '@soundworks/plugin-filesystem/client';
 
 import PlayerExperience from './PlayerExperience.js';
 
@@ -23,7 +21,7 @@ async function launch($container, index) {
     // -------------------------------------------------------------------
     // register plugins
     // -------------------------------------------------------------------
-    client.pluginManager.register('filesystem', pluginFilesystemFactory, {}, []);
+    // client.pluginManager.register('filesystem', pluginFilesystemFactory, {}, []);
     client.pluginManager.register('audio-buffer-loader', pluginAudioBufferLoaderFactory, {
       data: {
         'Shoot': 'Audio/Kill.mp3',
