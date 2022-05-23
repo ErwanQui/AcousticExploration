@@ -30,6 +30,7 @@ class PlayerExperience extends AbstractExperience {
     }
     this.previousClosestPointsId = [0, 1, 2, 3];
     this.nbPos = 40;
+    this.nbClosestPoints = 4;
     this.positions = [];
     this.sourcesColor = ["gold", "green", "white", "black"]
 
@@ -121,45 +122,48 @@ class PlayerExperience extends AbstractExperience {
     this.listenerPosition.y = valueY.value;
 
     var tempSourcesPositions = Object.values(this.positions);
-    // document.getElementById("circle" + this.previousClosestPointsId[0]).style.background = "red";
-    // this.previousClosestPointsId[0] = this.ClosestSource(this.listenerPosition, this.positions);
     for (let i = 0; i < this.previousClosestPointsId.length; i ++) {
       document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = "red";
-      // this.previousClosestPointsId[i] = this.IdDiff(this.ClosestSource(this.listenerPosition, tempSourcesPositions), this.previousClosestPointsId.splice(i));
-      this.previousClosestPointsId[i] = this.ClosestSource(this.listenerPosition, tempSourcesPositions);
-      console.log(this.previousClosestPointsId[i])
-      console.log(tempSourcesPositions[this.previousClosestPointsId[i]])
-      console.log(tempSourcesPositions.splice(this.previousClosestPointsId[i], 1))
     }
+    this.previousClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints);
     for (let i = 0; i < this.previousClosestPointsId.length; i ++) {
       document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = this.sourcesColor[i];
-      console.log(this.previousClosestPointsId);
     }
-
-    // this.previousClosestPointId = this.ClosestSource(this.listenerPosition, this.positions);
-    // console.log(this.ClosestSource(this.listenerPosition, this.positions));
     this.render();
   }
 
-  IdDiff(id, idList) {
-    var count = 0;
-    for (let j = 0; j < idList.length; j++) {
-      if (id > idList[j]) {
-        count += 1;
+  // IdDiff(id, idList) {
+  //   var count = 0;
+  //   for (let j = 0; j < idList.length; j++) {
+  //     if (id > idList[j]) {
+  //       count += 1;
+  //     }
+  //   }
+  //   return (count);
+  // }
+
+  ClosestSource(listenerPosition, listOfPoint, nbClosest) {
+    var closestIds = [];
+    var currentClosestId;
+    for (let j = 0; j < nbClosest; j++) {
+      currentClosestId = 0;
+      for (let i = 1; i < listOfPoint.length; i++) {
+        if (this.NotIn(i, closestIds) && this.Distance(listenerPosition, listOfPoint[i]) < this.Distance(listenerPosition, listOfPoint[currentClosestId])) {
+          currentClosestId = i;
+        }
       }
+      closestIds.push(currentClosestId);
+      console.log(closestIds)
     }
-    return (count);
+    return (closestIds);
   }
 
-  ClosestSource(listenerPosition, listOfPoint) {
-    var closestId = 0;
-    for (let i = 1; i < listOfPoint.length; i++) {
-      if (this.Distance(listenerPosition, listOfPoint[i]) < this.Distance(listenerPosition, listOfPoint[closestId])) {
-        closestId = i;
-      }
+  NotIn(pointId, listOfIds) {
+    var iterator = 0;
+    while (iterator < listOfIds.length && pointId != listOfIds[iterator]) {
+      iterator += 1;
     }
-    // console.log(this.Distance(listenerPosition, listOfPoint[closestId]));
-    return (closestId);
+    return(iterator >= listOfIds.length);
   }
 
   Distance(pointA, pointB) {
