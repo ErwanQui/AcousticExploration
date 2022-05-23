@@ -31,11 +31,16 @@ class PlayerExperience extends AbstractExperience {
       x: 0,
       y: 0,
     }
-    this.previousClosestPointsId = [0, 1, 2, 3];
+    this.ClosestPointsId = [];
+    this.previousClosestPointsId = [];
     this.nbPos = 40;
     this.nbClosestPoints = 4;
     this.positions = [];
-    this.sourcesColor = ["gold", "green", "white", "black"]
+    this.sourcesColor = ["gold", "green", "white", "black"];
+
+    this.audioContext = new AudioContext();
+    this.playingSounds = [];
+    this.gains = [];
 
     renderInitializationScreens(client, config, $container);
   }
@@ -43,12 +48,27 @@ class PlayerExperience extends AbstractExperience {
   async start() {
     super.start();
 
-    for (let i = 0; i <= this.nbPos; i++) {
+    this.soundBank = await this.audioBufferLoader.load({
+    }, true);
+
+    for (let i = 0; i < this.nbPos; i++) {
       this.positions.push({x: Math.round(Math.random()*1000 - 500), y: Math.round(Math.random()*500)});
     }
 
-    for (let i = 0; i < this.nbClosestPoints; i++) {
-      
+    this.ClosestPointsId = ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints)
+
+    for (let i = 0; i < this.nbPos; i++) {
+      this.playingSounds.push(this.audioContext.createBufferSource());
+      this.gains.push(this.audioContext.createGain());
+
+      this.gains[i].setValueAtTime(0.5, 0);
+
+      this.playingSounds[i].connect(this.gains[i]);
+      this.gains[i].connect(this.audioContext.destination);
+
+      LoadNewSound(this.ClosestPointsId, i);
+
+      this.playingSounds[i].play();
     }
 
     console.log(this.positions)
@@ -129,26 +149,23 @@ class PlayerExperience extends AbstractExperience {
     this.listenerPosition.x = valueX.value;
     this.listenerPosition.y = valueY.value;
 
-    var tempSourcesPositions = Object.values(this.positions);
-    for (let i = 0; i < this.previousClosestPointsId.length; i ++) {
-      document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = "red";
-    }
-    this.previousClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints);
-    for (let i = 0; i < this.previousClosestPointsId.length; i ++) {
-      document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = this.sourcesColor[i];
+    this.previousClosestPointsId - this.ClosestPointsId
+    this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints);
+
+    for (let i = 0; i < this.nbClosestPoints.length; i++) {
+      if (this.previousClosestPointsId[i] != this.ClosestPointsId) {
+        document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = "red";
+        document.getElementById("circle" + this.ClosestPointsId[i]).style.background = this.sourcesColor[i];
+
+        this.playingSounds[i].stop();
+        this.playingSounds[i].disconnect(this.gains(i));
+
+        this.playingSounds[i] = new LoadNewSound(this.ClosestPointsId[i], i);
+        this.playingSounds[i].play()
+      }
     }
     this.render();
   }
-
-  // IdDiff(id, idList) {
-  //   var count = 0;
-  //   for (let j = 0; j < idList.length; j++) {
-  //     if (id > idList[j]) {
-  //       count += 1;
-  //     }
-  //   }
-  //   return (count);
-  // }
 
   ClosestSource(listenerPosition, listOfPoint, nbClosest) {
     var closestIds = [];
@@ -176,6 +193,15 @@ class PlayerExperience extends AbstractExperience {
 
   Distance(pointA, pointB) {
     return (Math.sqrt(Math.pow(pointA.x - pointB.x, 2) + Math.pow(pointA.y - pointB.y, 2)));
+  }
+
+  LoadNewSound(soundId, gainId) {
+    // Sound initialisation
+    var Sound = this.audioContext.createBufferSource()
+    Sound.loop = true;
+    Sound.buffer = this.soundBank(soundId);
+    Sound.connect(this.gain(gainId));
+    return Sound;
   }
 }
 
