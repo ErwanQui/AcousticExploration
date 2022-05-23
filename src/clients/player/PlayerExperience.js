@@ -14,6 +14,9 @@ class PlayerExperience extends AbstractExperience {
     this.$container = $container;
     this.rafId = null;
 
+    // Require plugins if needed
+    this.audioBufferLoader = this.require('audio-buffer-loader');
+    this.ambisonics = require('ambisonics');
     // this.filesystem = this.require('filesystem');
     // console.log(this.filesystem)
     // console.log(this.filesystem.getValues())
@@ -43,6 +46,11 @@ class PlayerExperience extends AbstractExperience {
     for (let i = 0; i <= this.nbPos; i++) {
       this.positions.push({x: Math.round(Math.random()*1000 - 500), y: Math.round(Math.random()*500)});
     }
+
+    for (let i = 0; i < this.nbClosestPoints; i++) {
+      
+    }
+
     console.log(this.positions)
     window.addEventListener('resize', () => this.render());
     this.render();
