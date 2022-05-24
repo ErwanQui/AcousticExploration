@@ -55,18 +55,18 @@ class PlayerExperience extends AbstractExperience {
       this.positions.push({x: Math.round(Math.random()*1000 - 500), y: Math.round(Math.random()*500)});
     }
 
-    this.ClosestPointsId = ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints)
+    this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints)
 
     for (let i = 0; i < this.nbPos; i++) {
       this.playingSounds.push(this.audioContext.createBufferSource());
       this.gains.push(this.audioContext.createGain());
 
-      this.gains[i].setValueAtTime(0.5, 0);
+      this.gains[i].gain.setValueAtTime(0.5, 0);
 
       this.playingSounds[i].connect(this.gains[i]);
       this.gains[i].connect(this.audioContext.destination);
 
-      LoadNewSound(this.ClosestPointsId, i);
+      this.LoadNewSound(this.ClosestPointsId, i);
 
       this.playingSounds[i].play();
     }
@@ -199,8 +199,8 @@ class PlayerExperience extends AbstractExperience {
     // Sound initialisation
     var Sound = this.audioContext.createBufferSource()
     Sound.loop = true;
-    Sound.buffer = this.soundBank(soundId);
-    Sound.connect(this.gain(gainId));
+    Sound.buffer = this.soundBank[soundId];
+    Sound.connect(this.gain[gainId]);
     return Sound;
   }
 }

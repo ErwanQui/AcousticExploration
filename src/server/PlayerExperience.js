@@ -4,7 +4,7 @@ class PlayerExperience extends AbstractExperience {
   constructor(server, clientTypes, options = {}) {
     super(server, clientTypes);
 
-    // this.filesystem = this.require('filesystem');
+    this.filesystem = this.require('filesystem');
     this.audioBufferLoader = this.require('audio-buffer-loader');
   }
 

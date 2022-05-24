@@ -5,7 +5,7 @@ import serveStatic from 'serve-static';
 import compile from 'template-literal';
 
 import pluginAudioBufferLoaderFactory from '@soundworks/plugin-audio-buffer-loader/server';
-// import pluginFilesystemFactory from '@soundworks/plugin-filesystem/server';
+import pluginFilesystemFactory from '@soundworks/plugin-filesystem/server';
 
 import PlayerExperience from './PlayerExperience.js';
 
@@ -34,13 +34,13 @@ console.log(`
 // register plugins
 // -------------------------------------------------------------------
 
-// server.pluginManager.register('filesystem', pluginFilesystemFactory, {
-//   directories: [{
-//     name: 'images',
-//     path: path.join('public', 'images'),
-//     publicDirectory: '',
-//   }]
-// }, []);
+server.pluginManager.register('filesystem', pluginFilesystemFactory, {
+  directories: [{
+    name: 'fs-new',
+    path: path.join(process.cwd(), 'fs-new'),
+    publicDirectory: 'fs-new',
+  }]
+}, []);
 
 server.pluginManager.register('audio-buffer-loader', pluginAudioBufferLoaderFactory, {}, []);
 
