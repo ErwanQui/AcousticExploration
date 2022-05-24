@@ -5,7 +5,7 @@ import initQoS from '@soundworks/template-helpers/client/init-qos.js';
 
 // Import plugin
 import pluginAudioBufferLoaderFactory from '@soundworks/plugin-audio-buffer-loader/client';
-// import pluginFilesystemFactory from '@soundworks/plugin-filesystem/client';
+import pluginFilesystemFactory from '@soundworks/plugin-filesystem/client';
 
 import PlayerExperience from './PlayerExperience.js';
 
@@ -21,20 +21,8 @@ async function launch($container, index) {
     // -------------------------------------------------------------------
     // register plugins
     // -------------------------------------------------------------------
-    // client.pluginManager.register('filesystem', pluginFilesystemFactory, {}, []);
-    client.pluginManager.register('audio-buffer-loader', pluginAudioBufferLoaderFactory, {
-      data: {
-        'Shoot': 'Audio/Kill.mp3',
-        'MonsterSound1': 'Audio/Monster1.mp3',
-        'MonsterSound2': 'Audio/Monster2.mp3',
-        'MonsterSound3': 'Audio/Monster3.mp3',
-        'MonsterSound4': 'Audio/Monster4.mp3',
-        'MonsterSound5': 'Audio/Monster5.mp3',
-        'MonsterDie': 'Audio/MonsterDie.wav',
-        'GameOver': 'Audio/GameOver.wav',
-        'PlayerDamage': 'Audio/PlayerDamage.wav',
-      }
-    }, [])
+    client.pluginManager.register('filesystem', pluginFilesystemFactory, {}, []);
+    client.pluginManager.register('audio-buffer-loader', pluginAudioBufferLoaderFactory, {}, [])
     
     // -------------------------------------------------------------------
     // launch application

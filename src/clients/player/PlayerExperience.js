@@ -17,7 +17,7 @@ class PlayerExperience extends AbstractExperience {
     // Require plugins if needed
     this.audioBufferLoader = this.require('audio-buffer-loader');
     this.ambisonics = require('ambisonics');
-    // this.filesystem = this.require('filesystem');
+    this.filesystem = this.require('filesystem');
     // console.log(this.filesystem)
     // console.log(this.filesystem.getValues())
     // const trees = this.filesystem.getValues();
@@ -57,23 +57,48 @@ class PlayerExperience extends AbstractExperience {
 
     this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints)
 
-    for (let i = 0; i < this.nbPos; i++) {
-      this.playingSounds.push(this.audioContext.createBufferSource());
-      this.gains.push(this.audioContext.createGain());
+    // for (let i = 0; i < this.nbPos; i++) {
+    //   this.playingSounds.push(this.audioContext.createBufferSource());
+    //   this.gains.push(this.audioContext.createGain());
 
-      this.gains[i].gain.setValueAtTime(0.5, 0);
+    //   this.gains[i].gain.setValueAtTime(0.5, 0);
 
-      this.playingSounds[i].connect(this.gains[i]);
-      this.gains[i].connect(this.audioContext.destination);
+    //   this.playingSounds[i].connect(this.gains[i]);
+    //   this.gains[i].connect(this.audioContext.destination);
 
-      this.LoadNewSound(this.ClosestPointsId, i);
+    //   this.LoadNewSound(this.ClosestPointsId, i);
 
-      this.playingSounds[i].play();
-    }
+    //   this.playingSounds[i].play();
+    // }
 
-    console.log(this.positions)
+
+    // subscribe to display loading state
+    this.audioBufferLoader.subscribe(() => this.render());
+    // subscribe to display loading state
+    this.filesystem.subscribe(() => this.loadSoundbank());
+
+    // init with current content
+    this.loadSoundbank();
+
+    // console.log(this.positions)
     window.addEventListener('resize', () => this.render());
     this.render();
+  }
+
+  loadSoundbank() {
+    const soundbankTree = this.filesystem.get('AudioFiles0');
+    const defObj = {};
+    console.log(soundbankTree)
+
+    soundbankTree.children.forEach(leaf => {
+      // console.log(leaf)
+      if (leaf.type === 'file') {
+        // console.log(leaf.url)
+        defObj[leaf.name] = leaf.url;
+      }
+    });
+
+    this.audioBufferLoader.load(defObj, true);
   }
 
   render() {
@@ -81,6 +106,11 @@ class PlayerExperience extends AbstractExperience {
     window.cancelAnimationFrame(this.rafId);
 
     this.rafId = window.requestAnimationFrame(() => {
+
+      const loading = this.audioBufferLoader.get('loading');
+      const data = this.audioBufferLoader.data;
+      console.log(data)
+
       render(html`
         <div style="padding: 20px">
           <h1 style="margin: 20px 0">${this.client.type} [id: ${this.client.id}]</h1>
@@ -101,6 +131,11 @@ class PlayerExperience extends AbstractExperience {
             <div id="listener" style="position: absolute; height: 15px; width: 15px; background: blue; text-align: center; transform: translate(${this.listenerPosition.x}px, ${this.listenerPosition.y}px) rotate(45deg)"
           </div>
         </div>
+        <p>add or remove .wav or .mp3 files in the "soundbank" directory and observe the changes:</p>
+
+          ${Object.keys(data).map(key => {
+            return html`<p>- "${key}" loaded: ${data[key]}.</p>`;
+          })}
       `, this.$container);
 
       if (this.initialising) {
@@ -178,7 +213,7 @@ class PlayerExperience extends AbstractExperience {
         }
       }
       closestIds.push(currentClosestId);
-      console.log(closestIds)
+      // console.log(closestIds)
     }
     return (closestIds);
   }
