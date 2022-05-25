@@ -12,7 +12,9 @@ import PlayerExperience from './PlayerExperience.js';
 const config = window.soundworksConfig;
 // store experiences of emulated clients
 const experiences = new Set();
+// import path from 'path';
 
+// import fs from 'fs';
 
 async function launch($container, index) {
   try {

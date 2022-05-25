@@ -3,8 +3,11 @@ import { render, html } from 'lit-html';
 import renderInitializationScreens from '@soundworks/template-helpers/client/render-initialization-screens.js';
 
 import Marker from './Marker.js';
-// import Map from 'images/Map.png';
+// import Scene from 'grid_nav_assets/assets/scene.json';
 
+// import Positions from './scene.json'
+// import fs5 from "fs";
+// import JSON5 from 'json5';
 
 class PlayerExperience extends AbstractExperience {
   constructor(client, config = {}, $container) {
@@ -25,6 +28,13 @@ class PlayerExperience extends AbstractExperience {
     //   const tree = tree[name];
     //   console.log(name, tree);
     // }
+    // this.path = require("path")
+    // this.fs = this.require('fs')
+
+// const envConfigPath = 'public/grid_nav_assets/assets/scene.json'
+// var envConfig = JSON5.parse(fs.readFileSync(envConfigPath, 'utf-8'));
+// console.log(envConfig)
+
 
     this.initialising = true;
     this.listenerPosition = {
@@ -33,9 +43,30 @@ class PlayerExperience extends AbstractExperience {
     }
     this.ClosestPointsId = [];
     this.previousClosestPointsId = [];
-    this.nbPos = 40;
     this.nbClosestPoints = 4;
     this.positions = [];
+    this.truePositions = [
+      [31.0, 41.5],
+      [31.0, 39.0],
+      [31.0, 36.2],
+      [34.5, 36.2],
+      [36.8, 36.2],
+      [36.8, 33.6],
+      [34.5, 33.6],
+      [31.0, 33.6],
+      [31.0, 31.0],
+      [34.5, 31.0],
+      [34.5, 28.0],
+      [31.0, 28.0],
+      [31.0, 25.8],
+      [34.5, 25.8],
+      [36.8, 25.8],
+      [36.8, 23.6],
+      [34.5, 23.6],
+      [31.0, 23.6],
+    ]
+
+    this.nbPos = this.truePositions.length;
     this.sourcesColor = ["gold", "green", "white", "black"];
 
     this.audioContext = new AudioContext();
@@ -51,8 +82,14 @@ class PlayerExperience extends AbstractExperience {
     this.soundBank = await this.audioBufferLoader.load({
     }, true);
 
+    this.factorX = 20;
+    this.offsetX = -500;
+    this.factorY = 20;
+    this.offsetY = -236;
+
     for (let i = 0; i < this.nbPos; i++) {
       this.positions.push({x: Math.round(Math.random()*1000 - 500), y: Math.round(Math.random()*500)});
+      // this.positions.push({x: this.truePositions[i][0]*this.factorX + this.offsetX, y:this.truePositions[i][1]*this.factorY + this.offsetY});
     }
 
     this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints)
@@ -70,6 +107,10 @@ class PlayerExperience extends AbstractExperience {
 
     //   this.playingSounds[i].play();
     // }
+    // $.get("data.json", function(data){
+    // console.log(data);
+    // });
+
 
 
     // subscribe to display loading state
@@ -79,6 +120,26 @@ class PlayerExperience extends AbstractExperience {
 
     // init with current content
     this.loadSoundbank();
+
+    // this.fs = require('file-system')
+
+    const Tree = this.filesystem.get('Position'); //////// ça marche pas (impossibile d'utiliser fs, ne trouve pas le path...)
+    // Tree.children.forEach(leaf => {
+    //   // console.log(leaf)
+    //   if (leaf.type === 'file') {
+    //     console.log(leaf)
+    //     if (leaf.extension === '.json') {
+    //       // console.log(leaf.url)
+    //       console.log(JSON.parse('./scene.json'))
+    //       // console.log(JSON5.parse(this.filesystem.readFileSync(leaf.url, 'utf-8')));
+    //       // let a = require(leaf.path)
+    //       let b = require('./scene.json')
+    //       // console.log(a);
+    //       // console.log(b);
+    //     }
+    //   }
+    // });
+
 
     // console.log(this.positions)
     window.addEventListener('resize', () => this.render());
@@ -93,7 +154,6 @@ class PlayerExperience extends AbstractExperience {
     soundbankTree.children.forEach(leaf => {
       // console.log(leaf)
       if (leaf.type === 'file') {
-        // console.log(leaf.url)
         defObj[leaf.name] = leaf.url;
       }
     });
@@ -131,12 +191,10 @@ class PlayerExperience extends AbstractExperience {
             <div id="listener" style="position: absolute; height: 15px; width: 15px; background: blue; text-align: center; transform: translate(${this.listenerPosition.x}px, ${this.listenerPosition.y}px) rotate(45deg)"
           </div>
         </div>
-        <p>add or remove .wav or .mp3 files in the "soundbank" directory and observe the changes:</p>
-
-          ${Object.keys(data).map(key => {
-            return html`<p>- "${key}" loaded: ${data[key]}.</p>`;
-          })}
       `, this.$container);
+
+
+//<p>add or remove .wav or .mp3 files in the "soundbank" directory and observe the changes:</p>${Object.keys(data).map(key => {return html`<p>- "${key}" loaded: ${data[key]}.</p>`;})}
 
       if (this.initialising) {
         // Assign callbacks once

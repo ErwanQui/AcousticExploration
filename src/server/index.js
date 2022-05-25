@@ -27,6 +27,12 @@ server.router.use('AudioFiles1', serveStatic(path.join('public', 'grid_nav_asset
 server.router.use('AudioFiles2', serveStatic(path.join('public', 'grid_nav_assets/2_ambisonic_encoded_2nd')));
 server.router.use('AudioFiles3', serveStatic(path.join('public', 'grid_nav_assets/3_binaural_rirs')));
 server.router.use('AudioFiles4', serveStatic(path.join('public', 'grid_nav_assets/4_ambisonic_rirs_2nd')));
+server.router.use('Position', serveStatic(path.join('public', 'grid_nav_assets/assets')));
+
+
+import fs from 'fs';
+// import JSON5 from 'json5';
+// import path from 'path';
 
 console.log(`
 --------------------------------------------------------
@@ -35,12 +41,29 @@ console.log(`
 --------------------------------------------------------
 `);
 
+
+
+
+
+
+// const envConfigPath = path.join('public', 'grid_nav_assets', 'assets', `scene.json`)
+// var envConfig = JSON5.parse(fs.readFileSync(envConfigPath, 'utf-8'));
+// console.log(envConfig)
+
+
+
+
 // -------------------------------------------------------------------
 // register plugins
 // -------------------------------------------------------------------
 
 server.pluginManager.register('filesystem', pluginFilesystemFactory, {
   directories: [{
+    name: 'Position',
+    path: path.join(process.cwd(), 'public/grid_nav_assets/assets'),
+    publicDirectory: 'Position',
+  },
+  {
     name: 'AudioFiles0',
     path: path.join(process.cwd(), 'public/grid_nav_assets/0_debug_grid'),
     publicDirectory: 'AudioFiles0',
