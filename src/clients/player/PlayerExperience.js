@@ -242,7 +242,6 @@ class PlayerExperience extends AbstractExperience {
     this.listenerPosition.x = valueX.value;
     this.listenerPosition.y = valueY.value;
 
-    this.previousClosestPointsId - this.ClosestPointsId
     this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints);
 
     for (let i = 0; i < this.nbClosestPoints.length; i++) {
