@@ -67,6 +67,7 @@ class PlayerExperience extends AbstractExperience {
     ]
 
     this.nbPos = this.truePositions.length;
+    this.range;
     this.sourcesColor = ["gold", "green", "white", "black"];
 
     this.audioContext = new AudioContext();
@@ -88,8 +89,8 @@ class PlayerExperience extends AbstractExperience {
     this.offsetY = -236;
 
     for (let i = 0; i < this.nbPos; i++) {
-      this.positions.push({x: Math.round(Math.random()*1000 - 500), y: Math.round(Math.random()*500)});
-      // this.positions.push({x: this.truePositions[i][0]*this.factorX + this.offsetX, y:this.truePositions[i][1]*this.factorY + this.offsetY});
+      // this.positions.push({x: Math.round(Math.random()*1000 - 500), y: Math.round(Math.random()*500)});
+      this.positions.push({x: this.truePositions[i][0], y:this.truePositions[i][1]});
     }
 
     this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints)
@@ -169,7 +170,7 @@ class PlayerExperience extends AbstractExperience {
 
       const loading = this.audioBufferLoader.get('loading');
       const data = this.audioBufferLoader.data;
-      console.log(data)
+      // console.log(data)
 
       render(html`
         <div style="padding: 20px">
@@ -229,22 +230,58 @@ class PlayerExperience extends AbstractExperience {
 
   onBeginButtonClicked(container) {
     var tempCircle
+    this.Range(this.positions);
+    console.log(this.range);
     for (let i = 0; i < this.positions.length; i++) {
       tempCircle = document.createElement('div');
       tempCircle.id = "circle" + i;
       tempCircle.style = "position: absolute; width: 20px; height: 20px; border-radius: 20px; background: red; text-align: center;";
-      tempCircle.style.transform = "translate(" + this.positions[i].x + "px, " + this.positions[i].y + "px)";
+      tempCircle.style.transform = "translate(" + ((this.positions[i].x - this.range.moyX)*500/this.range.rangeX) + "px, " + ((this.positions[i].y - this.range.minY)*500/this.range.rangeY) + "px)";
       container.appendChild(tempCircle)
     }
   }
 
+  Range(positions) {
+    this.range = {
+      minX: positions[0].x,
+      maxX: positions[0].x, 
+      // moyX: null,
+      // rangeX: null,
+      minY: positions[0].y, 
+      maxY: positions[0].y,
+      // moyY: null,
+      // rangeY: null
+    };
+    for (let i = 1; i < positions.length; i++) {
+      if (positions[i].x < this.range.minX) {
+        this.range.minX = positions[i].x;
+      }
+      if (positions[i].x > this.range.maxX) {
+        this.range.maxX = positions[i].x;
+      }
+      if (positions[i].y < this.range.minY) {
+        this.range.minY = positions[i].y;
+      }
+      if (positions[i].y > this.range.maxY) {
+        this.range.maxY = positions[i].y;
+      }
+    }
+    this.range.moyX = (this.range.maxX + this.range.minX)/2
+    this.range.moyY = (this.range.maxY + this.range.minY)/2
+    this.range.rangeX = this.range.maxX - this.range.minX;
+    this.range.rangeY = this.range.maxY - this.range.minY;
+  }
+
   onPositionChange(valueX, valueY) {
+    console.log("oui")
     this.listenerPosition.x = valueX.value;
     this.listenerPosition.y = valueY.value;
 
+    this.previousClosestPointsId - this.ClosestPointsId
     this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints);
 
-    for (let i = 0; i < this.nbClosestPoints.length; i++) {
+    for (let i = 0; i < this.nbClosestPoints; i++) {
+      console.log("non")
       if (this.previousClosestPointsId[i] != this.ClosestPointsId) {
         document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = "red";
         document.getElementById("circle" + this.ClosestPointsId[i]).style.background = this.sourcesColor[i];
