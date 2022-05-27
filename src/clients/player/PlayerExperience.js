@@ -273,24 +273,25 @@ class PlayerExperience extends AbstractExperience {
   }
 
   onPositionChange(valueX, valueY) {
-    console.log("oui")
+    // console.log("oui")
     this.listenerPosition.x = valueX.value;
     this.listenerPosition.y = valueY.value;
 
-    this.previousClosestPointsId - this.ClosestPointsId
+    this.previousClosestPointsId = this.ClosestPointsId
     this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints);
 
     for (let i = 0; i < this.nbClosestPoints; i++) {
-      console.log("non")
+      // console.log("non")
       if (this.previousClosestPointsId[i] != this.ClosestPointsId) {
+        console.log(i)
         document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = "red";
         document.getElementById("circle" + this.ClosestPointsId[i]).style.background = this.sourcesColor[i];
 
-        this.playingSounds[i].stop();
-        this.playingSounds[i].disconnect(this.gains(i));
+        // this.playingSounds[i].stop();
+        // this.playingSounds[i].disconnect(this.gains(i));
 
-        this.playingSounds[i] = new LoadNewSound(this.ClosestPointsId[i], i);
-        this.playingSounds[i].play()
+        // this.playingSounds[i] = new LoadNewSound(this.ClosestPointsId[i], i);
+        // this.playingSounds[i].play()
       }
     }
     this.render();
