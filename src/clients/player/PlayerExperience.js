@@ -37,6 +37,7 @@ class PlayerExperience extends AbstractExperience {
 
 
     this.initialising = true;
+    this.pixelScale = 200;
     this.listenerPosition = {
       x: 0,
       y: 0,
@@ -83,31 +84,28 @@ class PlayerExperience extends AbstractExperience {
     this.soundBank = await this.audioBufferLoader.load({
     }, true);
 
-    this.factorX = 20;
-    this.offsetX = -500;
-    this.factorY = 20;
-    this.offsetY = -236;
-
     for (let i = 0; i < this.nbPos; i++) {
       // this.positions.push({x: Math.round(Math.random()*1000 - 500), y: Math.round(Math.random()*500)});
       this.positions.push({x: this.truePositions[i][0], y:this.truePositions[i][1]});
     }
 
+    this.Range(this.positions);
+    this.listenerPosition.x = this.range.moyX;
+    this.listenerPosition.y = this.range.minY;
+
     this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints)
 
-    // for (let i = 0; i < this.nbPos; i++) {
-    //   this.playingSounds.push(this.audioContext.createBufferSource());
-    //   this.gains.push(this.audioContext.createGain());
+    for (let i = 0; i < this.nbClosestPoints; i++) {
+      this.gains.push(await this.audioContext.createGain());
+      // console.log(this.gains)
+      this.playingSounds.push(this.LoadNewSound(this.audioContext, this.soundBank[this.ClosestPointsId[i]], this.gains[i]));
+      this.gains[i].connect(this.audioContext.destination);
 
-    //   this.gains[i].gain.setValueAtTime(0.5, 0);
 
-    //   this.playingSounds[i].connect(this.gains[i]);
-    //   this.gains[i].connect(this.audioContext.destination);
+      this.gains[i].gain.setValueAtTime(0.5, 0);
 
-    //   this.LoadNewSound(this.ClosestPointsId, i);
-
-    //   this.playingSounds[i].play();
-    // }
+      this.playingSounds[i].start();
+    }
     // $.get("data.json", function(data){
     // console.log(data);
     // });
@@ -181,15 +179,16 @@ class PlayerExperience extends AbstractExperience {
         </div>
         <div id="game" style="visibility: hidden;">
           <div>
-            <input type="range" id="positionInput1" max=500 min=-500 value=0></input>
-            <input type="range" id="positionInput2" max=500 min= 0 value=0></input>
+            <input type="range" id="positionInput1" step=0.1 max=${this.range.maxX} min=${this.range.minX} value=${this.listenerPosition.x}></input>
+            <input type="range" id="positionInput2" step=0.1 max=${this.range.maxY} min=${this.range.minY} value=${this.listenerPosition.y}></input>
           </div>
           <div>
             ${this.listenerPosition.x}
             ${this.listenerPosition.y}
           </div>
           <div id="circleContainer" style="width: 600px; text-align: center; position: absolute; top: 180px; left: 50%">
-            <div id="listener" style="position: absolute; height: 15px; width: 15px; background: blue; text-align: center; transform: translate(${this.listenerPosition.x}px, ${this.listenerPosition.y}px) rotate(45deg)"
+            <div id="listener" style="position: absolute; height: 15px; width: 15px; background: blue; text-align: center; transform: 
+            translate(${(this.listenerPosition.x - this.range.moyX)*2*this.pixelScale/this.range.rangeX}px, ${(this.listenerPosition.y - this.range.minY)*this.pixelScale/this.range.rangeY}px) rotate(45deg)"
           </div>
         </div>
       `, this.$container);
@@ -207,6 +206,7 @@ class PlayerExperience extends AbstractExperience {
 
           var positionInput1 = document.getElementById("positionInput1");
           var positionInput2 = document.getElementById("positionInput2");
+
           positionInput1.addEventListener("input",() => {
             this.onPositionChange(positionInput1, positionInput2);
           })
@@ -230,13 +230,14 @@ class PlayerExperience extends AbstractExperience {
 
   onBeginButtonClicked(container) {
     var tempCircle
-    this.Range(this.positions);
-    console.log(this.range);
+    this.audioContext.resume();
+    // console.log(this.range);
     for (let i = 0; i < this.positions.length; i++) {
       tempCircle = document.createElement('div');
       tempCircle.id = "circle" + i;
       tempCircle.style = "position: absolute; width: 20px; height: 20px; border-radius: 20px; background: red; text-align: center;";
-      tempCircle.style.transform = "translate(" + ((this.positions[i].x - this.range.moyX)*500/this.range.rangeX) + "px, " + ((this.positions[i].y - this.range.minY)*500/this.range.rangeY) + "px)";
+      tempCircle.style.transform = "translate(" + ((this.positions[i].x - this.range.moyX)*this.pixelScale*2/this.range.rangeX) + "px, " + ((this.positions[i].y - this.range.minY)*this.pixelScale/this.range.rangeY) + "px)";
+      tempCircle.label = i;
       container.appendChild(tempCircle)
     }
   }
@@ -279,19 +280,21 @@ class PlayerExperience extends AbstractExperience {
 
     this.previousClosestPointsId = this.ClosestPointsId
     this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints);
-
+    console.log(this.ClosestPointsId)
     for (let i = 0; i < this.nbClosestPoints; i++) {
       // console.log("non")
-      if (this.previousClosestPointsId[i] != this.ClosestPointsId) {
-        console.log(i)
-        document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = "red";
+      if (this.previousClosestPointsId[i] != this.ClosestPointsId[i]) {
+        if (this.NotIn(this.previousClosestPointsId[i], this.ClosestPointsId)) {
+          document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = "red";
+        }
         document.getElementById("circle" + this.ClosestPointsId[i]).style.background = this.sourcesColor[i];
 
-        // this.playingSounds[i].stop();
-        // this.playingSounds[i].disconnect(this.gains(i));
+        this.playingSounds[i].stop();
+        this.playingSounds[i].disconnect(this.gains[i]);
 
-        // this.playingSounds[i] = new LoadNewSound(this.ClosestPointsId[i], i);
-        // this.playingSounds[i].play()
+        this.playingSounds[i] = new this.LoadNewSound(this.audioContext, this.soundBank[this.ClosestPointsId[i]], this.gains[i]);
+        this.playingSounds[i].start();
+        console.log(this.playingSounds[i])
       }
     }
     this.render();
@@ -301,8 +304,9 @@ class PlayerExperience extends AbstractExperience {
     var closestIds = [];
     var currentClosestId;
     for (let j = 0; j < nbClosest; j++) {
-      currentClosestId = 0;
-      for (let i = 1; i < listOfPoint.length; i++) {
+      currentClosestId = undefined;
+      for (let i = 0; i < listOfPoint.length; i++) {
+      // console.log(listOfPoint[currentClosestId])
         if (this.NotIn(i, closestIds) && this.Distance(listenerPosition, listOfPoint[i]) < this.Distance(listenerPosition, listOfPoint[currentClosestId])) {
           currentClosestId = i;
         }
@@ -322,15 +326,26 @@ class PlayerExperience extends AbstractExperience {
   }
 
   Distance(pointA, pointB) {
-    return (Math.sqrt(Math.pow(pointA.x - pointB.x, 2) + Math.pow(pointA.y - pointB.y, 2)));
+    // console.log(pointA)
+    // console.log(pointB)
+    // if (pointB = undefined) {
+    //   return 0;
+    // }
+    if (pointB != undefined) {
+      return (Math.sqrt(Math.pow(pointA.x - pointB.x, 2) + Math.pow(pointA.y - pointB.y, 2)));
+    }
+    else {
+      return (Infinity);
+    }
   }
 
-  LoadNewSound(soundId, gainId) {
+  LoadNewSound(audioContext, sound, gain) {
     // Sound initialisation
-    var Sound = this.audioContext.createBufferSource()
+    // console.log(audioContext)
+    var Sound = audioContext.createBufferSource()
     Sound.loop = true;
-    Sound.buffer = this.soundBank[soundId];
-    Sound.connect(this.gain[gainId]);
+    Sound.buffer = sound;
+    Sound.connect(gain);
     return Sound;
   }
 }
