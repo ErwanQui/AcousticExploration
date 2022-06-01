@@ -37,6 +37,7 @@ class PlayerExperience extends AbstractExperience {
 
 
     this.initialising = true;
+    this.beginPressed = false;
     this.pixelScale = 200;
     this.listenerPosition = {
       x: 0,
@@ -77,9 +78,10 @@ class PlayerExperience extends AbstractExperience {
     this.audioContext = new AudioContext();
     this.playingSounds = [];
     this.gains = [];
-
+    this.circleSize = 20;
     this.tempX;
     this.tempY;
+    this.mouseDown = false
 
     renderInitializationScreens(client, config, $container);
   }
@@ -159,7 +161,14 @@ class PlayerExperience extends AbstractExperience {
 
 
     // console.log(this.positions)
-    window.addEventListener('resize', () => this.render());
+    window.addEventListener('resize', () => {
+      console.log(window.innerHeight)
+      this.scale = this.Scaling(this.range);
+      if (this.beginPressed) {
+        this.UpdateContainer();
+      }
+      this.render();
+    });
     this.render();
   }
 
@@ -191,9 +200,8 @@ class PlayerExperience extends AbstractExperience {
   }
 
   Scaling(rangeValues) {
-    var scale = {VPos2Pixel: Math.min(window.screen.height/rangeValues.rangeX, window.screen.width/rangeValues.rangeY)};
-    console.log(scale)
-    return (scale)
+    var scale = {VPos2Pixel: Math.min((window.innerWidth - this.circleSize)/rangeValues.rangeX, (window.innerHeight - this.circleSize)/rangeValues.rangeY)};
+    return (scale);
   }
 
   VirtualPos2Pixel(position) {
@@ -227,28 +235,27 @@ class PlayerExperience extends AbstractExperience {
       // console.log(data)
 
       render(html`
-        <div style="padding: 20px">
-          <h1 style="margin: 20px 0">${this.client.type} [id: ${this.client.id}]</h1>
-        </div>
-        <div>
-          <input type="button" id="beginButton" value="Begin Game"/>
+        <div id="begin">
+          <div style="padding: 20px">
+            <h1 style="margin: 20px 0">${this.client.type} [id: ${this.client.id}]</h1>
+          </div>
+          <div>
+            <input type="button" id="beginButton" value="Begin Game"/>
+          </div>
         </div>
         <div id="game" style="visibility: hidden;">
-          <div>
-            <input type="range" id="positionInput1" step=0.1 max=${this.range.maxX} min=${this.range.minX} value=${this.listenerPosition.x}></input>
-            <input type="range" id="positionInput2" step=0.1 max=${this.range.maxY} min=${this.range.minY} value=${this.listenerPosition.y}></input>
-          </div>
-          <div>
-            ${this.listenerPosition.x}
-            ${this.listenerPosition.y}
-          </div>
-          <div id="circleContainer" style="width: 600px; text-align: center; position: absolute; top: 180px; left: 50%">
-            <div id="listener" style="position: absolute; height: 15px; width: 15px; background: blue; text-align: center; z-index: 1; transform: 
-            translate(${(this.listenerPosition.x - this.range.moyX)*this.scaling}px, ${(this.listenerPosition.y - this.range.minY)*this.scaling}px) rotate(45deg)"
+          <div id="circleContainer" style="text-align: center; position: absolute; left: 50%">
+            <div id="selector" style="position: absolute;
+              height: ${this.range.rangeY*this.scale.VPos2Pixel}px;
+              width: ${this.range.rangeX*this.scale.VPos2Pixel}px;
+              background: yellow; z-index: 0;
+              transform: translate(${(-this.range.rangeX*this.scale.VPos2Pixel)/2}px, ${this.circleSize/2}px);">
+            </div>
+            <div id="listener" style="position: absolute; height: 16px; width: 16px; background: blue; text-align: center; z-index: 1;
+              transform: translate(${(this.listenerPosition.x - this.range.moyX)*this.scale.VPos2Pixel}px, ${(this.listenerPosition.y - this.range.minY)*this.scale.VPos2Pixel}px) rotate(45deg)";>
           </div>
         </div>
       `, this.$container);
-
 
         //<p>add or remove .wav or .mp3 files in the "soundbank" directory and observe the changes:</p>${Object.keys(data).map(key => {return html`<p>- "${key}" loaded: ${data[key]}.</p>`;})}
 
@@ -258,40 +265,42 @@ class PlayerExperience extends AbstractExperience {
         beginButton.addEventListener("click", () => {
           this.onBeginButtonClicked(document.getElementById('circleContainer'))
 
+          document.getElementById("begin").style.visibility = "hidden";
+          document.getElementById("begin").style.position = "absolute";
           document.getElementById("game").style.visibility = "visible";
 
           var positionInput1 = document.getElementById("positionInput1");
           var positionInput2 = document.getElementById("positionInput2");
 
-          positionInput1.addEventListener("input",() => {
-            this.onPositionChange(positionInput1, positionInput2);
-          })
-          positionInput2.addEventListener("input",() => {
-            this.onPositionChange(positionInput1, positionInput2);
-          })
+          // positionInput1.addEventListener("input",() => {
+          //   this.onPositionChange(positionInput1, positionInput2);
+          // })
+          // positionInput2.addEventListener("input",() => {
+          //   this.onPositionChange(positionInput1, positionInput2);
+          // })
 
-          var marker = document.getElementById("listener");
-          var mouseDown = false;
+          var canvas = document.getElementById('circleContainer');
           console.log(window.screen.width)
 
-          marker.addEventListener("mousedown", (mouse) => {
-            mouseDown = true;
+          canvas.addEventListener("mousedown", (mouse) => {
+            this.mouseDown = true;
             this.tempX = mouse.clientX;
             this.tempY = mouse.clientY;
             this.mouseAction(mouse);
           }, false);
 
-          marker.addEventListener("mousemove", (mouse) => {
-            if (mouseDown) {
+          canvas.addEventListener("mousemove", (mouse) => {
+            if (this.mouseDown) {
               this.mouseAction(mouse);
             }
           }, false);
 
-          marker.addEventListener("mouseup", (mouse) => {
-            mouseDown = false;
+          canvas.addEventListener("mouseup", (mouse) => {
+            this.mouseDown = false;
             // this.listenerPosition.x = this;
             // this.listenerPosition.y = mouse.clientY;
           }, false);
+          this.beginPressed = true;
         });
         this.initialising = false;
       }
@@ -309,7 +318,6 @@ class PlayerExperience extends AbstractExperience {
 
   onBeginButtonClicked(container) {
 
-
     for (let i = 0; i < this.nbClosestPoints; i++) {
       this.playingSounds[i].start();
     }
@@ -323,64 +331,47 @@ class PlayerExperience extends AbstractExperience {
       tempCircle.id = "circle" + i;
       // console.log(tempCircle)
       tempCircle.innerHTML = i;
-      tempCircle.style = "position: absolute; width: 20px; height: 20px; border-radius: 20px; background: grey; line-height: 20px";
-      tempCircle.style.transform = "translate(" + ((this.positions[i].x - this.range.moyX)*this.scaling) + "px, " + ((this.positions[i].y - this.range.minY)*this.scaling) + "px)";
+      tempCircle.style = "position: absolute; margin: 0 -10px; width: " + this.circleSize + "px; height: " + this.circleSize + "px; border-radius:" + this.circleSize + "px; line-height: " + this.circleSize + "px; background: grey;";
+      tempCircle.style.transform = "translate(" + ((this.positions[i].x - this.range.moyX)*this.scale.VPos2Pixel) + "px, " + ((this.positions[i].y - this.range.minY)*this.scale.VPos2Pixel) + "px)";
       container.appendChild(tempCircle)
     }
   }
 
-  onPositionChange(valueX, valueY) {
-    // console.log("oui")
-    this.listenerPosition.x = valueX.value;
-    this.listenerPosition.y = valueY.value;
+  UpdateContainer() {
 
-    var tempPrefix = "";
-    var file;
-
-    this.previousClosestPointsId = this.ClosestPointsId
-    this.distanceSum = 0;
-    this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints);
-    // console.log(this.ClosestPointsId)
-    for (let i = 0; i < this.nbClosestPoints; i++) {
-      // console.log("non")
-      if (this.previousClosestPointsId[i] != this.ClosestPointsId[i]) {
-        if (this.NotIn(this.previousClosestPointsId[i], this.ClosestPointsId)) {
-          document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = "grey";
-        }
-
-        this.playingSounds[i].stop();
-        this.playingSounds[i].disconnect(this.gains[i]);
-
-        if (this.ClosestPointsId[i] < 10) {
-          tempPrefix = "0";
-        }
-        else {
-          tempPrefix = "";
-        }
-
-        file = tempPrefix + this.ClosestPointsId[i] + ".wav";
-
-        this.playingSounds[i] = this.LoadNewSound(this.audioBufferLoader.data[file], i);
-        this.playingSounds[i].start();
-        // console.log(this.playingSounds[i])
-      }
-      document.getElementById("circle" + this.ClosestPointsId[i]).style.background = "rgb(0, " + 255*(1-2*this.distanceValue[i]/this.distanceSum) + ", 0)";
-    }
-    this.render();
+    document.getElementById("circleContainer").height = (this.range.rangeY*this.scale.VPos2Pixel) + "px";
+    document.getElementById("circleContainer").width = (this.range.rangeX*this.scale.VPos2Pixel) + "px";
+    document.getElementById("circleContainer").transform = "translate(" + (this.circleSize/2 - this.range.rangeX*this.scale.VPos2Pixel/2) + "px, 10px);"
+    // document.getElementById("circleContainer").style.transform = "translateX(" + (-2*this.range.rangeX*this.scale.VPos2Pixel) + "px)";
+    this.UpdateListener();
+    this.UpdateSourcesPosition();
   }
 
-  PositionChange(valueX, valueY) {
-    // console.log("oui")
+  UpdateListener() {
+    document.getElementById("listener").style.transform = "translate(" + ((this.listenerPosition.x - this.range.moyX)*this.scale.VPos2Pixel - this.circleSize/2) + "px, " + ((this.listenerPosition.y - this.range.minY)*this.scale.VPos2Pixel) + "px) rotate(45deg)";
+    this.PositionChanged();  
+  }
 
+  UpdateSourcesPosition() {
+    for (let i = 0; i < this.positions.length; i++) {
+      document.getElementById("circle" + i).style.transform = "translate(" + ((this.positions[i].x - this.range.moyX)*this.scale.VPos2Pixel) + "px, " + ((this.positions[i].y - this.range.minY)*this.scale.VPos2Pixel) + "px)";
+    }
+  }
+
+  UpdateSourcesSound(index) {
+    var sourceValue = (1-2*this.distanceValue[index]/this.distanceSum);
+    document.getElementById("circle" + this.ClosestPointsId[index]).style.background = "rgb(0, " + 255*sourceValue + ", 0)";
+    this.gains[index].gain.setValueAtTime(sourceValue, 0);
+  }
+
+  PositionChanged() {
     var tempPrefix = "";
     var file;
 
     this.previousClosestPointsId = this.ClosestPointsId
     this.distanceSum = 0;
     this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints);
-    // console.log(this.ClosestPointsId)
     for (let i = 0; i < this.nbClosestPoints; i++) {
-      // console.log("non")
       if (this.previousClosestPointsId[i] != this.ClosestPointsId[i]) {
         if (this.NotIn(this.previousClosestPointsId[i], this.ClosestPointsId)) {
           document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = "grey";
@@ -397,39 +388,30 @@ class PlayerExperience extends AbstractExperience {
         }
 
         file = tempPrefix + this.ClosestPointsId[i] + ".wav";
-
+console.log(this.audioBufferLoader.data)
         this.playingSounds[i] = this.LoadNewSound(this.audioBufferLoader.data[file], i);
         this.playingSounds[i].start();
         // console.log(this.playingSounds[i])
+        // console.log(this.playingSounds[i])
       }
-      document.getElementById("circle" + this.ClosestPointsId[i]).style.background = "rgb(0, " + 255*(1-2*this.distanceValue[i]/this.distanceSum) + ", 0)";
+    this.UpdateSourcesSound(i);
     }
-    this.render();
   }
 
   mouseAction(mouse) {
 
-    // Get current mouse coords
-    // var rect = canvas.getBoundingClientRect();
-    // var mouseXPos = (mouse.clientX - rect.left);
-    // var mouseYPos = (mouse.clientY - rect.top);
-    // this.listenerPosition.x = mouse.clientX - (document.getElementById("listener").style.width/2);
-    // this.listenerPosition.y = mouse.clientY - (document.getElementById("listener").Height/2);
-    // this.listenerPosition.x = this.range.moyX + (mouse.clientX - window.screen.width/2)/(this.scaling);
-    // this.listenerPosition.y = this.range.moyY + (mouse.clientY - window.screen.height/2)/(this.scaling);
-    console.log(this.range.minY + (mouse.clientY - window.screen.height/2)/(this.scaling));
-    console.log((mouse.clientY - this.tempY)/(this.scaling));
+    var tempX = this.range.moyX + (mouse.clientX - window.innerWidth/2)/(this.scale.VPos2Pixel);
+    var tempY = this.range.minY + (mouse.clientY - this.circleSize/2)/(this.scale.VPos2Pixel);
 
-    // this.listenerPosition.x += (mouse.clientX - this.tempX)/this.scaling;
-    // this.listenerPosition.y += (mouse.clientY - this.tempY)/this.scaling
+    if (tempX >= this.range.minX && tempX <= this.range.maxX && tempY >= this.range.minY && tempY <= this.range.maxY) {
+      this.listenerPosition.x = this.range.moyX + (mouse.clientX - window.innerWidth/2)/(this.scale.VPos2Pixel);
+      this.listenerPosition.y = this.range.minY + (mouse.clientY - this.circleSize/2)/(this.scale.VPos2Pixel);
 
-    document.getElementById("listener").style.transform = "translate(" + ((this.listenerPosition.x - this.range.moyX)*this.scaling + mouse.clientX - this.tempX) + "px, " + ((this.listenerPosition.y - this.range.minY)*this.scaling + mouse.clientY - this.tempY) +"px) rotate(45deg)";
-    // document.getElementById("listener").style.transform = "translate(" + ((this.listenerPosition.x - this.range.moyX)*this.scaling) + "px, " + ((this.listenerPosition.y - this.range.minY)*this.scaling + mouse.clientY - this.tempY) +"px) rotate(45deg)";
-    // this.listenerPosition.y = 24;
-    // console.log(document.getElementById("cle").style.height);
-    // console.log((window.screen.height/2 - mouse.clientY));
-    // console.log((window.screen.height/2 - mouse.clientY)/this.scaling);
-    // console.log(mouse.clientY);
+      this.UpdateListener();
+    }
+    else {
+      this.mouseDown = false;
+    }
   }
 
   ClosestSource(listenerPosition, listOfPoint, nbClosest) {
@@ -438,7 +420,6 @@ class PlayerExperience extends AbstractExperience {
     for (let j = 0; j < nbClosest; j++) {
       currentClosestId = undefined;
       for (let i = 0; i < listOfPoint.length; i++) {
-      // console.log(listOfPoint[currentClosestId])
         if (this.NotIn(i, closestIds) && this.Distance(listenerPosition, listOfPoint[i]) < this.Distance(listenerPosition, listOfPoint[currentClosestId])) {
           currentClosestId = i;
         }
@@ -446,7 +427,6 @@ class PlayerExperience extends AbstractExperience {
       this.distanceValue[j] = this.Distance(listenerPosition, listOfPoint[currentClosestId]);
       this.distanceSum += this.distanceValue[j];
       closestIds.push(currentClosestId);
-      // console.log(closestIds)
     }
     return (closestIds);
   }
@@ -460,11 +440,6 @@ class PlayerExperience extends AbstractExperience {
   }
 
   Distance(pointA, pointB) {
-    // console.log(pointA)
-    // console.log(pointB)
-    // if (pointB = undefined) {
-    //   return 0;
-    // }
     if (pointB != undefined) {
       return (Math.sqrt(Math.pow(pointA.x - pointB.x, 2) + Math.pow(pointA.y - pointB.y, 2)));
     }
@@ -475,12 +450,13 @@ class PlayerExperience extends AbstractExperience {
 
   LoadNewSound(buffer, index) {
     // Sound initialisation
+    var sound = this.audioContext.createBufferSource()
+    sound.loop = true;
     // console.log(buffer)
-    var Sound = this.audioContext.createBufferSource()
-    Sound.loop = true;
-    Sound.buffer = buffer;
-    Sound.connect(this.gains[index]);
-    return Sound;
+    sound.buffer = buffer;
+    sound.connect(this.gains[index]);
+    // console.log(sound)
+    return sound;
   }
 }
 
