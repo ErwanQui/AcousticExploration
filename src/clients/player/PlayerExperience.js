@@ -42,6 +42,9 @@ class PlayerExperience extends AbstractExperience {
       x: 0,
       y: 0,
     }
+    this.scaling = 150;
+    this.distanceSum = 0;
+
     this.ClosestPointsId = [];
     this.previousClosestPointsId = [];
     this.nbClosestPoints = 4;
@@ -69,11 +72,14 @@ class PlayerExperience extends AbstractExperience {
 
     this.nbPos = this.truePositions.length;
     this.range;
-    this.sourcesColor = ["gold", "green", "white", "black"];
+    this.distanceValue = [0, 0, 0, 0];
 
     this.audioContext = new AudioContext();
     this.playingSounds = [];
     this.gains = [];
+
+    this.tempX;
+    this.tempY;
 
     renderInitializationScreens(client, config, $container);
   }
@@ -95,22 +101,33 @@ class PlayerExperience extends AbstractExperience {
 
     this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints)
 
-    for (let i = 0; i < this.nbClosestPoints; i++) {
-      this.gains.push(await this.audioContext.createGain());
-      // console.log(this.gains)
-      this.playingSounds.push(this.LoadNewSound(this.audioContext, this.soundBank[this.ClosestPointsId[i]], this.gains[i]));
-      this.gains[i].connect(this.audioContext.destination);
-
-
-      this.gains[i].gain.setValueAtTime(0.5, 0);
-
-      this.playingSounds[i].start();
-    }
     // $.get("data.json", function(data){
     // console.log(data);
     // });
 
+    var tempPrefix = "";
+    var file;
 
+    for (let i = 0; i < this.nbClosestPoints; i++) {
+      this.gains.push(await this.audioContext.createGain());
+      // console.log(this.gains)
+
+      if (this.ClosestPointsId[i] < 10) {
+        tempPrefix = "0";
+      }
+      else {
+        tempPrefix = "";
+      }
+
+      file = tempPrefix + this.ClosestPointsId[i] + ".wav";
+
+
+      this.playingSounds.push(this.LoadNewSound(this.audioBufferLoader.data[file], i));
+      this.gains[i].connect(this.audioContext.destination);
+
+
+      this.gains[i].gain.setValueAtTime(0.5, 0);
+    }
 
     // subscribe to display loading state
     this.audioBufferLoader.subscribe(() => this.render());
@@ -187,8 +204,8 @@ class PlayerExperience extends AbstractExperience {
             ${this.listenerPosition.y}
           </div>
           <div id="circleContainer" style="width: 600px; text-align: center; position: absolute; top: 180px; left: 50%">
-            <div id="listener" style="position: absolute; height: 15px; width: 15px; background: blue; text-align: center; transform: 
-            translate(${(this.listenerPosition.x - this.range.moyX)*2*this.pixelScale/this.range.rangeX}px, ${(this.listenerPosition.y - this.range.minY)*this.pixelScale/this.range.rangeY}px) rotate(45deg)"
+            <div id="listener" style="position: absolute; height: 15px; width: 15px; background: blue; text-align: center; z-index: 1; transform: 
+            translate(${(this.listenerPosition.x - this.range.moyX)*this.scaling}px, ${(this.listenerPosition.y - this.range.minY)*this.scaling}px) rotate(45deg)"
           </div>
         </div>
       `, this.$container);
@@ -213,6 +230,29 @@ class PlayerExperience extends AbstractExperience {
           positionInput2.addEventListener("input",() => {
             this.onPositionChange(positionInput1, positionInput2);
           })
+
+          var marker = document.getElementById("listener");
+          var mouseDown = false;
+          console.log(window.screen.width)
+
+          marker.addEventListener("mousedown", (mouse) => {
+            mouseDown = true;
+            this.tempX = mouse.clientX;
+            this.tempY = mouse.clientY;
+            this.mouseAction(mouse);
+          }, false);
+
+          marker.addEventListener("mousemove", (mouse) => {
+            if (mouseDown) {
+              this.mouseAction(mouse);
+            }
+          }, false);
+
+          marker.addEventListener("mouseup", (mouse) => {
+            mouseDown = false;
+            // this.listenerPosition.x = this;
+            // this.listenerPosition.y = mouse.clientY;
+          }, false);
         });
         this.initialising = false;
       }
@@ -229,15 +269,23 @@ class PlayerExperience extends AbstractExperience {
   }
 
   onBeginButtonClicked(container) {
+
+
+    for (let i = 0; i < this.nbClosestPoints; i++) {
+      this.playingSounds[i].start();
+    }
+
+
     var tempCircle
     this.audioContext.resume();
     // console.log(this.range);
     for (let i = 0; i < this.positions.length; i++) {
       tempCircle = document.createElement('div');
       tempCircle.id = "circle" + i;
-      tempCircle.style = "position: absolute; width: 20px; height: 20px; border-radius: 20px; background: red; text-align: center;";
-      tempCircle.style.transform = "translate(" + ((this.positions[i].x - this.range.moyX)*this.pixelScale*2/this.range.rangeX) + "px, " + ((this.positions[i].y - this.range.minY)*this.pixelScale/this.range.rangeY) + "px)";
-      tempCircle.label = i;
+      // console.log(tempCircle)
+      tempCircle.innerHTML = i;
+      tempCircle.style = "position: absolute; width: 20px; height: 20px; border-radius: 20px; background: grey; line-height: 20px";
+      tempCircle.style.transform = "translate(" + ((this.positions[i].x - this.range.moyX)*this.scaling) + "px, " + ((this.positions[i].y - this.range.minY)*this.scaling) + "px)";
       container.appendChild(tempCircle)
     }
   }
@@ -278,27 +326,104 @@ class PlayerExperience extends AbstractExperience {
     this.listenerPosition.x = valueX.value;
     this.listenerPosition.y = valueY.value;
 
+    var tempPrefix = "";
+    var file;
+
     this.previousClosestPointsId = this.ClosestPointsId
+    this.distanceSum = 0;
     this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints);
-    console.log(this.ClosestPointsId)
+    // console.log(this.ClosestPointsId)
     for (let i = 0; i < this.nbClosestPoints; i++) {
       // console.log("non")
       if (this.previousClosestPointsId[i] != this.ClosestPointsId[i]) {
         if (this.NotIn(this.previousClosestPointsId[i], this.ClosestPointsId)) {
-          document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = "red";
+          document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = "grey";
         }
-        document.getElementById("circle" + this.ClosestPointsId[i]).style.background = this.sourcesColor[i];
 
         this.playingSounds[i].stop();
         this.playingSounds[i].disconnect(this.gains[i]);
 
-        this.playingSounds[i] = new this.LoadNewSound(this.audioContext, this.soundBank[this.ClosestPointsId[i]], this.gains[i]);
+        if (this.ClosestPointsId[i] < 10) {
+          tempPrefix = "0";
+        }
+        else {
+          tempPrefix = "";
+        }
+
+        file = tempPrefix + this.ClosestPointsId[i] + ".wav";
+
+        this.playingSounds[i] = this.LoadNewSound(this.audioBufferLoader.data[file], i);
         this.playingSounds[i].start();
-        console.log(this.playingSounds[i])
+        // console.log(this.playingSounds[i])
       }
+      document.getElementById("circle" + this.ClosestPointsId[i]).style.background = "rgb(0, " + 255*(1-2*this.distanceValue[i]/this.distanceSum) + ", 0)";
     }
     this.render();
   }
+
+  PositionChange(valueX, valueY) {
+    // console.log("oui")
+
+    var tempPrefix = "";
+    var file;
+
+    this.previousClosestPointsId = this.ClosestPointsId
+    this.distanceSum = 0;
+    this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints);
+    // console.log(this.ClosestPointsId)
+    for (let i = 0; i < this.nbClosestPoints; i++) {
+      // console.log("non")
+      if (this.previousClosestPointsId[i] != this.ClosestPointsId[i]) {
+        if (this.NotIn(this.previousClosestPointsId[i], this.ClosestPointsId)) {
+          document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = "grey";
+        }
+
+        this.playingSounds[i].stop();
+        this.playingSounds[i].disconnect(this.gains[i]);
+
+        if (this.ClosestPointsId[i] < 10) {
+          tempPrefix = "0";
+        }
+        else {
+          tempPrefix = "";
+        }
+
+        file = tempPrefix + this.ClosestPointsId[i] + ".wav";
+
+        this.playingSounds[i] = this.LoadNewSound(this.audioBufferLoader.data[file], i);
+        this.playingSounds[i].start();
+        // console.log(this.playingSounds[i])
+      }
+      document.getElementById("circle" + this.ClosestPointsId[i]).style.background = "rgb(0, " + 255*(1-2*this.distanceValue[i]/this.distanceSum) + ", 0)";
+    }
+    this.render();
+  }
+
+  mouseAction(mouse) {
+
+    // Get current mouse coords
+    // var rect = canvas.getBoundingClientRect();
+    // var mouseXPos = (mouse.clientX - rect.left);
+    // var mouseYPos = (mouse.clientY - rect.top);
+    // this.listenerPosition.x = mouse.clientX - (document.getElementById("listener").style.width/2);
+    // this.listenerPosition.y = mouse.clientY - (document.getElementById("listener").Height/2);
+    // this.listenerPosition.x = this.range.moyX + (mouse.clientX - window.screen.width/2)/(this.scaling);
+    // this.listenerPosition.y = this.range.moyY + (mouse.clientY - window.screen.height/2)/(this.scaling);
+    console.log(this.range.minY + (mouse.clientY - window.screen.height/2)/(this.scaling));
+    console.log((mouse.clientY - this.tempY)/(this.scaling));
+
+    // this.listenerPosition.x += (mouse.clientX - this.tempX)/this.scaling;
+    // this.listenerPosition.y += (mouse.clientY - this.tempY)/this.scaling
+
+    document.getElementById("listener").style.transform = "translate(" + ((this.listenerPosition.x - this.range.moyX)*this.scaling + mouse.clientX - this.tempX) + "px, " + ((this.listenerPosition.y - this.range.minY)*this.scaling + mouse.clientY - this.tempY) +"px) rotate(45deg)";
+    // document.getElementById("listener").style.transform = "translate(" + ((this.listenerPosition.x - this.range.moyX)*this.scaling) + "px, " + ((this.listenerPosition.y - this.range.minY)*this.scaling + mouse.clientY - this.tempY) +"px) rotate(45deg)";
+    // this.listenerPosition.y = 24;
+    // console.log(document.getElementById("cle").style.height);
+    // console.log((window.screen.height/2 - mouse.clientY));
+    // console.log((window.screen.height/2 - mouse.clientY)/this.scaling);
+    // console.log(mouse.clientY);
+  }
+
 
   ClosestSource(listenerPosition, listOfPoint, nbClosest) {
     var closestIds = [];
@@ -311,6 +436,8 @@ class PlayerExperience extends AbstractExperience {
           currentClosestId = i;
         }
       }
+      this.distanceValue[j] = this.Distance(listenerPosition, listOfPoint[currentClosestId]);
+      this.distanceSum += this.distanceValue[j];
       closestIds.push(currentClosestId);
       // console.log(closestIds)
     }
@@ -339,13 +466,13 @@ class PlayerExperience extends AbstractExperience {
     }
   }
 
-  LoadNewSound(audioContext, sound, gain) {
+  LoadNewSound(buffer, index) {
     // Sound initialisation
-    // console.log(audioContext)
-    var Sound = audioContext.createBufferSource()
+    // console.log(buffer)
+    var Sound = this.audioContext.createBufferSource()
     Sound.loop = true;
-    Sound.buffer = sound;
-    Sound.connect(gain);
+    Sound.buffer = buffer;
+    Sound.connect(this.gains[index]);
     return Sound;
   }
 }
