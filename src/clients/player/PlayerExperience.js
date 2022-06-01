@@ -264,7 +264,9 @@ class PlayerExperience extends AbstractExperience {
             for (let i = 0; i < this.nbClosestPoints; i++) {
               this.playingSounds.push(this.LoadNewSound(this.audioBufferLoader.data[this.audioFilesName[this.ClosestPointsId[i]]], i));
               this.gains[i].connect(this.audioContext.destination);
-              this.playingSounds[i].start();
+              if (i != this.nbClosestPoints - 1) {
+                this.playingSounds[i].start();
+              }
             }
 
             // Get all the data and set the display to begin
@@ -354,13 +356,13 @@ class PlayerExperience extends AbstractExperience {
     this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints);
     
     // Check all the new closest Points
-    for (let i = 0; i < this.nbClosestPoints; i++) {
+    for (let i = 0; i < this.nbClosestPoints - 1; i++) {
 
       // Check if the Id is new in 'this.ClosestPointsId'
       if (this.previousClosestPointsId[i] != this.ClosestPointsId[i]) {
 
         // Update the Display for Sources that are not active
-        if (this.NotIn(this.previousClosestPointsId[i], this.ClosestPointsId)) {
+        if (this.NotIn(this.previousClosestPointsId[i], this.ClosestPointsId) || this.previousClosestPointsId[i] == this.ClosestPointsId[this.nbClosestPoints - 1]) {
           document.getElementById("circle" + this.previousClosestPointsId[i]).style.background = "grey";
         }
 
@@ -386,13 +388,14 @@ class PlayerExperience extends AbstractExperience {
   UpdateSourcesSound(index) { // Update Gain and Display of the Source depending on Listener's Position
 
     // Set a using value to the Source
-    var sourceValue = this.distanceValue[index]/this.distanceSum;
+    var sourceValue = (this.distanceSum - this.distanceValue[index])/((this.nbClosestPoints - 2)*this.distanceSum);
 
     // Update the Display of the Source
-    document.getElementById("circle" + this.ClosestPointsId[index]).style.background = "rgb(0, " + 255*(1 - 2*sourceValue) + ", 0)";
+    document.getElementById("circle" + this.ClosestPointsId[index]).style.background = "rgb(0, " + 255*(4*Math.pow(sourceValue, 2)) + ", 0)";
     
     // Update the Gain of the Source
-    this.gains[index].gain.setValueAtTime(1- 3*sourceValue, 0);
+    this.gains[index].gain.setValueAtTime(sourceValue, 0);
+    console.log(sourceValue)
   }
 
   ClosestSource(listenerPosition, listOfPoint, nbClosest) { // get closest Sources to the Listener
@@ -415,11 +418,13 @@ class PlayerExperience extends AbstractExperience {
         }
       }
 
-      // Get the distance between the listener ant the source
-      this.distanceValue[j] = this.Distance(listenerPosition, listOfPoint[currentClosestId]);
-      
-      // Increment 'this.distanceSum'
-      this.distanceSum += this.distanceValue[j];
+      if (j != nbClosest - 1) {
+        // Get the distance between the listener ant the source
+        this.distanceValue[j] = this.Distance(listenerPosition, listOfPoint[currentClosestId]);
+        
+        // Increment 'this.distanceSum'
+        this.distanceSum += this.distanceValue[j];
+      }
 
       // Push the Id in the closest
       closestIds.push(currentClosestId);
