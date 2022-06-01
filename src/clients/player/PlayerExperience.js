@@ -213,9 +213,10 @@ class PlayerExperience extends AbstractExperience {
     const soundbankTree = this.filesystem.get('AudioFiles0');
     const defObj = {};
     console.log(soundbankTree)
-
+    console.log("bonjou")
     soundbankTree.children.forEach(leaf => {
       // console.log(leaf)
+      console.loh("hey")
       if (leaf.type === 'file') {
         defObj[leaf.name] = leaf.url;
       }
