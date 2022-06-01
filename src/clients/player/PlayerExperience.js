@@ -31,9 +31,9 @@ class PlayerExperience extends AbstractExperience {
     // this.path = require("path")
     // this.fs = this.require('fs')
 
-// const envConfigPath = 'public/grid_nav_assets/assets/scene.json'
-// var envConfig = JSON5.parse(fs.readFileSync(envConfigPath, 'utf-8'));
-// console.log(envConfig)
+    // const envConfigPath = 'public/grid_nav_assets/assets/scene.json'
+    // var envConfig = JSON5.parse(fs.readFileSync(envConfigPath, 'utf-8'));
+    // console.log(envConfig)
 
 
     this.initialising = true;
@@ -42,7 +42,7 @@ class PlayerExperience extends AbstractExperience {
       x: 0,
       y: 0,
     }
-    this.scaling = 150;
+    this.scale;
     this.distanceSum = 0;
 
     this.ClosestPointsId = [];
@@ -96,6 +96,7 @@ class PlayerExperience extends AbstractExperience {
     }
 
     this.Range(this.positions);
+    this.scale = this.Scaling(this.range);
     this.listenerPosition.x = this.range.moyX;
     this.listenerPosition.y = this.range.minY;
 
@@ -162,6 +163,44 @@ class PlayerExperience extends AbstractExperience {
     this.render();
   }
 
+  Range(positions) {
+    this.range = {
+      minX: positions[0].x,
+      maxX: positions[0].x,
+      minY: positions[0].y, 
+      maxY: positions[0].y,
+    };
+    for (let i = 1; i < positions.length; i++) {
+      if (positions[i].x < this.range.minX) {
+        this.range.minX = positions[i].x;
+      }
+      if (positions[i].x > this.range.maxX) {
+        this.range.maxX = positions[i].x;
+      }
+      if (positions[i].y < this.range.minY) {
+        this.range.minY = positions[i].y;
+      }
+      if (positions[i].y > this.range.maxY) {
+        this.range.maxY = positions[i].y;
+      }
+    }
+    this.range.moyX = (this.range.maxX + this.range.minX)/2
+    this.range.moyY = (this.range.maxY + this.range.minY)/2
+    this.range.rangeX = this.range.maxX - this.range.minX;
+    this.range.rangeY = this.range.maxY - this.range.minY;
+  }
+
+  Scaling(rangeValues) {
+    var scale = {VPos2Pixel: Math.min(window.screen.height/rangeValues.rangeX, window.screen.width/rangeValues.rangeY)};
+    console.log(scale)
+    return (scale)
+  }
+
+  VirtualPos2Pixel(position) {
+    var pixelCoord = {x: position.x*this.scale.VPos2Pixel, y: position.y*this.scale.VPos2Pixel};
+    return (pixelCoord);
+  }
+
   loadSoundbank() {
     const soundbankTree = this.filesystem.get('AudioFiles0');
     const defObj = {};
@@ -211,7 +250,7 @@ class PlayerExperience extends AbstractExperience {
       `, this.$container);
 
 
-//<p>add or remove .wav or .mp3 files in the "soundbank" directory and observe the changes:</p>${Object.keys(data).map(key => {return html`<p>- "${key}" loaded: ${data[key]}.</p>`;})}
+        //<p>add or remove .wav or .mp3 files in the "soundbank" directory and observe the changes:</p>${Object.keys(data).map(key => {return html`<p>- "${key}" loaded: ${data[key]}.</p>`;})}
 
       if (this.initialising) {
         // Assign callbacks once
@@ -288,37 +327,6 @@ class PlayerExperience extends AbstractExperience {
       tempCircle.style.transform = "translate(" + ((this.positions[i].x - this.range.moyX)*this.scaling) + "px, " + ((this.positions[i].y - this.range.minY)*this.scaling) + "px)";
       container.appendChild(tempCircle)
     }
-  }
-
-  Range(positions) {
-    this.range = {
-      minX: positions[0].x,
-      maxX: positions[0].x, 
-      // moyX: null,
-      // rangeX: null,
-      minY: positions[0].y, 
-      maxY: positions[0].y,
-      // moyY: null,
-      // rangeY: null
-    };
-    for (let i = 1; i < positions.length; i++) {
-      if (positions[i].x < this.range.minX) {
-        this.range.minX = positions[i].x;
-      }
-      if (positions[i].x > this.range.maxX) {
-        this.range.maxX = positions[i].x;
-      }
-      if (positions[i].y < this.range.minY) {
-        this.range.minY = positions[i].y;
-      }
-      if (positions[i].y > this.range.maxY) {
-        this.range.maxY = positions[i].y;
-      }
-    }
-    this.range.moyX = (this.range.maxX + this.range.minX)/2
-    this.range.moyY = (this.range.maxY + this.range.minY)/2
-    this.range.rangeX = this.range.maxX - this.range.minX;
-    this.range.rangeY = this.range.maxY - this.range.minY;
   }
 
   onPositionChange(valueX, valueY) {
@@ -423,7 +431,6 @@ class PlayerExperience extends AbstractExperience {
     // console.log((window.screen.height/2 - mouse.clientY)/this.scaling);
     // console.log(mouse.clientY);
   }
-
 
   ClosestSource(listenerPosition, listOfPoint, nbClosest) {
     var closestIds = [];

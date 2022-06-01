@@ -21,7 +21,7 @@ async function launch($container, index) {
     // -------------------------------------------------------------------
     // register plugins
     // -------------------------------------------------------------------
-    // client.pluginManager.register('filesystem', pluginFilesystemFactory, {}, []);
+    client.pluginManager.register('filesystem', pluginFilesystemFactory, {}, []);
     client.pluginManager.register('audio-buffer-loader', pluginAudioBufferLoaderFactory, {
       data: {
         'Shoot': 'Audio/Kill.mp3',
