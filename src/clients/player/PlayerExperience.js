@@ -84,6 +84,9 @@ class PlayerExperience extends AbstractExperience {
     this.nbPos = this.truePositions.length;     // Number of Sources
     this.distanceValue = [0, 0, 0, 0];          // Distance of closest Sources
     this.distanceSum = 0;                       // Sum of distances of closest Sources
+    this.gainsValue = [1, 1, 1];                // Array of Gains
+    this.gainNorm = 0;                          // Norm of the Gains
+    this.gainExposant = 3;                      // Esposant to increase Gains' gap
 
     // Creating AudioContext
     this.audioContext = new AudioContext();
@@ -350,7 +353,6 @@ class PlayerExperience extends AbstractExperience {
 
     // Initialising variables
     this.previousClosestPointsId = this.ClosestPointsId;
-    this.distanceSum = 0;
 
     // Update the closest Points
     this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints);
@@ -388,7 +390,7 @@ class PlayerExperience extends AbstractExperience {
   UpdateSourcesSound(index) { // Update Gain and Display of the Source depending on Listener's Position
 
     // Set a using value to the Source
-    var sourceValue = (this.distanceSum - this.distanceValue[index])/((this.nbClosestPoints - 2)*this.distanceSum);
+    var sourceValue = this.gainsValue[index]/this.gainNorm;
 
     // Update the Display of the Source
     document.getElementById("circle" + this.ClosestPointsId[index]).style.background = "rgb(0, " + 255*(4*Math.pow(sourceValue, 2)) + ", 0)";
@@ -403,6 +405,10 @@ class PlayerExperience extends AbstractExperience {
     // Initialising temporary variables;
     var closestIds = [];
     var currentClosestId;
+
+    // Reset Count
+    this.distanceSum = 0;
+    this.gainNorm = 0;
 
     // Get the 'nbClosest' closest Ids
     for (let j = 0; j < nbClosest; j++) {
@@ -419,9 +425,9 @@ class PlayerExperience extends AbstractExperience {
       }
 
       if (j != nbClosest - 1) {
-        // Get the distance between the listener ant the source
+        // Get the distance between the Listener and the Source
         this.distanceValue[j] = this.Distance(listenerPosition, listOfPoint[currentClosestId]);
-        
+
         // Increment 'this.distanceSum'
         this.distanceSum += this.distanceValue[j];
       }
@@ -429,6 +435,13 @@ class PlayerExperience extends AbstractExperience {
       // Push the Id in the closest
       closestIds.push(currentClosestId);
     }
+
+    // Set the Gains and the Gains norm
+    for (let i = 0; i < this.gainsValue.length; i++) {
+      this.gainsValue[i] = Math.pow((1 - this.distanceValue[i]/this.distanceSum), this.gainExposant);
+      this.gainNorm += this.gainsValue[i];
+    }
+
     return (closestIds);
   }
 
