@@ -9,6 +9,7 @@
 /public/grid_nav_assets/*
 !/public/grid_nav_assets/assets
 !/public/grid_nav_assets/0_debug_grid
+!/public/grid_nav_assets/readme.txt
 
 
 # application instance specific
