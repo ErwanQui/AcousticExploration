@@ -5,6 +5,12 @@
 /config/env/*
 !/config/env/default.json
 
+# ignore all files except asset and debug
+/public/grid_nav_assets/*
+!/public/grid_nav_assets/assets
+!/public/grid_nav_assets/0_debug_grid
+
+
 # application instance specific
 .build
 .data
