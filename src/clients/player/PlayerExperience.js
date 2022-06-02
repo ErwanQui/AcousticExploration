@@ -26,50 +26,16 @@ class PlayerExperience extends AbstractExperience {
     this.scale;                           // General Scales (initialised in start())
     this.circleSize = 20;                 // Sources size
     this.audioData = 'AudioFiles0';       // Set the audio data to use
+    this.dataFileName = "scene2.json";
+    this.jsonObj;
+    this.jsonObjloaded;
+    // this.dataLoaded = false;
 
     // Positions of the sources
-    this.truePositions = [
-      [31.0, 41.5],
-      [31.0, 39.0],
-      [31.0, 36.2],
-      [34.5, 36.2],
-      [36.8, 36.2],
-      [36.8, 33.6],
-      [34.5, 33.6],
-      [31.0, 33.6],
-      [31.0, 31.0],
-      [34.5, 31.0],
-      [34.5, 28.0],
-      [31.0, 28.0],
-      [31.0, 25.8],
-      [34.5, 25.8],
-      [36.8, 25.8],
-      [36.8, 23.6],
-      [34.5, 23.6],
-      [31.0, 23.6],
-    ];
+    this.truePositions = [];
 
     // Sounds of the sources
-    this.audioFilesName = [
-      "01.wav", 
-      "02.wav", 
-      "03.wav", 
-      "04.wav", 
-      "05.wav", 
-      "06.wav", 
-      "07.wav", 
-      "08.wav", 
-      "09.wav", 
-      "10.wav", 
-      "11.wav", 
-      "12.wav", 
-      "13.wav", 
-      "14.wav", 
-      "15.wav", 
-      "16.wav", 
-      "17.wav", 
-      "18.wav", 
-    ];
+    this.audioFilesName = [];
 
     // User positions
     this.listenerPosition = {
@@ -81,12 +47,12 @@ class PlayerExperience extends AbstractExperience {
     this.previousClosestPointsId = [];          // Ids of previous closest Sources
     this.nbClosestPoints = 4;                   // Number of avtive sources
     this.positions = [];                        // Array of sources positions (built in start())
-    this.nbPos = this.truePositions.length;     // Number of Sources
+    this.nbPos;     // Number of Sources
     this.distanceValue = [0, 0, 0, 0];          // Distance of closest Sources
     this.distanceSum = 0;                       // Sum of distances of closest Sources
     this.gainsValue = [1, 1, 1];                // Array of Gains
     this.gainNorm = 0;                          // Norm of the Gains
-    this.gainExposant = 3;                      // Esposant to increase Gains' gap
+    this.gainExposant = 4;                      // Esposant to increase Gains' gap
 
     // Creating AudioContext
     this.audioContext = new AudioContext();
@@ -98,43 +64,54 @@ class PlayerExperience extends AbstractExperience {
 
   async start() {
     super.start();
-
-    // Initialising of Sources positions data
-    for (let i = 0; i < this.nbPos; i++) {
-      this.positions.push({x: this.truePositions[i][0], y:this.truePositions[i][1]});
-    }
-
-    // Creating 'this.range'
-    this.Range(this.positions);
-
-    // Initialising 'this.scale'
-    this.scale = this.Scaling(this.range);
-
-    // Initialising User's Position
-    this.listenerPosition.x = this.range.moyX;
-    this.listenerPosition.y = this.range.minY;
-
-    // Initialising Closest Points
-    this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints);
+    // Load all Datas
+    await this.loadData();
 
     // Creating Gains
     for (let i = 0; i < this.nbClosestPoints; i++) {
       this.gains.push(await this.audioContext.createGain());
     }
 
-    // subscribe to display loading state
-    this.audioBufferLoader.subscribe(() => this.render());
+    // Wait json data to be loaded (an event is dispatch by 'loadData()')
+    document.addEventListener("dataLoaded", () => {
 
-    // Add Event listener for resize Window event to resize the display
-    window.addEventListener('resize', () => {
-      this.scale = this.Scaling(this.range);      // Change the scale
+      // Update data values
+      this.truePositions = this.jsonObj.receivers.xyz;
+      this.audioFilesName = this.jsonObj.receivers.files;
+      this.nbPos = this.truePositions.length;
 
-      if (this.beginPressed) {                    // Check the begin State
-        this.UpdateContainer();                   // Resize the display
+      // Initialising of Sources positions data
+      for (let i = 0; i < this.nbPos; i++) {
+        this.positions.push({x: this.truePositions[i][0], y:this.truePositions[i][1]});
       }
 
-      // Display
-      this.render();
+      // Creating 'this.range'
+      this.Range(this.positions);
+
+      // Initialising 'this.scale'
+      this.scale = this.Scaling(this.range);
+
+      // Initialising User's Position
+      this.listenerPosition.x = this.range.moyX;
+      this.listenerPosition.y = this.range.minY;
+
+      // Initialising Closest Points
+      this.ClosestPointsId = this.ClosestSource(this.listenerPosition, this.positions, this.nbClosestPoints);
+
+      // subscribe to display loading state
+      this.audioBufferLoader.subscribe(() => this.render());
+
+      // Add Event listener for resize Window event to resize the display
+      window.addEventListener('resize', () => {
+        this.scale = this.Scaling(this.range);      // Change the scale
+
+        if (this.beginPressed) {                    // Check the begin State
+          this.UpdateContainer();                   // Resize the display
+        }
+
+        // Display
+        this.render();
+      });
     });
 
     // init with current content
@@ -184,7 +161,46 @@ class PlayerExperience extends AbstractExperience {
     this.audioBufferLoader.load(defObj, true);
   }
 
+  loadData() { // Load the data
+    const data = this.filesystem.get('Position');
+
+    // Check files to get config
+    data.children.forEach(leaf => {
+      if (leaf.name === this.dataFileName) {
+
+        // Creating the data receiver (I need to use the 'leaf.url' to read the json)
+        var jsonData = new XMLHttpRequest();
+
+        // Wait the json file to be loaded
+        jsonData.addEventListener("load", () => {
+
+          // Get the text from data
+          var jsonText = JSON.stringify(jsonData.responseText);
+            
+          // Modify the text to be usable for an object
+          jsonText = jsonText.replaceAll(/[/][/][ \w'"]+/g,'');
+          jsonText = jsonText.replaceAll('\\n', '');
+          jsonText = jsonText.replace(/^./,'');
+          jsonText = jsonText.replace(/.$/,'');
+          jsonText = jsonText.replaceAll('\\','');
+          jsonText = jsonText.replaceAll('.0','');
+
+          // Create the data object
+          this.jsonObj = JSON.parse(jsonText);
+
+          // Dispatch an event to inform that the data has been loaded
+          document.dispatchEvent(new Event("dataLoaded"));
+          }, false);
+
+        // Get the data of the json from the 'leaf.url'
+        jsonData.open("get", leaf.url, true);
+        jsonData.send();
+      }
+    });
+  }
+
   render() {
+    // console.log("render")
     // Debounce with requestAnimationFrame
     window.cancelAnimationFrame(this.rafId);
 
@@ -397,7 +413,6 @@ class PlayerExperience extends AbstractExperience {
     
     // Update the Gain of the Source
     this.gains[index].gain.setValueAtTime(sourceValue, 0);
-    console.log(sourceValue)
   }
 
   ClosestSource(listenerPosition, listOfPoint, nbClosest) { // get closest Sources to the Listener

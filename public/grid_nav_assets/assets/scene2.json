@@ -2,9 +2,9 @@
   "name": "Sainte Elisabeth de Hongrie",
   "description": "Sources S3, S4, and S5. All Receivers.",
 
-  "receivers": // from m01 to m18
+  "receivers": 
   {
-    "xyz":[
+    "xyz":[       // from m01 to m18
       [31.0, 41.5],
       [31.0, 39.0],
       [31.0, 36.2],
@@ -22,27 +22,38 @@
       [36.8, 25.8],
       [36.8, 23.6],
       [34.5, 23.6],
-      [31.0, 23.6],
+      [31.0, 23.6]
     ],
 
-    // "files":[
-    //   ["source_1_rcvpos_1.wav", "source_2_rcvpos_1.wav", "source_3_rcvpos_1.wav"], 
-    //   ["source_1_rcvpos_2.wav", "source_2_rcvpos_2.wav", "source_3_rcvpos_2.wav"], 
-    //   ["source_1_rcvpos_3.wav", "source_2_rcvpos_3.wav", "source_3_rcvpos_3.wav"], 
-    // ]
 
-"files":[
-      ["source_1_rcvpos_1.wav"], 
-      ["source_1_rcvpos_2.wav"], 
-      ["source_1_rcvpos_3.wav"], 
-    ]
+
+  "files":[
+        "01.wav", 
+        "02.wav", 
+        "03.wav", 
+        "04.wav", 
+        "05.wav", 
+        "06.wav", 
+        "07.wav", 
+        "08.wav", 
+        "09.wav", 
+        "10.wav", 
+        "11.wav", 
+        "12.wav", 
+        "13.wav", 
+        "14.wav", 
+        "15.wav", 
+        "16.wav", 
+        "17.wav", 
+        "18.wav" 
+      ]
   },
 
-  "sources_xy": // from s3 to s5
+  "sources_xy": 
   [
     [27.5, 12.1],
     [33.0, 30.5],
-    [28.0, 42.3],
+    [28.0, 42.3]
   ]
 
 }
