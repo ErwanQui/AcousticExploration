@@ -18,6 +18,19 @@ class PlayerExperience extends AbstractExperience {
     // this.ambisonics = require('ambisonics');
     this.filesystem = this.require('filesystem');
 
+    // Changing Parameters
+
+    this.parameters = {
+      // mode: "streaming",                   // Choose audio mode (possible: "streaming", "convolving")
+      mode: "convolving",                   // Choose audio mode (possible: "streaming", "convolving")
+      circleDiameter: 20,
+      dataFileName: "scene2.json",
+      nbClosestPoints: 4,
+      gainExposant: 3,
+      listenerSize: 16,
+      order: 3
+    }
+
     // Initialisation variables
     this.initialising = true;
     this.beginPressed = false;
@@ -27,37 +40,15 @@ class PlayerExperience extends AbstractExperience {
     // Global values
     this.range;                           // Values of the array data (creates in start())
     this.scale;                           // General Scales (initialised in start())
-    this.circleDiameter = 20;                 // Sources size
-    this.audioData = 'AudioFiles0';       // Set the audio data to use
-    this.dataFileName = "scene2.json";
-    this.jsonObj;
-    this.jsonObjloaded;
-    // this.dataLoaded = false;
+    this.audioData;       // Set the audio data to use
 
-    // Positions of the sources
-    this.truePositions = [];
 
     // Sounds of the sources
     this.audioFilesName = [];
 
-
-
-    this.ClosestPointsId = [];                  // Ids of closest Sources
-    this.previousClosestPointsId = [];          // Ids of previous closest Sources
-    this.nbClosestPoints = 4;                   // Number of avtive sources
     this.positions = [];                        // Array of sources positions (built in start())
-    this.nbPos;     // Number of Sources
-    this.distanceValue = [0, 0, 0, 0];          // Distance of closest Sources
-    this.distanceSum = 0;                       // Sum of distances of closest Sources
-    this.gainsValue = [1, 1, 1];                // Array of Gains
-    this.gainNorm = 0;                          // Norm of the Gains
-    this.gainExposant = 4;                      // Esposant to increase Gains' gap
 
     this.container;
-    // // Creating AudioContext
-    // this.audioContext = new AudioContext();
-    // this.playingSounds = [];                    // BufferSources
-    // this.gains = [];                            // Gains
 
     renderInitializationScreens(client, config, $container);
   }
@@ -65,9 +56,20 @@ class PlayerExperience extends AbstractExperience {
   async start() {
     super.start();
 
-      this.Sources = new Sources(this.filesystem, this.audioBufferLoader)
+      switch (this.parameters.mode) {
+        case 'streaming':
+          this.audioData = 'AudioFiles0';
+          break;
+        case 'convolving':
+          this.audioData = 'AudioFiles3';
+          break;
+        default:
+          alert("No valid mode");
+      }
+
+      this.Sources = new Sources(this.filesystem, this.audioBufferLoader, this.parameters)
       console.log(this.filesystem)
-      this.Sources.LoadData(this.dataFileName);
+      this.Sources.LoadData(this.parameters.dataFileName);
       this.Sources.LoadSoundbank(this.audioData);
 
       document.addEventListener("dataLoaded", () => {
@@ -76,7 +78,7 @@ class PlayerExperience extends AbstractExperience {
 
         this.positions = this.Sources.sourcesData.receivers.xyz;
         this.audioFilesName = this.Sources.sourcesData.receivers.files;
-        this.nbPos = this.truePositions.length;
+        // this.nbPos = this.truePositions.length;
 
         this.Range(this.positions);
 
@@ -88,7 +90,7 @@ class PlayerExperience extends AbstractExperience {
           y: this.range.minY
         }
 
-        this.Listener = new Listener(this.offset, )
+        this.Listener = new Listener(this.offset, this.parameters)
         this.Listener.start();
         this.Sources.start(this.Listener.listenerPosition)
 
@@ -135,7 +137,7 @@ class PlayerExperience extends AbstractExperience {
   }
 
   Scaling(rangeValues) { // Store the greatest scale to display all the elements in 'this.scale'
-    var scale = Math.min((window.innerWidth - this.circleDiameter)/rangeValues.rangeX, (window.innerHeight - this.circleDiameter)/rangeValues.rangeY);
+    var scale = Math.min((window.innerWidth - this.parameters.circleDiameter)/rangeValues.rangeX, (window.innerHeight - this.parameters.circleDiameter)/rangeValues.rangeY);
     return (scale);
   }
 
@@ -165,7 +167,7 @@ class PlayerExperience extends AbstractExperience {
                 height: ${this.range.rangeY*this.scale}px;
                 width: ${this.range.rangeX*this.scale}px;
                 background: yellow; z-index: 0;
-                transform: translate(${(-this.range.rangeX*this.scale)/2}px, ${this.circleDiameter/2}px);">
+                transform: translate(${(-this.range.rangeX*this.scale)/2}px, ${this.parameters.circleDiameter/2}px);">
               </div>
               
             </div>
@@ -238,11 +240,13 @@ class PlayerExperience extends AbstractExperience {
   userAction(mouse) { // Change Listener's Position when the mouse has been used
     // Get the new potential Listener's Position
     var tempX = this.range.moyX + (mouse.clientX - window.innerWidth/2)/(this.scale);
-    var tempY = this.range.minY + (mouse.clientY - this.circleDiameter/2)/(this.scale);
+    var tempY = this.range.minY + (mouse.clientY - this.parameters.circleDiameter/2)/(this.scale);
     // Check if the value is in the values range
     if (tempX >= this.range.minX && tempX <= this.range.maxX && tempY >= this.range.minY && tempY <= this.range.maxY) {
       // Update Listener
-      this.Listener.UpdateListener(mouse, this.offset, this.scale, this.circleDiameter/2);
+
+      console.log("Updating")
+      this.Listener.UpdateListener(mouse, this.offset, this.scale);
       this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);
       this.render();
     }
@@ -256,13 +260,12 @@ class PlayerExperience extends AbstractExperience {
   UpdateContainer() { // Change the display when the window is resized
 
     // Change size
-    document.getElementById("circleContainer").height = (this.range.rangeY*this.scale.VPos2Pixel) + "px";
-    document.getElementById("circleContainer").width = (this.range.rangeX*this.scale.VPos2Pixel) + "px";
-    document.getElementById("circleContainer").transform = "translate(" + (this.circleSize/2 - this.range.rangeX*this.scale.VPos2Pixel/2) + "px, 10px)";
-    
+    document.getElementById("circleContainer").height = (this.offset.y*this.scale) + "px";
+    document.getElementById("circleContainer").width = (this.offset.x*this.scale) + "px";
+    document.getElementById("circleContainer").transform = "translate(" + (this.parameters.circleDiameter/2 - this.range.rangeX*this.scale.VPos2Pixel/2) + "px, 10px)";
 
     this.Sources.UpdateSourcesPosition(this.scale, this.offset);     // Update Sources' display
-    this.Listener.UpdateListenerDisplay(this.offset, this.scale, this.circleDiameter/2)
+    this.Listener.UpdateListenerDisplay(this.offset, this.scale)
   }
 }
 

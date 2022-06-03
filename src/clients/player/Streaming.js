@@ -1,8 +1,8 @@
 //////////////////
-/// Audio.js ///
+/// Streaming.js ///
 //////////////////
 
-class Audio {
+class Streaming {
 
 	constructor (audioContext) {
 		
@@ -43,21 +43,15 @@ class Audio {
 		this.playingSound.disconnect(this.gain);
 		this.playingSound = this.LoadNewSound(buffer);
 		// console.log(value/norm)
-		this.gain.gain.setValueAtTime(value/norm, 0)
+		// this.gain.gain.setValueAtTime(value/norm, 0)
 		this.playingSound.start();
 	}
 
-	UpdateSourcesSound(index) { // Update Gain and Display of the Source depending on Listener's Position
-
-	    // Set a using value to the Source
-	    var sourceValue = this.gainsValue[index]/this.gainNorm;
-
-	    // Update the Display of the Source
-	    document.getElementById("circle" + this.ClosestPointsId[index]).style.background = "rgb(0, " + 255*(4*Math.pow(sourceValue, 2)) + ", 0)";
+	UpdateGain(value, norm) { // Update Gain and Display of the Source depending on Listener's Position
 	    
 	    // Update the Gain of the Source
-	    this.gains[index].gain.setValueAtTime(sourceValue, 0);
+	    this.gain.gain.setValueAtTime(value/norm, 0);
   	}
 }
 
-export default Audio;
+export default Streaming;

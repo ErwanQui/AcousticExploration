@@ -2,21 +2,23 @@
 /// Sources.js ///
 //////////////////
 
-import Audio from './Audio.js'
+import Streaming from './Streaming.js'
+import Convolving from './Convolving.js'
 
 class Sources {
 
-	constructor (filesystem, audioBufferLoader) {
+	constructor (filesystem, audioBufferLoader, parameters) {
 
 	    // User positions
-	    this.nbSources = 18;
-	    this.circleDiameter = 20;
+	    this.nbSources;
+	    this.mode = parameters.mode
+	    this.circleDiameter = parameters.circleDiameter;
 	    // this.container = container;
 	    this.sources = [];
 	    this.closestSourcesId = undefined;
-	    this.nbActiveSources = 4;
+	    this.nbActiveSources = parameters.nbClosestPoints;
 	    this.sourcesData;
-	    this.scale;
+	    // this.scale;
 	    // this.dataFileName = "scene2.json"
 	    this.audioSources = []
 	    this.filesystem = filesystem;
@@ -27,15 +29,25 @@ class Sources {
 	    this.gainsData = {
 	    	Value: [],
 	    	Norm: 0,
-	    	Exposant: 3
+	    	Exposant: parameters.gainExposant
 	    }
 	}
 
 	async start (listenerPosition) {
 		for (let i = 0; i < this.nbActiveSources - 1; i++) {
-			this.audioSources.push(new Audio(this.audioContext));
+			switch (this.mode) {
+				case 'streaming':
+				console.log("Streaming")
+					this.audioSources.push(new Streaming(this.audioContext));
+					break;
+				case 'convolving':
+				console.log("Convolving")
+					this.audioSources.push(new Convolving(this.audioContext));
+					break;
+				default:
+					alert("No valid mode");
+			}
 		}
-
 		this.closestSourcesId = this.ClosestSource(listenerPosition, this.sourcesData.receivers.xyz) // get closest Sources to the Listener
   	}
 
@@ -88,6 +100,7 @@ class Sources {
 			    fetch(leaf.url).then(results => results.json()).then(jsonObj => {
 
 			        this.sourcesData = jsonObj;
+			        this.nbSources = this.sourcesData.receivers.xyz.length;
 			        var tempSourcesPosition = [];
 			        for (let i = 0; i < this.nbSources; i++) {
 		          		tempSourcesPosition.push({x: this.sourcesData.receivers.xyz[i][0], y:this.sourcesData.receivers.xyz[i][1]});
@@ -117,10 +130,11 @@ class Sources {
 
 		          	this.sources[previousClosestSourcesId[i]].style.background = "grey";
 		        }
-
-		        this.UpdateClosestSourcesColor(i);
 		        this.audioSources[i].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm)
 		    }
+
+		    this.UpdateClosestSourcesColor(i);
+		    this.audioSources[i].UpdateGain(this.gainsData.Value[i], this.gainsData.Norm)
 	    }
 	}
 

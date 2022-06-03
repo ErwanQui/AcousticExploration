@@ -4,7 +4,7 @@
 
 class Listener {
 
-	constructor (position) {
+	constructor (position, parameters) {
 
 	    // User positions
 	    this.listenerPosition = {
@@ -13,8 +13,8 @@ class Listener {
 	    };
 
 	    this.display;
-	    this.displaySize = 16;
-	    this.circleSpacing;
+	    this.displaySize = parameters.listenerSize;
+	    this.circleSpacing = parameters.circleDiameter/2;
 	}
 
 	async start () {
@@ -33,17 +33,17 @@ class Listener {
 		container.appendChild(this.display);
 	} 
 
-	UpdateListener(position, offset, scale, circleSpacing) { // Update Listener
+	UpdateListener(position, offset, scale) { // Update Listener
 	    // Update Listener's dipslay
       	this.listenerPosition.x = offset.x + (position.clientX - window.innerWidth/2)/scale;
-      	this.listenerPosition.y = offset.y + (position.clientY - circleSpacing)/scale;
+      	this.listenerPosition.y = offset.y + (position.clientY - this.circleSpacing)/scale;
 
-      	this.UpdateListenerDisplay(offset, scale, circleSpacing);
+      	this.UpdateListenerDisplay(offset, scale);
     }
 
-    UpdateListenerDisplay(offset, scale, circleSpacing) {
+    UpdateListenerDisplay(offset, scale) {
 	    this.display.style.transform = "translate(" + 
-	    	((this.listenerPosition.x - offset.x)*scale - circleSpacing) + "px, " + 
+	    	((this.listenerPosition.x - offset.x)*scale - this.circleSpacing) + "px, " + 
 	    	((this.listenerPosition.y - offset.y)*scale) + "px) rotate(45deg)";
     }
 }
