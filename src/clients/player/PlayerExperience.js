@@ -168,33 +168,40 @@ class PlayerExperience extends AbstractExperience {
     data.children.forEach(leaf => {
       if (leaf.name === this.dataFileName) {
 
-        // Creating the data receiver (I need to use the 'leaf.url' to read the json)
-        var jsonData = new XMLHttpRequest();
+        // // Creating the data receiver (I need to use the 'leaf.url' to read the json)
+        // var jsonData = new XMLHttpRequest();
 
-        // Wait the json file to be loaded
-        jsonData.addEventListener("load", () => {
+        // // Wait the json file to be loaded
+        // jsonData.addEventListener("load", () => {
 
-          // Get the text from data
-          var jsonText = JSON.stringify(jsonData.responseText);
+        //   // Get the text from data
+        //   var jsonText = JSON.stringify(jsonData.responseText);
             
-          // Modify the text to be usable for an object
-          jsonText = jsonText.replaceAll(/[/][/][ \w'"]+/g,'');
-          jsonText = jsonText.replaceAll('\\n', '');
-          jsonText = jsonText.replace(/^./,'');
-          jsonText = jsonText.replace(/.$/,'');
-          jsonText = jsonText.replaceAll('\\','');
-          jsonText = jsonText.replaceAll('.0','');
+        //   // Modify the text to be usable for an object
+        //   jsonText = jsonText.replaceAll(/[/][/][ \w'"]+/g,'');
+        //   jsonText = jsonText.replaceAll('\\n', '');
+        //   jsonText = jsonText.replace(/^./,'');
+        //   jsonText = jsonText.replace(/.$/,'');
+        //   jsonText = jsonText.replaceAll('\\','');
+        //   jsonText = jsonText.replaceAll('.0','');
 
-          // Create the data object
-          this.jsonObj = JSON.parse(jsonText);
+        //   // Create the data object
+        //   this.jsonObj = JSON.parse(jsonText);
 
-          // Dispatch an event to inform that the data has been loaded
+        //   // Dispatch an event to inform that the data has been loaded
+        //   document.dispatchEvent(new Event("dataLoaded"));
+        //   }, false);
+
+        // // Get the data of the json from the 'leaf.url'
+        // jsonData.open("get", leaf.url, true);
+        // jsonData.send();
+        var url = leaf.url;
+        fetch(url).then(results => results.json()).then(jsonObj => {
+          console.log(jsonObj)
+          console.log(jsonObj.receivers.xyz)
+          this.jsonObj = jsonObj;
           document.dispatchEvent(new Event("dataLoaded"));
-          }, false);
-
-        // Get the data of the json from the 'leaf.url'
-        jsonData.open("get", leaf.url, true);
-        jsonData.send();
+        })
       }
     });
   }
