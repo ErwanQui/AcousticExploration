@@ -233,7 +233,6 @@ class PlayerExperience extends AbstractExperience {
     this.Sources.CreateSources(this.container, this.scale, this.offset);
     this.Listener.Display(this.container);
     this.render();
-    console.log(this.container)
   }
 
   userAction(mouse) { // Change Listener's Position when the mouse has been used
@@ -263,7 +262,7 @@ class PlayerExperience extends AbstractExperience {
     
 
     this.Sources.UpdateSourcesPosition(this.scale, this.offset);     // Update Sources' display
-    this.Listener.UpdateListener(this.Listener.listenerPosition, this.offset, this.scale, this.circleDiameter/2)
+    this.Listener.UpdateListenerDisplay(this.offset, this.scale, this.circleDiameter/2)
   }
 }
 

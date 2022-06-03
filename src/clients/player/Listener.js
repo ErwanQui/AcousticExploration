@@ -35,14 +35,17 @@ class Listener {
 
 	UpdateListener(position, offset, scale, circleSpacing) { // Update Listener
 	    // Update Listener's dipslay
-
       	this.listenerPosition.x = offset.x + (position.clientX - window.innerWidth/2)/scale;
       	this.listenerPosition.y = offset.y + (position.clientY - circleSpacing)/scale;
 
+      	this.UpdateListenerDisplay(offset, scale, circleSpacing);
+    }
+
+    UpdateListenerDisplay(offset, scale, circleSpacing) {
 	    this.display.style.transform = "translate(" + 
-	    	(position.clientX - window.innerWidth/2 - circleSpacing) + "px, " + 
-	    	(position.clientY - circleSpacing) + "px) rotate(45deg)";
-	}
+	    	((this.listenerPosition.x - offset.x)*scale - circleSpacing) + "px, " + 
+	    	((this.listenerPosition.y - offset.y)*scale) + "px) rotate(45deg)";
+    }
 }
 
 export default Listener;

@@ -22,7 +22,6 @@ class Sources {
 	    this.filesystem = filesystem;
 	    this.audioBufferLoader = audioBufferLoader;
 	    this.audioContext = new AudioContext();
-	    console.log(this.filesystem)
 	    this.distanceValue = [1, 1, 1];
 	    this.distanceSum = 0;
 	    this.gainsData = {
@@ -64,7 +63,6 @@ class Sources {
     	}
     	for (let i = 0; i < this.nbActiveSources - 1; i++) {
 		    this.sources[this.closestSourcesId[i]].style.background = "rgb(0, " + 255*(4*Math.pow(this.gainsData.Value[i]/this.gainsData.Norm, 2)) + ", 0)"
-        	console.log(this.gainsData)
         	this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm)    	
     	}
   	}
@@ -81,7 +79,6 @@ class Sources {
   	}
 
   	LoadData(dataFileName) { // Load the data
-  		console.log(this.filesystem)
 	    const data = this.filesystem.get('Position');
 
 	    // Check files to get config
