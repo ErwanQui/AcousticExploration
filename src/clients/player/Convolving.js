@@ -11,12 +11,12 @@ class Convolving {
 	    this.audioContext = audioContext;
 	    this.order = order;
 
-	    this.ambisonic = require("ambisonics")
-	    this.convolver = new ambisonics.convolver(this.audioContext, this.order)
-	   	this.mirror = new ambisonics.sceneRotator(this.audioContext, this.order);
-		this.rotator = new ambisonics.sceneRotator(this.audioContext, this.order);
-		this.decoder = new ambisonics.binDecoder(this.audioContext, this.order);
-	    this.gain = await this.audioContext.createGain();
+	    this.ambisonic = require("ambisonics");
+	    this.convolver = new this.ambisonic.convolver(this.audioContext, this.order);
+	   	this.mirror = new this.ambisonic.sceneRotator(this.audioContext, this.order);
+		this.rotator = new this.ambisonic.sceneRotator(this.audioContext, this.order);
+		this.decoder = new this.ambisonic.binDecoder(this.audioContext, this.order);
+	    this.gain = this.audioContext.createGain();
 
 	    this.hoaLoaderConvolver;
 	}
@@ -24,10 +24,10 @@ class Convolving {
 	async start (buffer, value, norm) {
 
 	    // Creating Gains
-	    this.convolver = new ambisonics.convolver(this.audioContext, this.order)
-	   	this.mirror = new ambisonics.sceneRotator(this.audioContext, this.order);
-		this.rotator = new ambisonics.sceneRotator(this.audioContext, this.order);
-		this.decoder = new ambisonics.binDecoder(this.audioContext, this.order);
+	    this.convolver = new this.ambisonic.convolver(this.audioContext, this.order)
+	   	this.mirror = new this.ambisonic.sceneRotator(this.audioContext, this.order);
+		this.rotator = new this.ambisonic.sceneRotator(this.audioContext, this.order);
+		this.decoder = new this.ambisonic.binDecoder(this.audioContext, this.order);
 	    this.gain = await this.audioContext.createGain();
 
 	    // init with current content
@@ -48,7 +48,7 @@ class Convolving {
 
 	LoadNewSound(buffer) { // Create and link the sound to the AudioContext
 	    // Sound initialisation
-	    this.hoaLoaderConvolver = new ambisonics.HOAloader(this.audioContext, this.order, buffer, this.hoaAssignFiltersOnLoad)		// Create the sound
+	    this.hoaLoaderConvolver = new this.ambisonic.HOAloader(this.audioContext, this.order, buffer, this.hoaAssignFiltersOnLoad)		// Create the sound
 	    console.log(this.hoaLoaderConvolver)
 	    sound.loop = true;                                    	// Set the sound to loop
 	    sound.buffer = buffer;                                	// Set the sound buffer

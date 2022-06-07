@@ -6,6 +6,8 @@ import initQoS from '@soundworks/template-helpers/client/init-qos.js';
 // Import plugin
 import pluginAudioBufferLoaderFactory from '@soundworks/plugin-audio-buffer-loader/client';
 import pluginFilesystemFactory from '@soundworks/plugin-filesystem/client';
+import pluginSyncFactory from '@soundworks/plugin-sync/client';
+import pluginPlatformFactory from '@soundworks/plugin-platform/client';
 
 import PlayerExperience from './PlayerExperience.js';
 
@@ -13,7 +15,7 @@ const config = window.soundworksConfig;
 // store experiences of emulated clients
 const experiences = new Set();
 // import path from 'path';
-
+const audioContext = new AudioContext();
 // import fs from 'fs';
 
 async function launch($container, index) {
@@ -25,14 +27,23 @@ async function launch($container, index) {
     // -------------------------------------------------------------------
     client.pluginManager.register('filesystem', pluginFilesystemFactory, {}, []);
     client.pluginManager.register('audio-buffer-loader', pluginAudioBufferLoaderFactory, {}, [])
-    
+    client.pluginManager.register('sync', pluginSyncFactory, {
+      // choose the clock to synchronize, defaults to:
+      // (where `startTime` is the time at which the plugin is instantiated)
+      getTimeFunction: () => audioContext.currentTime,
+    }, []);
+    client.pluginManager.register('platform', pluginPlatformFactory, {
+      features: [
+        ['web-audio', audioContext],
+      ]
+    }, []);   
     // -------------------------------------------------------------------
     // launch application
     // -------------------------------------------------------------------
     await client.init(config);
     initQoS(client);
 
-    const experience = new PlayerExperience(client, config, $container);
+    const experience = new PlayerExperience(client, config, $container, audioContext);
     // store exprience for emulated clients
     experiences.add(experience);
 

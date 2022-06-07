@@ -1,12 +1,11 @@
 //////////////////
-/// Streaming.js ///
+/// Streming.js ///
 //////////////////
 
 class Streaming {
 
 	constructor (audioContext) {
 		
-
 	    // Creating AudioContext
 	    this.audioContext = audioContext;
 	    this.playingSound;                    // BufferSources

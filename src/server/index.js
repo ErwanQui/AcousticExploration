@@ -6,6 +6,8 @@ import compile from 'template-literal';
 
 import pluginAudioBufferLoaderFactory from '@soundworks/plugin-audio-buffer-loader/server';
 import pluginFilesystemFactory from '@soundworks/plugin-filesystem/server';
+import pluginSyncFactory from '@soundworks/plugin-sync/server';
+import pluginPlatformFactory from '@soundworks/plugin-platform/server';
 
 import PlayerExperience from './PlayerExperience.js';
 
@@ -41,17 +43,9 @@ console.log(`
 --------------------------------------------------------
 `);
 
-
-
-
-
-
 // const envConfigPath = path.join('public', 'grid_nav_assets', 'assets', `scene.json`)
 // var envConfig = JSON5.parse(fs.readFileSync(envConfigPath, 'utf-8'));
 // console.log(envConfig)
-
-
-
 
 // -------------------------------------------------------------------
 // register plugins
@@ -71,7 +65,7 @@ server.pluginManager.register('filesystem', pluginFilesystemFactory, {
   {
     name: 'AudioFiles1',
     path: path.join(process.cwd(), 'public/grid_nav_assets/1_binaural_encoded'),
-    publicDirectory: 'public/grid_nav_assets/1_binaural_encoded',
+    publicDirectory: 'AudioFiles1',
   },
   {
     name: 'AudioFiles2',
@@ -91,6 +85,10 @@ server.pluginManager.register('filesystem', pluginFilesystemFactory, {
 }, []);
 
 server.pluginManager.register('audio-buffer-loader', pluginAudioBufferLoaderFactory, {}, []);
+
+server.pluginManager.register('sync', pluginSyncFactory, {}, []);
+
+server.pluginManager.register('platform', pluginPlatformFactory, {}, []);
 
 // -------------------------------------------------------------------
 // register schemas

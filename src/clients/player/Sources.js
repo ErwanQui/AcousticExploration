@@ -23,29 +23,39 @@ class Sources {
 	    this.audioSources = []
 	    this.filesystem = filesystem;
 	    this.audioBufferLoader = audioBufferLoader;
-	    this.audioContext = new AudioContext();
+	    // this.ambisonic = ambisonic;
+	    this.audioContext = parameters.audioContext;
 	    this.distanceValue = [1, 1, 1];
 	    this.distanceSum = 0;
+	    this.fileData = {
+	    	File: parameters.dataFileName,
+	    	Audio: parameters.audioData
+	    }
 	    this.gainsData = {
 	    	Value: [],
 	    	Norm: 0,
 	    	Exposant: parameters.gainExposant
 	    }
+	    this.ambiOrder = parameters.order;
 	}
 
 	async start (listenerPosition) {
 		for (let i = 0; i < this.nbActiveSources - 1; i++) {
 			switch (this.mode) {
+				case 'debug':
+				console.log("Debugging")
+					this.audioSources.push(new Streaming(this.audioContext));
+					break;
 				case 'streaming':
 				console.log("Streaming")
 					this.audioSources.push(new Streaming(this.audioContext));
 					break;
 				case 'convolving':
 				console.log("Convolving")
-					this.audioSources.push(new Convolving(this.audioContext));
+					this.audioSources.push(new Convolving(this.audioContext, this.ambiOrder));
 					break;
 				default:
-					alert("No valid mode");
+					console.log("No valid mode");
 			}
 		}
 		this.closestSourcesId = this.ClosestSource(listenerPosition, this.sourcesData.receivers.xyz) // get closest Sources to the Listener
@@ -79,8 +89,8 @@ class Sources {
     	}
   	}
 
-  	LoadSoundbank(audioData) { // Load the audioData to use
-	    const soundbankTree = this.filesystem.get(audioData);
+  	LoadSoundbank() { // Load the audioData to use
+	    const soundbankTree = this.filesystem.get(this.fileData.Audio);
 	    const defObj = {};
 	    soundbankTree.children.forEach(leaf => {
 	      	if (leaf.type === 'file') {
@@ -90,12 +100,12 @@ class Sources {
 	    this.audioBufferLoader.load(defObj, true);
   	}
 
-  	LoadData(dataFileName) { // Load the data
+  	LoadData() { // Load the data
 	    const data = this.filesystem.get('Position');
 
 	    // Check files to get config
 	    data.children.forEach(leaf => {
-	      	if (leaf.name === dataFileName) {
+	      	if (leaf.name === this.fileData.File) {
 
 			    fetch(leaf.url).then(results => results.json()).then(jsonObj => {
 
