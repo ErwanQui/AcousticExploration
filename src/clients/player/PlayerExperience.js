@@ -24,9 +24,10 @@ class PlayerExperience extends AbstractExperience {
     // Changing Parameters
 
     this.parameters = {
-      mode: "debug",                   // Choose audio mode (possible: "debug", "convolving")
+      // mode: "debug",                   // Choose audio mode (possible: "debug", "convolving")
       // mode: "streaming",                   // Choose audio mode (possible: "debug", "convolving")
-      // mode: "convolving",                   // Choose audio mode (possible: "debug", "convolving")
+      // mode: "ambisonic",                   // Choose audio mode (possible: "debug", "convolving")
+      mode: "convolving",                   // Choose audio mode (possible: "debug", "convolving")
       circleDiameter: 20,
       dataFileName: "",
       audioData: "",
@@ -34,7 +35,7 @@ class PlayerExperience extends AbstractExperience {
       nbClosestPoints: 4,
       gainExposant: 3,
       listenerSize: 16,
-      order: 3,
+      order: 2,
       audioContext: audioContext
     }
 
@@ -72,9 +73,10 @@ class PlayerExperience extends AbstractExperience {
           this.parameters.audioData = 'AudioFiles1';
           this.parameters.dataFileName = 'scene1.json';
           break;
-        // case 'debug':
-        //   this.audioData = 'AudioFiles0';
-        //   break;
+        case 'ambisonic':
+          this.parameters.audioData = 'AudioFiles2';
+          this.parameters.dataFileName = 'scene2.json';
+          break;
         case 'convolving':
           this.parameters.audioData = 'AudioFiles3';
           this.parameters.dataFileName = 'scene3.json';
@@ -84,60 +86,60 @@ class PlayerExperience extends AbstractExperience {
       }
 
 
-    const getTimeFunction = () => this.sync.getSyncTime();
-    const currentTimeToAudioTimeFunction =
-      currentTime => this.sync.getLocalTime(currentTime);
+    // const getTimeFunction = () => this.sync.getSyncTime();
+    // const currentTimeToAudioTimeFunction =
+    //   currentTime => this.sync.getLocalTime(currentTime);
 
-    this.scheduler = new Scheduler(getTimeFunction, {
-      currentTimeToAudioTimeFunction
-    });
-
-    // define simple engines for the scheduler
-    this.metroAudio = {
-      // `currentTime` is the current time of the scheduler (aka the syncTime)
-      // `audioTime` is the audioTime as computed by `currentTimeToAudioTimeFunction`
-      // `dt` is the time between the actual call of the function and the time of the
-      // scheduled event
-      advanceTime: (currentTime, audioTime, dt) => {
-        const env = this.audioContext.createGain();
-        env.connect(this.audioContext.destination);
-        env.gain.value = 0;
-        console.log("audio")
-        const sine = this.audioContext.createOscillator();
-        sine.connect(env);
-        sine.frequency.value = 200 * (this.client.id % 10 + 1);
-
-        env.gain.setValueAtTime(0, audioTime);
-        env.gain.linearRampToValueAtTime(1, audioTime + 0.01);
-        env.gain.exponentialRampToValueAtTime(0.0001, audioTime + 0.1);
-
-        sine.start(audioTime);
-        sine.stop(audioTime + 0.1);
-
-        return currentTime + 1;
-      }
-    }
-
-    this.metroVisual = {
-      advanceTime: (currentTime, audioTime, dt) => {
-        if (!this.$beat) {
-          this.$beat = document.querySelector(`#beat-${this.client.id}`);
-        }
-
-        // console.log(`go in ${dt * 1000}`)
-        // this.$beat.active = true;
-        setTimeout(() => this.$beat.active = true, Math.round(dt * 1000));
-
-        return currentTime + 1;
-      }
-    };
-
-
-    // this.globals.subscribe(updates => {
-    //   this.updateEngines();
-    //   this.render();
+    // this.scheduler = new Scheduler(getTimeFunction, {
+    //   currentTimeToAudioTimeFunction
     // });
-    // this.updateEngines();
+
+    // // define simple engines for the scheduler
+    // this.metroAudio = {
+    //   // `currentTime` is the current time of the scheduler (aka the syncTime)
+    //   // `audioTime` is the audioTime as computed by `currentTimeToAudioTimeFunction`
+    //   // `dt` is the time between the actual call of the function and the time of the
+    //   // scheduled event
+    //   advanceTime: (currentTime, audioTime, dt) => {
+    //     const env = this.audioContext.createGain();
+    //     env.connect(this.audioContext.destination);
+    //     env.gain.value = 0;
+    //     console.log("audio")
+    //     const sine = this.audioContext.createOscillator();
+    //     sine.connect(env);
+    //     sine.frequency.value = 200 * (this.client.id % 10 + 1);
+
+    //     env.gain.setValueAtTime(0, audioTime);
+    //     env.gain.linearRampToValueAtTime(1, audioTime + 0.01);
+    //     env.gain.exponentialRampToValueAtTime(0.0001, audioTime + 0.1);
+
+    //     sine.start(audioTime);
+    //     sine.stop(audioTime + 0.1);
+
+    //     return currentTime + 1;
+    //   }
+    // }
+
+    // this.metroVisual = {
+    //   advanceTime: (currentTime, audioTime, dt) => {
+    //     if (!this.$beat) {
+    //       this.$beat = document.querySelector(`#beat-${this.client.id}`);
+    //     }
+
+    //     // console.log(`go in ${dt * 1000}`)
+    //     // this.$beat.active = true;
+    //     setTimeout(() => this.$beat.active = true, Math.round(dt * 1000));
+
+    //     return currentTime + 1;
+    //   }
+    // };
+
+
+    // // this.globals.subscribe(updates => {
+    // //   this.updateEngines();
+    // //   this.render();
+    // // });
+    // // this.updateEngines();
 
 
 
@@ -146,6 +148,10 @@ class PlayerExperience extends AbstractExperience {
       console.log(this.filesystem)
       this.Sources.LoadData();
       this.Sources.LoadSoundbank();
+
+      if (this.parameters.mode == 'convolving') {
+        this.Sources.LoadSound4Rirs();
+      }
 
       document.addEventListener("dataLoaded", () => {
 

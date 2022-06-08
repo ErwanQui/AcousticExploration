@@ -4,6 +4,7 @@
 
 import Streaming from './Streaming.js'
 import Convolving from './Convolving.js'
+import Ambisonic from './Ambisonic.js'
 
 class Sources {
 
@@ -50,6 +51,10 @@ class Sources {
 				case 'streaming':
 				console.log("Streaming")
 					this.audioSources.push(new Streaming(this.audioContext));
+					break;
+				case 'ambisonic':
+				console.log("Ambisonics")
+					this.audioSources.push(new Ambisonic(this.audioContext, this.ambiOrder));
 					break;
 				case 'convolving':
 				console.log("Convolving")
@@ -101,9 +106,22 @@ class Sources {
 	    this.audioBufferLoader.load(defObj, true);
   	}
 
-  	LoadData() { // Load the data
-	    const data = this.filesystem.get('Position');
+  	LoadSound4Rirs() { // Load the audioData to use
+	    const soundbankTree = this.filesystem.get('Assets');
+	    const defObj = {};
+	    soundbankTree.children.forEach(branch => {
+	      	if (branch.type === 'directory') {
+	      		branch.children.forEach(leaf => {
+	        		defObj[leaf.name] = leaf.url;
+	        	});
+	      	}
+	    });
+	    this.audioBufferLoader.load(defObj, true);
+  		console.log("RIRS loaded")
+}
 
+  	LoadData() { // Load the data
+	    const data = this.filesystem.get('Assets');
 	    // Check files to get config
 	    data.children.forEach(leaf => {
 	      	if (leaf.name === this.fileData.File) {
@@ -117,7 +135,6 @@ class Sources {
 		          		tempSourcesPosition.push({x: this.sourcesData.receivers.xyz[i][0], y:this.sourcesData.receivers.xyz[i][1]});
 		        	}
 		        	this.sourcesData.receivers.xyz = tempSourcesPosition
-
 		          	document.dispatchEvent(new Event("dataLoaded"));
 	        	})
       		}
