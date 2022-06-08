@@ -36,6 +36,7 @@ class Sources {
 	    	Norm: 0,
 	    	Exposant: parameters.gainExposant
 	    }
+	    this.audio2Source = [0, 1, 2] 				// Associate ths index in 'this.closestSourcesId' to the corresponding audioSource
 	    this.ambiOrder = parameters.order;
 	}
 
@@ -64,7 +65,7 @@ class Sources {
   	CreateSources(container, scale, offset) {
   		// Create the circle for the Sources
 	    for (let i = 0; i < this.nbSources; i++) {     // foreach Sources
-	      	this.sources.push(document.createElement('div'));         // Create a new element
+	      	this.sources.push(document.createElement('div'));        // Create a new element
 	      	this.sources[i].id = "circle" + i;                       // Set the circle id
 	      	this.sources[i].innerHTML = i + 1;                       // Set the circle value (i+1)
 
@@ -127,6 +128,11 @@ class Sources {
 
 	    // Initialising variables
 	    var previousClosestSourcesId = this.closestSourcesId;
+	    var currentClosestInPrevious;
+	    var tempAudio2Source = this.audio2Source.slice();	// remove the reference
+	    // console.log(tempAudio2Source, this.audio2Source)
+	    var availableAudioSources = [];						// AudioSources where source have been removed
+	    var sources2Attribuate = [];						// Sources to attribuate to an audioSource
 	    // Update the closest Points
 	    this.closestSourcesId = this.ClosestSource(listenerPosition, this.sourcesData.receivers.xyz);
 	    
@@ -135,16 +141,42 @@ class Sources {
 		    // Check if the Id is new in 'this.ClosestPointsId'
 		    if (previousClosestSourcesId[i] != this.closestSourcesId[i]) {
 
-		        // Update the Display for Sources that are not active
-		        if (this.NotIn(previousClosestSourcesId[i], this.closestSourcesId) || previousClosestSourcesId[i] == this.closestSourcesId[this.nbActiveSources - 1]) {
+		        // Update the Display for Sources that are not active  (//Check if the point is the fourth point)
+		        if (this.Index(previousClosestSourcesId[i], this.closestSourcesId)[0] || previousClosestSourcesId[i] == this.closestSourcesId[this.nbActiveSources - 1]) {
 
 		          	this.sources[previousClosestSourcesId[i]].style.background = "grey";
+		          	availableAudioSources.push(this.audio2Source[i]);				// Set the audioSource as waiting for a source
 		        }
-		        this.audioSources[i].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm)
-		    }
 
+		        currentClosestInPrevious = this.Index(this.closestSourcesId[i], previousClosestSourcesId);
+
+		       	if (currentClosestInPrevious[0] || this.closestSourcesId[i] == previousClosestSourcesId[this.nbActiveSources - 1]) {
+		          	sources2Attribuate.push([this.closestSourcesId[i], i])			// Set the source as waiting for an AudioSource
+		        }
+		        else {
+		        	// Change the association between 'this.closestSourceId' and the corresponding Source
+		        	tempAudio2Source[i] = this.audio2Source[currentClosestInPrevious[1]];
+		        }
+		    }
+	    }
+	    this.audio2Source = tempAudio2Source.slice();
+
+	    // 
+	    var k = 0;
+
+	    // Update the audioSources with new Sources ('sources2Attribuate')
+	    availableAudioSources.forEach(audioSourceId => {
+	    	// Add a new association between 'this.closestSourceId' and the corresponding Source
+	    	this.audio2Source[sources2Attribuate[k][1]] = audioSourceId;
+	    	// Update audioSources corresponding to the association ('this.audioSources')
+		    this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[sources2Attribuate[k][0]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
+	    	k += 1;
+	    });
+
+	    // Update display and gain of activ sources
+	    for (let i = 0; i < this.nbActiveSources - 1; i++) {
 		    this.UpdateClosestSourcesColor(i);
-		    this.audioSources[i].UpdateGain(this.gainsData.Value[i], this.gainsData.Norm)
+		    this.audioSources[i].UpdateGain(this.gainsData.Value[this.Index(i, this.audio2Source)[1]], this.gainsData.Norm);
 	    }
 	}
 
@@ -165,7 +197,7 @@ class Sources {
 
 	      for (let i = 0; i < listOfPoint.length; i++) {
 	        // Check if the Id is not already in the closest Ids and if the Source of this Id is closest
-	        if (this.NotIn(i, closestIds) && this.Distance(listenerPosition, listOfPoint[i]) < this.Distance(listenerPosition, listOfPoint[currentClosestId])) {
+	        if (this.Index(i, closestIds)[0] && this.Distance(listenerPosition, listOfPoint[i]) < this.Distance(listenerPosition, listOfPoint[currentClosestId])) {
 	          currentClosestId = i;
 	        }
 	      }
@@ -208,12 +240,12 @@ class Sources {
   	}
 
 
-	NotIn(pointId, listOfIds) { // Check if an Id is not in an Ids' array
+	Index(pointId, listOfIds) { // Check if an Id is not in an Ids' array
 	    var iterator = 0;
 	    while (iterator < listOfIds.length && pointId != listOfIds[iterator]) {
 	      iterator += 1;
 	    }
-	    return(iterator >= listOfIds.length);
+	    return ([iterator >= listOfIds.length, iterator]);
 	}
 
 	Distance(pointA, pointB) { // Get the distance between 2 points
