@@ -24,6 +24,7 @@ class Sources {
 	    this.audioSources = []
 	    this.filesystem = filesystem;
 	    this.audioBufferLoader = audioBufferLoader;
+	    this.audio4RirsBufferLoader = audioBufferLoader;
 	    // this.ambisonic = ambisonic;
 	    this.audioContext = parameters.audioContext;
 	    this.distanceValue = [1, 1, 1];
@@ -58,7 +59,7 @@ class Sources {
 					break;
 				case 'convolving':
 				console.log("Convolving")
-					this.audioSources.push(new Convolving(this.audioContext, this.ambiOrder));
+					this.audioSources.push(new Convolving(this.audioContext, this.ambiOrder, i));
 					break;
 				default:
 					console.log("No valid mode");
@@ -90,35 +91,62 @@ class Sources {
 	      	container.appendChild(this.sources[i]);
     	}
     	for (let i = 0; i < this.nbActiveSources - 1; i++) {
-		    this.sources[this.closestSourcesId[i]].style.background = "rgb(0, " + 255*(4*Math.pow(this.gainsData.Value[i]/this.gainsData.Norm, 2)) + ", 0)"
-        	this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm)    	
+		    this.sources[this.closestSourcesId[i]].style.background = "rgb(0, " + 255*(4*Math.pow(this.gainsData.Value[i]/this.gainsData.Norm, 2)) + ", 0)";
+		    if (this.mode == "convolving") {
+		    	// console.log(this.sourcesData.receivers.files)
+		    	// console.log(this.sourcesData.receivers.files)
+		    	// console.log(this.Rirs)
+		    	// console.log(this.Rirs[i])
+		    	// console.log(this.audioBufferLoader.data[this.sourcesData.receivers.files])
+        		this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.Rirs, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm)    	
+		    }
+		    else {
+        		this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm)    	
+			}
     	}
   	}
 
   	LoadSoundbank() { // Load the audioData to use
 	    const soundbankTree = this.filesystem.get(this.fileData.Audio);
-	    const defObj = {};
+	    var defObj = {};
 	    soundbankTree.children.forEach(leaf => {
 	      	if (leaf.type === 'file') {
 	        	defObj[leaf.name] = leaf.url;
 	      	}
 	    });
+	    if (this.mode == "convolving") {
+	    	defObj = this.LoadSound4Rirs(defObj);
+	    }
 	    this.audioBufferLoader.load(defObj, true);
   	}
 
-  	LoadSound4Rirs() { // Load the audioData to use
+  	LoadRirs() { // Load the audioData to use
+	    const soundbankTree = this.filesystem.get(this.fileData.Audio);
+	    this.Rirs = {};
+	    var defObj = {};
+	    soundbankTree.children.forEach(leaf => {
+	      	if (leaf.type === 'file') {
+	        	this.Rirs[leaf.name] = leaf.url;
+	      	}
+	    });
+	    if (this.mode == "convolving") {
+	    	defObj = this.LoadSound4Rirs(defObj);
+	    }
+	    this.audioBufferLoader.load(defObj, true);
+	}
+
+  	LoadSound4Rirs(defObj) { // Load the audioData to use
 	    const soundbankTree = this.filesystem.get('Assets');
-	    const defObj = {};
+
 	    soundbankTree.children.forEach(branch => {
 	      	if (branch.type === 'directory') {
 	      		branch.children.forEach(leaf => {
-	        		defObj[leaf.name] = leaf.url;
-	        	});
+	        		defObj[leaf.name] = leaf.url;	
+	           	});
 	      	}
 	    });
-	    this.audioBufferLoader.load(defObj, true);
-  		console.log("RIRS loaded")
-}
+  		return(defObj)
+	}
 
   	LoadData() { // Load the data
 	    const data = this.filesystem.get('Assets');
@@ -186,7 +214,16 @@ class Sources {
 	    	// Add a new association between 'this.closestSourceId' and the corresponding Source
 	    	this.audio2Source[sources2Attribuate[k][1]] = audioSourceId;
 	    	// Update audioSources corresponding to the association ('this.audioSources')
-		    this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[sources2Attribuate[k][0]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
+		    if (this.mode == "convolving") {
+		    	console.log(this.closestSourcesId[sources2Attribuate[k][1]])
+		    	console.log(this.Rirs)
+		    	console.log(this.sourcesData.receivers.files)
+		    	console.log(this.sourcesData.receivers.files.Rirs["source" + audioSourceId])
+		    	this.audioSources[audioSourceId].UpdateAudioSource(this.Rirs[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[k][1]]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
+	    	}
+	    	else {
+		    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][sources2Attribuate[k][0]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
+	    	}
 	    	k += 1;
 	    });
 

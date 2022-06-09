@@ -147,11 +147,27 @@ class PlayerExperience extends AbstractExperience {
       this.Sources = new Sources(this.filesystem, this.audioBufferLoader, this.parameters)
       console.log(this.filesystem)
       this.Sources.LoadData();
+      // document.addEventListener("audioLoaded", () => {
+
+      switch (this.parameters.mode) {
+        case 'debug':
+        case 'streaming':
+        case 'ambisonic':
+          this.Sources.LoadSoundbank();
+          break;
+        case 'convolving':
+          this.Sources.LoadRirs();
+          break;
+        default:
+          alert("No valid mode");
+      }
       this.Sources.LoadSoundbank();
 
-      if (this.parameters.mode == 'convolving') {
-        this.Sources.LoadSound4Rirs();
-      }
+      // if (this.parameters.mode == 'convolving') {
+      //   this.Sources.LoadSound4Rirs();
+      // }
+
+      // this.audioBufferLoader.subscribe(() => {
 
       document.addEventListener("dataLoaded", () => {
 
@@ -187,6 +203,7 @@ class PlayerExperience extends AbstractExperience {
       });
         this.render();
     });
+    // });
 
   }
 

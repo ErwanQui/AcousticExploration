@@ -4,7 +4,8 @@
 
   "receivers": 
   {
-    "xyz":[   
+    "xyz":
+    [   
       [31.0, 41.5],
       [31.0, 39.0],
       [31.0, 36.2],
@@ -25,71 +26,87 @@
       [31.0, 23.6]
     ],
 
+    "files":
+    {
+      "Rirs":
+      {
+        "source0":
+        [
+          "steliz_octamic_m01_s3a_bin.wav",
+          "steliz_octamic_m02_s3a_bin.wav",
+          "steliz_octamic_m03_s3a_bin.wav",
+          "steliz_octamic_m04_s3a_bin.wav",
+          "steliz_octamic_m05_s3a_bin.wav",
+          "steliz_octamic_m06_s3a_bin.wav",
+          "steliz_octamic_m07_s3a_bin.wav",
+          "steliz_octamic_m08_s3a_bin.wav",
+          "steliz_octamic_m09_s3a_bin.wav",
+          "steliz_octamic_m10_s3a_bin.wav",
+          "steliz_octamic_m11_s3a_bin.wav",
+          "steliz_octamic_m12_s3a_bin.wav",
+          "steliz_octamic_m13_s3a_bin.wav",
+          "steliz_octamic_m14_s3a_bin.wav",
+          "steliz_octamic_m15_s3a_bin.wav",
+          "steliz_octamic_m16_s3a_bin.wav",
+          "steliz_octamic_m17_s3a_bin.wav",
+          "steliz_octamic_m18_s3a_bin.wav"
+        ],
+        "source1":
+        [
+          "steliz_octamic_m01_s4a_bin.wav",
+          "steliz_octamic_m02_s4a_bin.wav",
+          "steliz_octamic_m03_s4a_bin.wav",
+          "steliz_octamic_m04_s4a_bin.wav",
+          "steliz_octamic_m05_s4a_bin.wav",
+          "steliz_octamic_m06_s4a_bin.wav",
+          "steliz_octamic_m07_s4a_bin.wav",
+          "steliz_octamic_m08_s4a_bin.wav",
+          "steliz_octamic_m09_s4a_bin.wav",
+          "steliz_octamic_m10_s4a_bin.wav",
+          "steliz_octamic_m11_s4a_bin.wav",
+          "steliz_octamic_m12_s4a_bin.wav",
+          "steliz_octamic_m13_s4a_bin.wav",
+          "steliz_octamic_m14_s4a_bin.wav",
+          "steliz_octamic_m15_s4a_bin.wav",
+          "steliz_octamic_m16_s4a_bin.wav",
+          "steliz_octamic_m17_s4a_bin.wav",
+          "steliz_octamic_m18_s4a_bin.wav"
+        ],
+        "source2":
+        [
+          "steliz_octamic_m01_s5a_bin.wav",
+          "steliz_octamic_m02_s5a_bin.wav",
+          "steliz_octamic_m03_s5a_bin.wav",
+          "steliz_octamic_m04_s5a_bin.wav",
+          "steliz_octamic_m05_s5a_bin.wav",
+          "steliz_octamic_m06_s5a_bin.wav",
+          "steliz_octamic_m07_s5a_bin.wav",
+          "steliz_octamic_m08_s5a_bin.wav",
+          "steliz_octamic_m09_s5a_bin.wav",
+          "steliz_octamic_m10_s5a_bin.wav",
+          "steliz_octamic_m11_s5a_bin.wav",
+          "steliz_octamic_m12_s5a_bin.wav",
+          "steliz_octamic_m13_s5a_bin.wav",
+          "steliz_octamic_m14_s5a_bin.wav",
+          "steliz_octamic_m15_s5a_bin.wav",
+          "steliz_octamic_m16_s5a_bin.wav",
+          "steliz_octamic_m17_s5a_bin.wav",
+          "steliz_octamic_m18_s5a_bin.wav"
+        ]
+      },
+      "Sounds":
+      [
+        "01.wav",
+        "02.wav",
+        "03.wav"
+      ]
+    },
 
-
-  "files":[
-      "steliz_octamic_m01_s3a_bin.wav",
-      "steliz_octamic_m01_s4a_bin.wav",
-      "steliz_octamic_m01_s5a_bin.wav",
-      "steliz_octamic_m02_s3a_bin.wav",
-      "steliz_octamic_m02_s4a_bin.wav",
-      "steliz_octamic_m02_s5a_bin.wav",
-      "steliz_octamic_m03_s3a_bin.wav",
-      "steliz_octamic_m03_s4a_bin.wav",
-      "steliz_octamic_m03_s5a_bin.wav",
-      "steliz_octamic_m04_s3a_bin.wav",
-      "steliz_octamic_m04_s4a_bin.wav",
-      "steliz_octamic_m04_s5a_bin.wav",
-      "steliz_octamic_m05_s3a_bin.wav",
-      "steliz_octamic_m05_s4a_bin.wav",
-      "steliz_octamic_m05_s5a_bin.wav",
-      "steliz_octamic_m06_s3a_bin.wav",
-      "steliz_octamic_m06_s4a_bin.wav",
-      "steliz_octamic_m06_s5a_bin.wav",
-      "steliz_octamic_m07_s3a_bin.wav",
-      "steliz_octamic_m07_s4a_bin.wav",
-      "steliz_octamic_m07_s5a_bin.wav",
-      "steliz_octamic_m08_s3a_bin.wav",
-      "steliz_octamic_m08_s4a_bin.wav",
-      "steliz_octamic_m08_s5a_bin.wav",
-      "steliz_octamic_m09_s3a_bin.wav",
-      "steliz_octamic_m09_s4a_bin.wav",
-      "steliz_octamic_m09_s5a_bin.wav",
-      "steliz_octamic_m10_s3a_bin.wav",
-      "steliz_octamic_m10_s4a_bin.wav",
-      "steliz_octamic_m10_s5a_bin.wav",
-      "steliz_octamic_m11_s3a_bin.wav",
-      "steliz_octamic_m11_s4a_bin.wav",
-      "steliz_octamic_m11_s5a_bin.wav",
-      "steliz_octamic_m12_s3a_bin.wav",
-      "steliz_octamic_m12_s4a_bin.wav",
-      "steliz_octamic_m12_s5a_bin.wav",
-      "steliz_octamic_m13_s3a_bin.wav",
-      "steliz_octamic_m13_s4a_bin.wav",
-      "steliz_octamic_m13_s5a_bin.wav",
-      "steliz_octamic_m14_s3a_bin.wav",
-      "steliz_octamic_m14_s4a_bin.wav",
-      "steliz_octamic_m14_s5a_bin.wav",
-      "steliz_octamic_m15_s3a_bin.wav",
-      "steliz_octamic_m15_s4a_bin.wav",
-      "steliz_octamic_m15_s5a_bin.wav",
-      "steliz_octamic_m16_s3a_bin.wav",
-      "steliz_octamic_m16_s4a_bin.wav",
-      "steliz_octamic_m16_s5a_bin.wav",
-      "steliz_octamic_m17_s3a_bin.wav",
-      "steliz_octamic_m17_s4a_bin.wav",
-      "steliz_octamic_m17_s5a_bin.wav",
-      "steliz_octamic_m18_s3a_bin.wav",
-      "steliz_octamic_m18_s4a_bin.wav",
-      "steliz_octamic_m18_s5a_bin.wav"
+    "sources_xy": 
+    [
+      [27.5, 12.1],
+      [33.0, 30.5],
+      [28.0, 42.3]
     ]
-  },
-
-  "sources_xy": 
-  [
-    [27.5, 12.1],
-    [33.0, 30.5],
-    [28.0, 42.3]
-  ]
-
+  }
 }
