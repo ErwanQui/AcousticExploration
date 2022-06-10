@@ -215,21 +215,14 @@ class Sources {
 	    	this.audio2Source[sources2Attribuate[k][1]] = audioSourceId;
 	    	// Update audioSources corresponding to the association ('this.audioSources')
 		    if (this.mode == "convolving") {
-		    	console.log(this.closestSourcesId[sources2Attribuate[k][1]])
-		    	console.log(this.Rirs)
-		    	console.log(this.sourcesData.receivers.files)
-		    	console.log(this.sourcesData.receivers.files.Rirs["source" + audioSourceId])
+		    	// console.log(this.closestSourcesId[sources2Attribuate[k][1]])
+		    	// console.log(this.Rirs)
+		    	// console.log(this.sourcesData.receivers.files)
+		    	// console.log(this.sourcesData.receivers.files.Rirs["source" + audioSourceId])
 		    	this.audioSources[audioSourceId].UpdateAudioSource(this.Rirs[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[k][1]]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
 	    	}
 	    	else {
-	    		console.log(this.audioBufferLoader.data)
-	    		console.log(this.sourcesData.receivers.files)
-	    		console.log(this.sourcesData.receivers.files[audioSourceId])
-	    		console.log(sources2Attribuate[k][0])
-	    		console.log(sources2Attribuate[k])
-	    		console.log([audioSourceId][sources2Attribuate[k][0]])
-	    		console.log(this.audioBufferLoader.data[this.sourcesData.receivers.files[audioSourceId][sources2Attribuate[k][0]]])
-		    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files["source" + audioSourceId][sources2Attribuate[k][0]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
+		    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[sources2Attribuate[k][0]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
 	    	}
 	    	k += 1;
 	    });
