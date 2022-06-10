@@ -1,23 +1,26 @@
-//////////////////
+///////////////////
 /// Listener.js ///
-//////////////////
+///////////////////
 
 class Listener {
 
 	constructor (position, parameters) {
 
-	    // User positions
+	    // User's begin position
 	    this.listenerPosition = {
 	      x: position.x,
 	      y: position.y,
 	    };
 
-	    this.display;
-	    this.displaySize = parameters.listenerSize;
-	    this.circleSpacing = parameters.circleDiameter/2;
+	    // Parameter's for the display of user's position
+	    this.display;													// Html element for the display (build in 'start()')
+	    this.displaySize = parameters.listenerSize;						// Size of the listener's display
+	    this.circleSpacing = parameters.circleDiameter/2;				// Size of sources to set an offset
 	}
 
 	async start () {
+
+		// Create listener's display and assigning parameters
 		this.display = document.createElement('div');
 		this.display.id = "listener";
 		this.display.style.position = "absolute"
@@ -29,19 +32,23 @@ class Listener {
 		this.display.style.transform = "rotate(45deg)";
 	}
 
-	Display (container) {
+	Display (container) { // Add the listener's display to the container
+
+		// @note: we can't do it in 'start()' because the container wasn't created
 		container.appendChild(this.display);
 	} 
 
-	UpdateListener(position, offset, scale) { // Update Listener
-	    // Update Listener's dipslay
+	UpdateListener(position, offset, scale) { // Update listener
+
+	    // Update Listener's dipslay depending on offset and scale
       	this.listenerPosition.x = offset.x + (position.clientX - window.innerWidth/2)/scale;
       	this.listenerPosition.y = offset.y + (position.clientY - this.circleSpacing)/scale;
 
       	this.UpdateListenerDisplay(offset, scale);
     }
 
-    UpdateListenerDisplay(offset, scale) {
+    UpdateListenerDisplay(offset, scale) { // Update listener's display
+
 	    this.display.style.transform = "translate(" + 
 	    	((this.listenerPosition.x - offset.x)*scale - this.circleSpacing) + "px, " + 
 	    	((this.listenerPosition.y - offset.y)*scale) + "px) rotate(45deg)";
