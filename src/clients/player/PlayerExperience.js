@@ -25,9 +25,9 @@ class PlayerExperience extends AbstractExperience {
 
     this.parameters = {
       // mode: "debug",                   // Choose audio mode (possible: "debug", "convolving")
-      // mode: "streaming",                   // Choose audio mode (possible: "debug", "convolving")
+      mode: "streaming",                   // Choose audio mode (possible: "debug", "convolving")
       // mode: "ambisonic",                   // Choose audio mode (possible: "debug", "convolving")
-      mode: "convolving",                   // Choose audio mode (possible: "debug", "convolving")
+      // mode: "convolving",                   // Choose audio mode (possible: "debug", "convolving")
       circleDiameter: 20,
       dataFileName: "",
       audioData: "",
