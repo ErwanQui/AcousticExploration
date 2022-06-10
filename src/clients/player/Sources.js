@@ -10,67 +10,91 @@ class Sources {
 
 	constructor (filesystem, audioBufferLoader, parameters) {
 
-	    // User positions
-	    this.nbSources;
-	    this.mode = parameters.mode
-	    this.circleDiameter = parameters.circleDiameter;
-	    // this.container = container;
-	    this.sources = [];
-	    this.closestSourcesId = undefined;
-	    this.nbActiveSources = parameters.nbClosestPoints;
+	    // Create the datas' storer
 	    this.sourcesData;
-	    // this.scale;
-	    // this.dataFileName = "scene2.json"
-	    this.audioSources = []
-	    this.filesystem = filesystem;
-	    this.audioBufferLoader = audioBufferLoader;
-	    this.audio4RirsBufferLoader = audioBufferLoader;
-	    // this.ambisonic = ambisonic;
+
+	    // Get audioContext
 	    this.audioContext = parameters.audioContext;
-	    this.distanceValue = [1, 1, 1];
-	    this.distanceSum = 0;
-	    this.fileData = {
+
+	    // Create the audioBufferLoaders
+	    this.audioBufferLoader = audioBufferLoader;
+
+		// Get files
+	   	this.filesystem = filesystem;
+
+	    // Global parameters
+	    this.nbSources;											// Create the number of sources object
+	    this.mode = parameters.mode								// Get the used mode
+	    this.circleDiameter = parameters.circleDiameter;		// Get the circles' diameter
+	    this.nbActiveSources = parameters.nbClosestPoints;		// Get the number of activ sources
+	    this.ambiOrder = parameters.order;						// Get the ambisonic's order
+	    this.fileData = {										// Create the fileDatas' storer
 	    	File: parameters.dataFileName,
 	    	Audio: parameters.audioData
 	    }
+	    this.audioSources = []									// Store the audioSources (I will then associate a source to each audioSource)
+	    this.sources = [];										// Create the array of sources' display's elements
+
+		// Create used variables
+	    this.closestSourcesId;									// Array of the closest sources from listener
+	    this.audio2Source = [0, 1, 2] 							// Associate ths index in 'this.closestSourcesId' to the corresponding audioSource
+	    this.distanceValue = [1, 1, 1];							// Distance of each source with listener
+	    this.distanceSum = 0;									// Sum of the sources' distance
+
+	    // Set gain's datas
 	    this.gainsData = {
 	    	Value: [],
 	    	Norm: 0,
 	    	Exposant: parameters.gainExposant
 	    }
-	    this.audio2Source = [0, 1, 2] 				// Associate ths index in 'this.closestSourcesId' to the corresponding audioSource
-	    this.ambiOrder = parameters.order;
+
+	    // Add RIRs for convolving mode
+	    if (this.mode == "convolving") {
+	    	this.Rirs = {};
+	    }
 	}
 
 	async start (listenerPosition) {
+
+		// Add the audioSources depending on the mode chosen
 		for (let i = 0; i < this.nbActiveSources - 1; i++) {
 			switch (this.mode) {
+
 				case 'debug':
 				console.log("Debugging")
 					this.audioSources.push(new Streaming(this.audioContext));
 					break;
+
 				case 'streaming':
 				console.log("Streaming")
 					this.audioSources.push(new Streaming(this.audioContext));
 					break;
+
 				case 'ambisonic':
 				console.log("Ambisonics")
 					this.audioSources.push(new Ambisonic(this.audioContext, this.ambiOrder));
 					break;
+
 				case 'convolving':
 				console.log("Convolving")
 					this.audioSources.push(new Convolving(this.audioContext, this.ambiOrder, i));
 					break;
+
 				default:
 					console.log("No valid mode");
 			}
 		}
-		this.closestSourcesId = this.ClosestSource(listenerPosition, this.sourcesData.receivers.xyz) // get closest Sources to the Listener
+
+		// Get closest sources from listener
+		this.closestSourcesId = this.ClosestSource(listenerPosition, this.sourcesData.receivers.xyz);
   	}
 
-  	CreateSources(container, scale, offset) {
-  		// Create the circle for the Sources
-	    for (let i = 0; i < this.nbSources; i++) {     // foreach Sources
+  	CreateSources(container, scale, offset) { // Create the display for sources, add them to the gloabl container and start the audio
+
+  		// Create a circle as a display for each source
+	    for (let i = 0; i < this.nbSources; i++) {
+
+	    	// Create the source's display
 	      	this.sources.push(document.createElement('div'));        // Create a new element
 	      	this.sources[i].id = "circle" + i;                       // Set the circle id
 	      	this.sources[i].innerHTML = i + 1;                       // Set the circle value (i+1)
@@ -87,145 +111,200 @@ class Sources {
 	      		((this.sourcesData.receivers.xyz[i].x - offset.x)*scale) + "px, " + 
 	      		((this.sourcesData.receivers.xyz[i].y - offset.y)*scale) + "px)";
 
-	      	// Add the circle to the display
+	      	// Add the circle's display to the global container
 	      	container.appendChild(this.sources[i]);
     	}
+
+    	// Start each source
     	for (let i = 0; i < this.nbActiveSources - 1; i++) {
-		    this.sources[this.closestSourcesId[i]].style.background = "rgb(0, " + 255*(4*Math.pow(this.gainsData.Value[i]/this.gainsData.Norm, 2)) + ", 0)";
+
+    		// Set sources' color for the starting position of the listener
+			this.UpdateClosestSourcesColor(i);
+
+			// Check if the mode is 'convolving' and then start audio sources
 		    if (this.mode == "convolving") {
-		    	// console.log(this.sourcesData.receivers.files)
-		    	// console.log(this.sourcesData.receivers.files)
-		    	// console.log(this.Rirs)
-		    	// console.log(this.Rirs[i])
-		    	// console.log(this.audioBufferLoader.data[this.sourcesData.receivers.files])
+
         		this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.Rirs, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm)    	
 		    }
+
 		    else {
+
         		this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm)    	
 			}
     	}
   	}
 
-  	LoadSoundbank() { // Load the audioData to use
+  	LoadSoundbank() { // Load the audio datas to use
+
+  		// Get all audio datas
 	    const soundbankTree = this.filesystem.get(this.fileData.Audio);
+
+	    // Initiate an object to store audios' paths
 	    var defObj = {};
+
+	    // Get all audio files' paths
 	    soundbankTree.children.forEach(leaf => {
+
 	      	if (leaf.type === 'file') {
+
 	        	defObj[leaf.name] = leaf.url;
 	      	}
 	    });
-	    if (this.mode == "convolving") {
-	    	defObj = this.LoadSound4Rirs(defObj);
-	    }
+
+	    // Load all audio datas
 	    this.audioBufferLoader.load(defObj, true);
   	}
 
-  	LoadRirs() { // Load the audioData to use
-	    const soundbankTree = this.filesystem.get(this.fileData.Audio);
-	    this.Rirs = {};
+  	LoadRirs() { // Load the rirs to use
+
+  		// Get all rirs' datas
+	    const rirbankTree = this.filesystem.get(this.fileData.Audio);
+
+	    // Initiate an object to store audios' paths
 	    var defObj = {};
-	    soundbankTree.children.forEach(leaf => {
+
+	    // Get all rirs' files' paths
+	    rirbankTree.children.forEach(leaf => {
+
 	      	if (leaf.type === 'file') {
+
 	        	this.Rirs[leaf.name] = leaf.url;
 	      	}
 	    });
-	    if (this.mode == "convolving") {
-	    	defObj = this.LoadSound4Rirs(defObj);
-	    }
+
+	    // Get all audio dats
+	    defObj = this.LoadSound4Rirs(defObj);
+
+	    // Load all audio datas
 	    this.audioBufferLoader.load(defObj, true);
 	}
 
-  	LoadSound4Rirs(defObj) { // Load the audioData to use
+  	LoadSound4Rirs(defObj) { // Load the audio datas to use with rirs
+
+  		// Get all assets
 	    const soundbankTree = this.filesystem.get('Assets');
 
+	    // Read 'soundbankTree' to find the audio files
 	    soundbankTree.children.forEach(branch => {
+
 	      	if (branch.type === 'directory') {
+
 	      		branch.children.forEach(leaf => {
+
 	        		defObj[leaf.name] = leaf.url;	
 	           	});
 	      	}
 	    });
+
   		return(defObj)
 	}
 
-  	LoadData() { // Load the data
+  	LoadData() { // Load the data from the json file
+
+  		// Get all assets' datas
 	    const data = this.filesystem.get('Assets');
-	    // Check files to get config
+
 	    data.children.forEach(leaf => {
+
 	      	if (leaf.name === this.fileData.File) {
 
+	      		// Wait that the json file has been getting before using it
 			    fetch(leaf.url).then(results => results.json()).then(jsonObj => {
 
+			    	// Create the sourcesData object from the json file
 			        this.sourcesData = jsonObj;
+
+			        // Get the number of sources
 			        this.nbSources = this.sourcesData.receivers.xyz.length;
+
+			        // Change sources' positions format
 			        var tempSourcesPosition = [];
 			        for (let i = 0; i < this.nbSources; i++) {
 		          		tempSourcesPosition.push({x: this.sourcesData.receivers.xyz[i][0], y:this.sourcesData.receivers.xyz[i][1]});
 		        	}
-		        	this.sourcesData.receivers.xyz = tempSourcesPosition
+
+		        	// Update sourcesData object
+		        	this.sourcesData.receivers.xyz = tempSourcesPosition;
+
+		        	// Create an event to inform that the file's data can be used
 		          	document.dispatchEvent(new Event("dataLoaded"));
 	        	})
       		}
     	});
   	}
 
-  	onListenerPositionChanged(listenerPosition) { // Update the closest Sources to use when Listener's Position changed
+  	onListenerPositionChanged(listenerPosition) { // Update the closest sources to use when listener's position changed
 
 	    // Initialising variables
-	    var previousClosestSourcesId = this.closestSourcesId;
-	    var currentClosestInPrevious;
-	    var tempAudio2Source = this.audio2Source.slice();	// remove the reference
-	    // console.log(tempAudio2Source, this.audio2Source)
-	    var availableAudioSources = [];						// AudioSources where source have been removed
-	    var sources2Attribuate = [];						// Sources to attribuate to an audioSource
-	    // Update the closest Points
+	    var previousClosestSourcesId = this.closestSourcesId;	// Keep the previous closest sources
+	    var currentClosestInPrevious;							// Create the object to get the index of a closest source in the previous closest sources array
+
+	    // @note: I have to use the 'slice()' method, otherwise it creates a reference of the array
+	    var tempAudio2Source = this.audio2Source.slice();		// remove the reference
+	    var availableAudioSources = [];							// AudioSources where source have been removed
+	    var sources2Attribuate = [];							// Sources to attribuate to an audioSource
+
+	    // Update the closest points
 	    this.closestSourcesId = this.ClosestSource(listenerPosition, this.sourcesData.receivers.xyz);
 	    
-	    // Check all the new closest Points
+	    // Check all the new closest points
 	    for (let i = 0; i < this.nbActiveSources - 1; i++) {
-		    // Check if the Id is new in 'this.ClosestPointsId'
+
+		    // Check if the id is new in 'this.ClosestPointsId'
 		    if (previousClosestSourcesId[i] != this.closestSourcesId[i]) {
 
-		        // Update the Display for Sources that are not active  (//Check if the point is the fourth point)
+		        // Update the display for sources that are not active  (//Check if the point is the fourth point)
 		        if (this.Index(previousClosestSourcesId[i], this.closestSourcesId)[0] || previousClosestSourcesId[i] == this.closestSourcesId[this.nbActiveSources - 1]) {
 
-		          	this.sources[previousClosestSourcesId[i]].style.background = "grey";
-		          	availableAudioSources.push(this.audio2Source[i]);				// Set the audioSource as waiting for a source
+		          	this.sources[previousClosestSourcesId[i]].style.background = "grey";	// Change the color of inactiv sources to grey
+		          	availableAudioSources.push(this.audio2Source[i]);						// Set the audioSource as waiting for a source
 		        }
 
+		        // Instantiate 'currentClosestInPrevious': if the sources was in the 'previousClosestSourcesId', it get the index in the array
 		        currentClosestInPrevious = this.Index(this.closestSourcesId[i], previousClosestSourcesId);
 
+		        // Check if the sources wasn't in 'previousClosestSourcesId'
 		       	if (currentClosestInPrevious[0] || this.closestSourcesId[i] == previousClosestSourcesId[this.nbActiveSources - 1]) {
-		          	sources2Attribuate.push([this.closestSourcesId[i], i])			// Set the source as waiting for an AudioSource
+
+		       		// Set the source as waiting for an AudioSource
+		          	sources2Attribuate.push([this.closestSourcesId[i], i]);
 		        }
+
+		        // If it was, update the association between the source and the audioSource
 		        else {
+
 		        	// Change the association between 'this.closestSourceId' and the corresponding Source
 		        	tempAudio2Source[i] = this.audio2Source[currentClosestInPrevious[1]];
 		        }
 		    }
 	    }
+
+	    // Store the association's array in the corresponding class' object
 	    this.audio2Source = tempAudio2Source.slice();
 
-	    // 
-	    var k = 0;
+	    // Variable to store the available audio source's id
+	    var audioSourceId;
 
 	    // Update the audioSources with new Sources ('sources2Attribuate')
-	    availableAudioSources.forEach(audioSourceId => {
+	    for (let i = 0; i < availableAudioSources.length; i++) {
+
+	    	// Get the available audio source's id
+	    	audioSourceId = availableAudioSources[i];
+
 	    	// Add a new association between 'this.closestSourceId' and the corresponding Source
-	    	this.audio2Source[sources2Attribuate[k][1]] = audioSourceId;
+	    	this.audio2Source[sources2Attribuate[i][1]] = audioSourceId;
+
 	    	// Update audioSources corresponding to the association ('this.audioSources')
+	    	// For convolving mode
 		    if (this.mode == "convolving") {
-		    	// console.log(this.closestSourcesId[sources2Attribuate[k][1]])
-		    	// console.log(this.Rirs)
-		    	// console.log(this.sourcesData.receivers.files)
-		    	// console.log(this.sourcesData.receivers.files.Rirs["source" + audioSourceId])
-		    	this.audioSources[audioSourceId].UpdateAudioSource(this.Rirs[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[k][1]]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
+		    	this.audioSources[audioSourceId].UpdateAudioSource(this.Rirs[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[i][1]]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
 	    	}
+
+	    	// For other modes 
 	    	else {
-		    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[sources2Attribuate[k][0]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
+		    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[sources2Attribuate[i][0]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
 	    	}
-	    	k += 1;
-	    });
+	    }
 
 	    // Update display and gain of activ sources
 	    for (let i = 0; i < this.nbActiveSources - 1; i++) {
@@ -234,42 +313,46 @@ class Sources {
 	    }
 	}
 
-  	ClosestSource(listenerPosition, listOfPoint) { // get closest Sources to the Listener
+  	ClosestSource(listenerPosition, listOfPoint) { // get closest sources from the listener
     
 	    // Initialising temporary variables;
 	    var closestIds = [];
 	    var currentClosestId;
 
-	    // Reset Count
+	    // Reset the count
 	    this.distanceSum = 0;
 	    this.gainsData.Norm = 0;
-	    // Get the 'nbClosest' closest Ids
+
+	    // Get the 'nbClosest' closest ids
 	    for (let j = 0; j < this.nbActiveSources; j++) {
 
 	      // Set 'undefined' to the currentClosestId to ignore difficulties with initial values
 	      currentClosestId = undefined;
 
 	      for (let i = 0; i < listOfPoint.length; i++) {
-	        // Check if the Id is not already in the closest Ids and if the Source of this Id is closest
+
+	        // Check if the id is not already in the closest ids and if the source of this id is closest
 	        if (this.Index(i, closestIds)[0] && this.Distance(listenerPosition, listOfPoint[i]) < this.Distance(listenerPosition, listOfPoint[currentClosestId])) {
 	          currentClosestId = i;
 	        }
 	      }
 
 	      if (j != this.nbActiveSources - 1) {
-	        // Get the distance between the Listener and the Source
+
+	        // Get the distance between the listener and the source
 	        this.distanceValue[j] = this.Distance(listenerPosition, listOfPoint[currentClosestId]);
 
 	        // Increment 'this.distanceSum'
 	        this.distanceSum += this.distanceValue[j];
 	      }
 
-	      // Push the Id in the closest
+	      // Push the id in the closestId attribute
 	      closestIds.push(currentClosestId);
 	    }
 
-	    // Set the Gains and the Gains norm
+	    // Set the gains and the gains' norm
 	    for (let i = 0; i < this.nbActiveSources - 1; i++) {
+
 	      this.gainsData.Value[i] = Math.pow((1 - this.distanceValue[i]/this.distanceSum), this.gainsData.Exposant);
 	      this.gainsData.Norm += this.gainsData.Value[i];
 	    }
@@ -277,6 +360,7 @@ class Sources {
   	}
 
   	UpdateSourcesPosition(scale, offset) { // Update the Positions of circles when window is resized
+
 	    for (let i = 0; i < this.nbSources; i++) {
 	      	this.sources[i].style.transform = "translate(" + 
 	      		((this.sourcesData.receivers.xyz[i].x - offset.x)*scale) + "px, " + 
@@ -284,17 +368,17 @@ class Sources {
     	}
   	}
 
-  	UpdateClosestSourcesColor(index) { // Update Gain and Display of the Source depending on Listener's Position
+  	UpdateClosestSourcesColor(index) { // Update source's display depending on listener's position
 
-	    // Set a using value to the Source
+	    // Set a using value to the source
 	    var sourceValue = this.gainsData.Value[index]/this.gainsData.Norm;
 
-	    // Update the Display of the Source
+	    // Update source's display
 	    this.sources[this.closestSourcesId[index]].style.background = "rgb(0, " + 255*(4*Math.pow(sourceValue, 2)) + ", 0)";
   	}
 
+	Index(pointId, listOfIds) { // Check if an id is not in an ids' array and return the corresponding id if it's not the cas
 
-	Index(pointId, listOfIds) { // Check if an Id is not in an Ids' array
 	    var iterator = 0;
 	    while (iterator < listOfIds.length && pointId != listOfIds[iterator]) {
 	      iterator += 1;
@@ -303,6 +387,7 @@ class Sources {
 	}
 
 	Distance(pointA, pointB) { // Get the distance between 2 points
+
 	    if (pointB != undefined) {
 	      	return (Math.sqrt(Math.pow(pointA.x - pointB.x, 2) + Math.pow(pointA.y - pointB.y, 2)));
 	    }

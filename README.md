@@ -1,4 +1,11 @@
-# `@soundworks/plugin-audio-buffer-loader` and `@soundworks/plugin-filesystem` example application
+# Description
+
+A web application to explore the acoustic of Notre-Dame
+
+## Using
+
+The mode can be changed in "src/clients/player/PlayerExperience.js" at l.30
+Warning: Only "debug" and "streaming" modes work. There are difficulties to decode auddioData in "ambisonic" and "convolving" modes.
 
 ## Plugin repository
 

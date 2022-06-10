@@ -1,17 +1,21 @@
-//////////////////
+////////////////////
 /// Ambisonic.js ///
-//////////////////
+////////////////////
+
+// @note: voir si il faudrait pas utiliser un autre décodeur
 
 class Ambisonic {
 
 	constructor (audioContext, order) {
 		
 	    // Creating AudioContext
-	    this.audioContext = audioContext;
-	    this.order = order;
+	    this.audioContext = audioContext;		// Get audioContext
+	    this.order = order;						// get ambisonic's order
 
+	    // Get ambisnic's objects
 	    this.ambisonic = require("ambisonics");
 
+	    // Create the audioNodes
 	    this.playingSound = this.audioContext.createBufferSource();
 	    this.encoder = new this.ambisonic.monoEncoder(this.audioContext, this.order);
 	   	this.mirror = new this.ambisonic.sceneRotator(this.audioContext, this.order);
@@ -23,8 +27,7 @@ class Ambisonic {
 
 	async start (buffer, value, norm) {
 
-	    // Creating Gains
-
+	    // Connect the audioNodes
     	this.playingSound.connect(this.encoder.in);
     	this.encoder.out.connect(this.mirror.in);
     	this.mirror.out.connect(this.rotator);
@@ -35,16 +38,18 @@ class Ambisonic {
 	    // init with current content
     	this.gain.gain.setValueAtTime(value/norm, 0)
 
+    	// Load the sound from the buffer
     	this.playingSound = this.LoadNewSound(buffer)
 
-    	this.gain.connect(this.audioContext.destination)
-    	this.playingSound.connect(this.gain)
-
+    	// this.gain.connect(this.audioContext.destination)
+    	// this.playingSound.connect(this.gain)
+    	
+    	// Play the sound
     	this.playingSound.start()
 	}
 
 	LoadNewSound(buffer) { // Create and link the sound to the AudioContext
-	    // Sound initialisation
+
 	    var sound = this.audioContext.createBufferSource();		// Create the sound
 	    sound.loop = true;                                    	// Set the sound to loop
 	    sound.buffer = buffer;                                	// Set the sound buffer
@@ -52,18 +57,17 @@ class Ambisonic {
 	    return (sound);
 	}
 
-	UpdateAudioSource(buffer, value, norm) {
-		this.playingSound.stop();
-		this.playingSound.disconnect(this.gain);
-		this.playingSound = this.LoadNewSound(buffer);
-		// console.log(value/norm)
-		// this.gain.gain.setValueAtTime(value/norm, 0)
-		this.playingSound.start();
+	UpdateAudioSource(buffer, value, norm) { // Stop the current playing to play an other source's audioBuffer
+
+		this.playingSound.stop();							// Stop the audio
+		this.playingSound.disconnect(this.gain);			// Disconnect it from the tree
+		this.playingSound = this.LoadNewSound(buffer);		// Load the new audioBuffer and link the new node
+		this.playingSound.start();							// Play the new audio
 	}
 
-	UpdateGain(value, norm) { // Update Gain and Display of the Source depending on Listener's Position
+	UpdateGain(value, norm) { // Update gain
 	    
-	    // Update the Gain of the Source
+	    // Update the gain of the source
 	    this.gain.gain.setValueAtTime(value/norm, 0);
   	}
 }

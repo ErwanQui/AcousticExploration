@@ -1,6 +1,8 @@
-//////////////////
+/////////////////////
 /// Convolving.js ///
-//////////////////
+/////////////////////
+
+// @note: c'est un peu le bordel et ça marche pas trop... (voir comment faire pour décoder les rirs)
 
 class Convolving {
 
@@ -55,13 +57,6 @@ class Convolving {
     	this.rotator.out.connect(this.decoder.in);
     	this.decoder.out.connect(this.gain);
     	this.gain.connect(this.audioContext.destination);
-
-    	// console.log(this.playingSound)
-    	// console.log(this.convolver)
-    	// console.log(this.mirror)
-    	// console.log(this.rotator)
-    	// console.log(this.decoder)
-    	// console.log(this.gain)
 
     	for (let i = 0; i < Files.Sounds.length; i++) {
     		this.playingSounds[i].start();

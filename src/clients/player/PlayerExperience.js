@@ -4,10 +4,11 @@ import renderInitializationScreens from '@soundworks/template-helpers/client/ren
 
 import Listener from './Listener.js'
 import Sources from './Sources.js'
-import { Scheduler } from 'waves-masters';
+// import { Scheduler } from 'waves-masters';
 
 class PlayerExperience extends AbstractExperience {
   constructor(client, config = {}, $container, audioContext) {
+
     super(client);
 
     this.config = config;
@@ -15,28 +16,25 @@ class PlayerExperience extends AbstractExperience {
     this.rafId = null;
 
     // Require plugins if needed
-    this.audioBufferLoader = this.require('audio-buffer-loader');
-    // this.ambisonic = require('ambisonics');
-    this.filesystem = this.require('filesystem');
-    this.sync = this.require('sync');
-    this.platform = this.require('platform');
+    this.audioBufferLoader = this.require('audio-buffer-loader');     // To load audioBuffers
+    this.filesystem = this.require('filesystem');                     // To get files
+    // this.sync = this.require('sync');                                 // To sync audio sources
+    // this.platform = this.require('platform');                         // To manage plugin for the sync
 
-    // Changing Parameters
-
+    // Variable parameters
     this.parameters = {
-      // mode: "debug",                   // Choose audio mode (possible: "debug", "convolving")
-      mode: "streaming",                   // Choose audio mode (possible: "debug", "convolving")
-      // mode: "ambisonic",                   // Choose audio mode (possible: "debug", "convolving")
-      // mode: "convolving",                   // Choose audio mode (possible: "debug", "convolving")
-      circleDiameter: 20,
-      dataFileName: "",
-      audioData: "",
-      rirs: {},
-      nbClosestPoints: 4,
-      gainExposant: 3,
-      listenerSize: 16,
-      order: 2,
-      audioContext: audioContext
+      audioContext: audioContext,               // Global audioContext
+      order: 2,                                 // Order of ambisonics
+      nbClosestPoints: 4,                       // Number of closest points searched
+      gainExposant: 3,                          // Exposant of the gains (to increase contraste)
+      // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving")
+      mode: "streaming",
+      // mode: "ambisonic",
+      // mode: "convolving",
+      circleDiameter: 20,                       // Diameter of sources' display
+      listenerSize: 16,                         // Size of listener's display
+      dataFileName: "",                         // All sources' position and audioDatas' filenames (instantiated in 'start()')
+      audioData: ""                             // All audioDatas (instantiated in 'start()')
     }
 
     // Initialisation variables
@@ -45,45 +43,46 @@ class PlayerExperience extends AbstractExperience {
     this.mouseDown = false;
     this.touched = false;
 
+    // Instanciate classes' storer
+    this.Listener;                              // Store the 'Listener' class
+    this.Sources;                               // Store the 'Sources' class
+
     // Global values
-    this.range;                           // Values of the array data (creates in start())
-    this.scale;                           // General Scales (initialised in start())
-    // this.audioData;       // Set the audio data to use
-
-
-    // Sounds of the sources
-    this.audioFilesName = [];
-
-    this.positions = [];                        // Array of sources positions (built in start())
-
-    this.container;
+    this.range;                                 // Values of the array data (creates in 'start()')
+    this.scale;                                 // General Scales (initiated in 'start()')
+    this.offset;                                // Offset of the display
+    this.container;                             // General container of display elements (creates in 'render()')
 
     renderInitializationScreens(client, config, $container);
   }
 
   async start() {
+
     super.start();
 
-      switch (this.parameters.mode) {
-        case 'debug':
-          this.parameters.audioData = 'AudioFiles0';
-          this.parameters.dataFileName = 'scene0.json';
-          break;
-        case 'streaming':
-          this.parameters.audioData = 'AudioFiles1';
-          this.parameters.dataFileName = 'scene1.json';
-          break;
-        case 'ambisonic':
-          this.parameters.audioData = 'AudioFiles2';
-          this.parameters.dataFileName = 'scene2.json';
-          break;
-        case 'convolving':
-          this.parameters.audioData = 'AudioFiles3';
-          this.parameters.dataFileName = 'scene3.json';
-          break;
-        default:
-          alert("No valid mode");
-      }
+    console.log("You are using " + this.parameters.mode + " mode.");
+
+    // Switch files' names and audios, depending on the mode chosen
+    switch (this.parameters.mode) {
+      case 'debug':
+        this.parameters.audioData = 'AudioFiles0';
+        this.parameters.dataFileName = 'scene0.json';
+        break;
+      case 'streaming':
+        this.parameters.audioData = 'AudioFiles1';
+        this.parameters.dataFileName = 'scene1.json';
+        break;
+      case 'ambisonic':
+        this.parameters.audioData = 'AudioFiles2';
+        this.parameters.dataFileName = 'scene2.json';
+        break;
+      case 'convolving':
+        this.parameters.audioData = 'AudioFiles3';
+        this.parameters.dataFileName = 'scene3.json';
+        break;
+      default:
+        alert("No valid mode");
+    }
 
 
     // const getTimeFunction = () => this.sync.getSyncTime();
@@ -141,73 +140,67 @@ class PlayerExperience extends AbstractExperience {
     // // });
     // // this.updateEngines();
 
+    // Create the objects storer for sources and load their fileDatas
+    this.Sources = new Sources(this.filesystem, this.audioBufferLoader, this.parameters)
+    this.Sources.LoadData();
 
+    // Load sources' sound depending on mode (some modes need RIRs in addition of sounds)
+    switch (this.parameters.mode) {
+      case 'debug':
+      case 'streaming':
+      case 'ambisonic':
+        this.Sources.LoadSoundbank();
+        break;
+      case 'convolving':
+        this.Sources.LoadRirs();
+        break;
+      default:
+        alert("No valid mode");
+    }
 
+    // Wait until data have been loaded from json files ("dataLoaded" event is create 'this.Sources.LoadData()')
+    document.addEventListener("dataLoaded", () => {
 
-      this.Sources = new Sources(this.filesystem, this.audioBufferLoader, this.parameters)
-      console.log(this.filesystem)
-      this.Sources.LoadData();
-      // document.addEventListener("audioLoaded", () => {
+      console.log("AudioFiles: " + this.Sources.sourcesData);
 
-      switch (this.parameters.mode) {
-        case 'debug':
-        case 'streaming':
-        case 'ambisonic':
-          this.Sources.LoadSoundbank();
-          break;
-        case 'convolving':
-          this.Sources.LoadRirs();
-          break;
-        default:
-          alert("No valid mode");
-      }
-      this.Sources.LoadSoundbank();
+      // Instantiate the attribute 'this.range' to get datas' parameters
+      this.Range(this.Sources.sourcesData.receivers.xyz);
 
-      // if (this.parameters.mode == 'convolving') {
-      //   this.Sources.LoadSound4Rirs();
-      // }
+      // Instanciate 'this.scale'
+      this.scale = this.Scaling(this.range);
 
-      // this.audioBufferLoader.subscribe(() => {
+      // Get offset parameters of the display
+      this.offset = {
+        x: this.range.moyX,
+        y: this.range.minY
+      };
 
-      document.addEventListener("dataLoaded", () => {
+      // Create, start and store the listener class
+      this.Listener = new Listener(this.offset, this.parameters);
+      this.Listener.start();
 
-        console.log(this.Sources.sourcesData)
+      // Start the sources display and audio depending on listener's initial position
+      this.Sources.start(this.Listener.listenerPosition);
 
-        this.positions = this.Sources.sourcesData.receivers.xyz;
-        this.audioFilesName = this.Sources.sourcesData.receivers.files;
-        // this.nbPos = this.truePositions.length;
+      // Add event listener for resize window event to resize the display
+      window.addEventListener('resize', () => {
 
-        this.Range(this.positions);
+        this.scale = this.Scaling(this.range);      // Change the scale
 
-        // Initialising 'this.scale'
-        this.scale = this.Scaling(this.range);
-
-        this.offset = {
-          x: this.range.moyX,
-          y: this.range.minY
+        if (this.beginPressed) {                    // Check the begin State
+          this.UpdateContainer();                   // Resize the display
         }
 
-        this.Listener = new Listener(this.offset, this.parameters)
-        this.Listener.start();
-        this.Sources.start(this.Listener.listenerPosition)
-
-        // Add Event listener for resize Window event to resize the display
-        window.addEventListener('resize', () => {
-          this.scale = this.Scaling(this.range);      // Change the scale
-          if (this.beginPressed) {                    // Check the begin State
-            this.UpdateContainer();                   // Resize the display
-          }
-
-          // Display
-          this.render();
-      });
+        // Display
         this.render();
+      })
+      // Display
+      this.render();
     });
-    // });
-
   }
 
   Range(positions) { // Store the array properties in 'this.range'
+
     this.range = {
       minX: positions[0].x,
       maxX: positions[0].x,
@@ -234,120 +227,120 @@ class PlayerExperience extends AbstractExperience {
     this.range.rangeY = this.range.maxY - this.range.minY;
   }
 
-  Scaling(rangeValues) { // Store the greatest scale to display all the elements in 'this.scale'
+  Scaling(rangeValues) { // Store the greatest scale that displays all the elements in 'this.scale'
+
     var scale = Math.min((window.innerWidth - this.parameters.circleDiameter)/rangeValues.rangeX, (window.innerHeight - this.parameters.circleDiameter)/rangeValues.rangeY);
     return (scale);
   }
 
   render() {
+
     // Debounce with requestAnimationFrame
     window.cancelAnimationFrame(this.rafId);
 
     this.rafId = window.requestAnimationFrame(() => {
 
-      // const loading = this.audioBufferLoader.get('loading');
-      const loading = false;
-
       // Begin the render only when audioData ara loaded
-      if (!loading) {
-        render(html`
-          <div id="begin">
-            <div style="padding: 20px">
-              <h1 style="margin: 20px 0">${this.client.type} [id: ${this.client.id}]</h1>
-            </div>
-            <div>
-              <input type="button" id="beginButton" value="Begin Game"/>
-            </div>
+      render(html`
+        <div id="begin">
+          <div style="padding: 20px">
+            <h1 style="margin: 20px 0">${this.client.type} [id: ${this.client.id}]</h1>
           </div>
-          <div id="game" style="visibility: hidden;">
-            <div id="circleContainer" style="text-align: center; position: absolute; left: 50%">
-              <div id="selector" style="position: absolute;
-                height: ${this.range.rangeY*this.scale}px;
-                width: ${this.range.rangeX*this.scale}px;
-                background: yellow; z-index: 0;
-                transform: translate(${(-this.range.rangeX*this.scale)/2}px, ${this.parameters.circleDiameter/2}px);">
-              </div>
-              
-            </div>
+          <div>
+            <input type="button" id="beginButton" value="Begin Game"/>
           </div>
-        `, this.$container);
+        </div>
+        <div id="game" style="visibility: hidden;">
+          <div id="circleContainer" style="text-align: center; position: absolute; left: 50%">
+            <div id="selector" style="position: absolute;
+              height: ${this.range.rangeY*this.scale}px;
+              width: ${this.range.rangeX*this.scale}px;
+              background: yellow; z-index: 0;
+              transform: translate(${(-this.range.rangeX*this.scale)/2}px, ${this.parameters.circleDiameter/2}px);">
+            </div>
+            
+          </div>
+        </div>
+      `, this.$container);
 
-        // Do this only at beginning
-        if (this.initialising) {
-          // Assign callbacks once
-          var beginButton = document.getElementById("beginButton");
+      // Do this only at beginning
+      if (this.initialising) {
 
-          beginButton.addEventListener("click", () => {
-            // Change the display to begin the simulation
-            document.getElementById("begin").style.visibility = "hidden";
-            document.getElementById("begin").style.position = "absolute";
-            document.getElementById("game").style.visibility = "visible";
+        // Assign callbacks once
+        var beginButton = document.getElementById("beginButton");
 
-            // Create circles to display Sources
+        beginButton.addEventListener("click", () => {
+          // Change the display to begin the simulation
+          document.getElementById("begin").style.visibility = "hidden";
+          document.getElementById("begin").style.position = "absolute";
+          document.getElementById("game").style.visibility = "visible";
 
-            // Assign mouse and touch callbacks to change the user Position
-            this.container = document.getElementById('circleContainer');
+          // Assign gloabl containers
+          this.container = document.getElementById('circleContainer');
+          
+          // Assign mouse and touch callbacks to change the user Position
+          this.onBeginButtonClicked()
 
-            this.onBeginButtonClicked()
-
-            // Using mouse
-            this.container.addEventListener("mousedown", (mouse) => {
-              this.mouseDown = true;
+          // Add mouseEvents to do actions when the user does actions on the screen
+          this.container.addEventListener("mousedown", (mouse) => {
+            this.mouseDown = true;
+            this.userAction(mouse);
+          }, false);
+          this.container.addEventListener("mousemove", (mouse) => {
+            if (this.mouseDown) {
               this.userAction(mouse);
-            }, false);
-            this.container.addEventListener("mousemove", (mouse) => {
-              if (this.mouseDown) {
-                this.userAction(mouse);
-              }
-            }, false);
-            this.container.addEventListener("mouseup", (mouse) => {
-              this.mouseDown = false;
-            }, false);
+            }
+          }, false);
+          this.container.addEventListener("mouseup", (mouse) => {
+            this.mouseDown = false;
+          }, false);
 
-            // Using touch
-            this.container.addEventListener("touchstart", (evt) => {
-              this.touched = true;
-              console.log(evt.changedTouches[0])
+          // Add touchEvents to do actions when the user does actions on the screen
+          this.container.addEventListener("touchstart", (evt) => {
+            this.touched = true;
+            console.log(evt.changedTouches[0])
+            this.userAction(evt.changedTouches[0]);
+          }, false);
+          this.container.addEventListener("touchmove", (evt) => {
+            if (this.touched) {
               this.userAction(evt.changedTouches[0]);
-            }, false);
-            this.container.addEventListener("touchmove", (evt) => {
-              if (this.touched) {
-                this.userAction(evt.changedTouches[0]);
-              }
-            }, false);
-            this.container.addEventListener("touchend", (evt) => {
-              this.touched = false;
-            }, false);            
+            }
+          }, false);
+          this.container.addEventListener("touchend", (evt) => {
+            this.touched = false;
+          }, false);            
 
-            this.beginPressed = true;         // Update begin State 
-          });
-          this.initialising = false;          // Update initialising State
-        }
+          this.beginPressed = true;         // Update begin State 
+        });
+        this.initialising = false;          // Update initialising State
       }
     });
   }
 
-  onBeginButtonClicked() { // Begin AudioContext and add the Sources display to the display
+  onBeginButtonClicked() { // Begin audioContext and add the sources display to the display
 
-    // Initialising a temporary circle
-    this.Sources.CreateSources(this.container, this.scale, this.offset);
-    this.Listener.Display(this.container);
-    this.render();
+    // Create and display objects
+    this.Sources.CreateSources(this.container, this.scale, this.offset);        // Create the sources and display them
+    this.Listener.Display(this.container);                                      // Add the listener's display to the container
+    this.render();                                                              // Update the display
   }
 
-  userAction(mouse) { // Change Listener's Position when the mouse has been used
-    // Get the new potential Listener's Position
+  userAction(mouse) { // Change listener's position when the mouse has been used
+
+    // Get the new potential listener's position
     var tempX = this.range.moyX + (mouse.clientX - window.innerWidth/2)/(this.scale);
     var tempY = this.range.minY + (mouse.clientY - this.parameters.circleDiameter/2)/(this.scale);
+
     // Check if the value is in the values range
     if (tempX >= this.range.minX && tempX <= this.range.maxX && tempY >= this.range.minY && tempY <= this.range.maxY) {
-      // Update Listener
-
       console.log("Updating")
-      this.Listener.UpdateListener(mouse, this.offset, this.scale);
-      this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);
-      this.render();
+
+      // Update objects and their display
+      this.Listener.UpdateListener(mouse, this.offset, this.scale);                   // Update the listener's position
+      this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
+      this.render();                                                                  // Update the display
     }
+
     else {
       // When the value is out of range, stop the Listener's Position Update
       this.mouseDown = false;
@@ -357,13 +350,13 @@ class PlayerExperience extends AbstractExperience {
 
   UpdateContainer() { // Change the display when the window is resized
 
-    // Change size
+    // Change size of display
     document.getElementById("circleContainer").height = (this.offset.y*this.scale) + "px";
     document.getElementById("circleContainer").width = (this.offset.x*this.scale) + "px";
     document.getElementById("circleContainer").transform = "translate(" + (this.parameters.circleDiameter/2 - this.range.rangeX*this.scale.VPos2Pixel/2) + "px, 10px)";
 
-    this.Sources.UpdateSourcesPosition(this.scale, this.offset);     // Update Sources' display
-    this.Listener.UpdateListenerDisplay(this.offset, this.scale)
+    this.Sources.UpdateSourcesPosition(this.scale, this.offset);      // Update sources' display
+    this.Listener.UpdateListenerDisplay(this.offset, this.scale);     // Update listener's display
   }
 }
 
