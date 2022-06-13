@@ -28,8 +28,8 @@ class PlayerExperience extends AbstractExperience {
       nbClosestPoints: 4,                       // Number of closest points searched
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
       // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving")
-      mode: "streaming",
-      // mode: "ambisonic",
+      // mode: "streaming",
+      mode: "ambisonic",
       // mode: "convolving",
       circleDiameter: 20,                       // Diameter of sources' display
       listenerSize: 16,                         // Size of listener's display
@@ -59,6 +59,7 @@ class PlayerExperience extends AbstractExperience {
   async start() {
 
     super.start();
+    console.log(this.audioBufferLoader.data)
 
     console.log("You are using " + this.parameters.mode + " mode.");
 
@@ -139,16 +140,31 @@ class PlayerExperience extends AbstractExperience {
     // //   this.render();
     // // });
     // // this.updateEngines();
+    var a = setInterval(() => {
+      if (this.audioBufferLoader.get('loading')) {console.log("loading...");}
+      else {
+        console.log("loaded");       
+        document.dispatchEvent(new Event("audioLoaded"));
+        clearInterval(a)
+      }
+    }, 50);
 
     // Create the objects storer for sources and load their fileDatas
     this.Sources = new Sources(this.filesystem, this.audioBufferLoader, this.parameters)
     this.Sources.LoadData();
 
+
+    // Wait until data have been loaded from json files ("dataLoaded" event is create 'this.Sources.LoadData()')
+    document.addEventListener("dataLoaded", () => {
+
     // Load sources' sound depending on mode (some modes need RIRs in addition of sounds)
     switch (this.parameters.mode) {
       case 'debug':
       case 'streaming':
+        this.Sources.LoadSoundbank();
+        break;
       case 'ambisonic':
+        // this.Sources.LoadAmbiSoundbank();
         this.Sources.LoadSoundbank();
         break;
       case 'convolving':
@@ -157,9 +173,6 @@ class PlayerExperience extends AbstractExperience {
       default:
         alert("No valid mode");
     }
-
-    // Wait until data have been loaded from json files ("dataLoaded" event is create 'this.Sources.LoadData()')
-    document.addEventListener("dataLoaded", () => {
 
       console.log("AudioFiles: " + this.Sources.sourcesData);
 

@@ -52,6 +52,9 @@ class Sources {
 	    if (this.mode == "convolving") {
 	    	this.Rirs = {};
 	    }
+
+	    this.ambisonic = require("ambisonics");
+	    this.ambiSoundbankTree = {};
 	}
 
 	async start (listenerPosition) {
@@ -121,18 +124,34 @@ class Sources {
     		// Set sources' color for the starting position of the listener
 			this.UpdateClosestSourcesColor(i);
 
-			// Check if the mode is 'convolving' and then start audio sources
-		    if (this.mode == "convolving") {
+			// // Check if the mode is 'convolving' and then start audio sources
+		 //    if (this.mode == "convolving") {
 
-        		this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.Rirs, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm)    	
-		    }
+	  //    	this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.Rirs, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm)    	
 
-		    else {
-
-        		this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm)    	
+		 //    else {
+		 //    	console.log(this.audioBufferLoader.data)
+		 //    	console.log(this.sourcesData.receivers.files[this.closestSourcesId[i]])
+	  //    	this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm)    	
+			// }
+			switch (this.mode) {
+		    	case 'convolving':
+        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.Rirs, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
+		    		break;
+		    	case 'ambisonic':
+		    		// this.audioS 
+		    	case 'debug':
+		    	case 'streaming':
+			    	console.log(this.audioBufferLoader.data)
+			    	console.log(this.sourcesData.receivers.files[this.closestSourcesId[i]])
+	        		this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm);  	
+					break;
+				default:
+					console.log("no valid mode");
+					break;
 			}
-    	}
-  	}
+		}
+	}
 
   	LoadSoundbank() { // Load the audio datas to use
 
@@ -151,8 +170,90 @@ class Sources {
 	      	}
 	    });
 
-	    // Load all audio datas
+
 	    this.audioBufferLoader.load(defObj, true);
+    var a = setInterval(() => {
+      if (this.audioBufferLoader.get('loading')) {console.log("loading...");}
+      else {
+        console.log("loaded");       
+        document.dispatchEvent(new Event("audioLoaded"));
+        clearInterval(a)
+      }
+    }, 50);
+	    // fetch(this.audioBufferLoader.data["steliz_octamic_m02_(ACN-SN3D-2).wav"]).then((response) => {
+	    // 	console.log(response)
+	    // 	console.log("a")
+	    // })
+    document.addEventListener("audioLoaded", () => {
+
+		    console.log(this.audioBufferLoader.data)
+		    // Load all audio datas
+		    console.log(defObj)
+		    console.log(this.audioBufferLoader.data["steliz_octamic_m17_(ACN-SN3D-2).wav"])
+
+		    this.playingSound = this.audioContext.createBufferSource();
+		    this.playingSound.buffer = this.audioBufferLoader.data["steliz_octamic_m17_(ACN-SN3D-2)_01-08ch.wav"];
+		    this.playingSound.loop = true;
+			this.decoder = new this.ambisonic.binDecoder(this.audioContext, this.ambiOrder);
+		    this.gain = this.audioContext.createGain();
+
+	    	this.gain.gain.setValueAtTime(1, 0)
+	    	console.log(this.playingSound)
+
+		    this.playingSound.connect(this.decoder.in)
+		    this.decoder.out.connect(this.gain);
+	    	this.gain.connect(this.audioContext.destination);
+
+	    	// this.playingSound.start()
+	    });
+  	}
+
+  	LoadAmbiSoundbank() { // Load the audio datas to use
+
+  		// Get all audio datas
+	    const ambiSoundbankTree = this.filesystem.get(this.fileData.Audio);
+
+	    // Initiate an object to store audios' paths
+	    // var defObj = {};
+	    // var bufferLoader
+	    // console.log(ambiSoundbankTree)
+	    // const data = this.sourcesData.receivers.files;
+	    // // Get all audio files' paths
+	    // // data.forEach(leaf => {
+
+	    //   	// if (leaf.type === 'file') {
+	    //   		var leaf = data[0]
+		   //  	var add2toBufferArray = function(buffer) {
+		   //  		console.log("xed")
+	    // 			this.ambiSoundbankTree[leaf] = buffer;
+	    // 		}
+	    // 		console.log(this.path)
+	    // 		console.log(ambiSoundbankTree.children[0])
+	    // 		console.log(ambiSoundbankTree.children[0].path)
+	    // 		var path = ""
+	    // 		console.log(ambiSoundbankTree.children[0].url)
+
+	    // 		bufferLoader = new this.ambisonic.HOAloader(this.audioContext, this.ambiOrder, ambiSoundbankTree.children[0].url, add2toBufferArray);
+	    // 		bufferLoader.load();
+	    // 		console.log(this.ambiSoundbankTree)
+	    //   	// }
+	    // // });
+
+	    // Load all audio datas
+
+	    console.log(defObj)
+
+	    var bufferLoader;
+	    var path;
+
+	    for (let i = 0; i < defObj.length; i++) {
+	    	path = defObj[i];
+	    	// bufferLoader = new this.ambisonic.HOAloader(this.audioContext, this.order, path, add2toBufferArray);
+	    	// bufferLoader.load();
+	    	// SetInterval(() => {
+	    	// 	console.log(this.audioBufferLoader.get('loading'))
+	    	// }, 1000);
+	    }
   	}
 
   	LoadRirs() { // Load the rirs to use
@@ -313,7 +414,7 @@ class Sources {
 	    }
 	}
 
-  	ClosestSource(listenerPosition, listOfPoint) { // get closest sources from the listener
+  	ClosestSource(listenerPosition, listOfPoint) { // Get closest sources from the listener
     
 	    // Initialising temporary variables;
 	    var closestIds = [];

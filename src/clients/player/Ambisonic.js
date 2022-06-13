@@ -28,12 +28,14 @@ class Ambisonic {
 	async start (buffer, value, norm) {
 
 	    // Connect the audioNodes
-    	this.playingSound.connect(this.encoder.in);
-    	this.encoder.out.connect(this.mirror.in);
-    	this.mirror.out.connect(this.rotator);
-    	this.rotator.out.connect(this.decoder.in);
+    	this.playingSound.connect(this.decoder.in);
+    	// this.encoder.out.connect(this.mirror.in);
+    	// this.mirror.out.connect(this.rotator.in);
+    	// this.rotator.out.connect(this.decoder.in);
     	this.decoder.out.connect(this.gain);
     	this.gain.connect(this.audioContext.destination);
+
+
 
 	    // init with current content
     	this.gain.gain.setValueAtTime(value/norm, 0)
@@ -43,13 +45,18 @@ class Ambisonic {
 
     	// this.gain.connect(this.audioContext.destination)
     	// this.playingSound.connect(this.gain)
-    	
+ 	console.log(buffer)
+    	console.log(this.playingSound)
+    	console.log(this.encoder)
+    	console.log(this.mirror)
+    	console.log(this.rotator)
+    	console.log(this.decoder)
+
     	// Play the sound
     	this.playingSound.start()
 	}
 
 	LoadNewSound(buffer) { // Create and link the sound to the AudioContext
-
 	    var sound = this.audioContext.createBufferSource();		// Create the sound
 	    sound.loop = true;                                    	// Set the sound to loop
 	    sound.buffer = buffer;                                	// Set the sound buffer
