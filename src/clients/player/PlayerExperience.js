@@ -68,18 +68,22 @@ class PlayerExperience extends AbstractExperience {
         this.parameters.audioData = 'AudioFiles0';
         this.parameters.dataFileName = 'scene0.json';
         break;
+
       case 'streaming':
         this.parameters.audioData = 'AudioFiles1';
         this.parameters.dataFileName = 'scene1.json';
         break;
+
       case 'ambisonic':
         this.parameters.audioData = 'AudioFiles2';
         this.parameters.dataFileName = 'scene2.json';
         break;
+
       case 'convolving':
         this.parameters.audioData = 'AudioFiles3';
         this.parameters.dataFileName = 'scene3.json';
         break;
+
       default:
         alert("No valid mode");
     }
@@ -145,30 +149,31 @@ class PlayerExperience extends AbstractExperience {
     this.Sources = new Sources(this.filesystem, this.audioBufferLoader, this.parameters)
     this.Sources.LoadData();
 
-
     // Wait until data have been loaded from json files ("dataLoaded" event is create 'this.Sources.LoadData()')
     document.addEventListener("dataLoaded", () => {
+
+      console.log("json files: " + this.parameters.dataFileName + " has been read");
 
       // Load sources' sound depending on mode (some modes need RIRs in addition of sounds)
       switch (this.parameters.mode) {
         case 'debug':
         case 'streaming':
+        case 'ambisonic':
           this.Sources.LoadSoundbank();
           break;
-        case 'ambisonic':
-          this.Sources.LoadAmbiSoundbank();
-          // this.Sources.LoadSoundbank();
-          break;
+
         case 'convolving':
           this.Sources.LoadRirs();
           break;
+
         default:
           alert("No valid mode");
       }
 
+      // Wait until audioBuffer has been loaded ("dataLoaded" event is create 'this.Sources.LoadSoundBank()')
       document.addEventListener("audioLoaded", () => {
 
-        console.log("AudioFiles: " + this.Sources.sourcesData);
+        console.log("Audio buffers have been loaded from source: " + this.parameters.audioData);
 
         // Instantiate the attribute 'this.range' to get datas' parameters
         this.Range(this.Sources.sourcesData.receivers.xyz);
@@ -278,6 +283,7 @@ class PlayerExperience extends AbstractExperience {
         var beginButton = document.getElementById("beginButton");
 
         beginButton.addEventListener("click", () => {
+
           // Change the display to begin the simulation
           document.getElementById("begin").style.visibility = "hidden";
           document.getElementById("begin").style.position = "absolute";
@@ -306,7 +312,6 @@ class PlayerExperience extends AbstractExperience {
           // Add touchEvents to do actions when the user does actions on the screen
           this.container.addEventListener("touchstart", (evt) => {
             this.touched = true;
-            console.log(evt.changedTouches[0])
             this.userAction(evt.changedTouches[0]);
           }, false);
           this.container.addEventListener("touchmove", (evt) => {
