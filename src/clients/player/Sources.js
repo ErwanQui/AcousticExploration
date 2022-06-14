@@ -124,26 +124,15 @@ class Sources {
     		// Set sources' color for the starting position of the listener
 			this.UpdateClosestSourcesColor(i);
 
-			// // Check if the mode is 'convolving' and then start audio sources
-		 //    if (this.mode == "convolving") {
-
-	  //    	this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.Rirs, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm)    	
-
-		 //    else {
-		 //    	console.log(this.audioBufferLoader.data)
-		 //    	console.log(this.sourcesData.receivers.files[this.closestSourcesId[i]])
-	  //    	this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm)    	
-			// }
 			switch (this.mode) {
 		    	case 'convolving':
         			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.Rirs, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
 		    		break;
 		    	case 'ambisonic':
-		    		// this.audioS 
+        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
+		    		break;
 		    	case 'debug':
 		    	case 'streaming':
-			    	console.log(this.audioBufferLoader.data)
-			    	console.log(this.sourcesData.receivers.files[this.closestSourcesId[i]])
 	        		this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm);  	
 					break;
 				default:
@@ -172,40 +161,16 @@ class Sources {
 
 
 	    this.audioBufferLoader.load(defObj, true);
-    var a = setInterval(() => {
-      if (this.audioBufferLoader.get('loading')) {console.log("loading...");}
-      else {
-        console.log("loaded");       
-        document.dispatchEvent(new Event("audioLoaded"));
-        clearInterval(a)
-      }
-    }, 50);
-	    // fetch(this.audioBufferLoader.data["steliz_octamic_m02_(ACN-SN3D-2).wav"]).then((response) => {
-	    // 	console.log(response)
-	    // 	console.log("a")
-	    // })
-    document.addEventListener("audioLoaded", () => {
-
-		    console.log(this.audioBufferLoader.data)
-		    // Load all audio datas
-		    console.log(defObj)
-		    console.log(this.audioBufferLoader.data["steliz_octamic_m17_(ACN-SN3D-2).wav"])
-
-		    this.playingSound = this.audioContext.createBufferSource();
-		    this.playingSound.buffer = this.audioBufferLoader.data["steliz_octamic_m17_(ACN-SN3D-2)_01-08ch.wav"];
-		    this.playingSound.loop = true;
-			this.decoder = new this.ambisonic.binDecoder(this.audioContext, this.ambiOrder);
-		    this.gain = this.audioContext.createGain();
-
-	    	this.gain.gain.setValueAtTime(1, 0)
-	    	console.log(this.playingSound)
-
-		    this.playingSound.connect(this.decoder.in)
-		    this.decoder.out.connect(this.gain);
-	    	this.gain.connect(this.audioContext.destination);
-
-	    	// this.playingSound.start()
-	    });
+    	var loader = setInterval(() => {
+      		if (this.audioBufferLoader.get('loading')) {
+      			console.log("loading...");
+      		}
+      		else {
+        		console.log("loaded");       
+        		document.dispatchEvent(new Event("audioLoaded"));
+        		clearInterval(loader)
+      		}
+    	}, 50);
   	}
 
   	LoadAmbiSoundbank() { // Load the audio datas to use
@@ -214,46 +179,29 @@ class Sources {
 	    const ambiSoundbankTree = this.filesystem.get(this.fileData.Audio);
 
 	    // Initiate an object to store audios' paths
-	    // var defObj = {};
-	    // var bufferLoader
-	    // console.log(ambiSoundbankTree)
-	    // const data = this.sourcesData.receivers.files;
-	    // // Get all audio files' paths
-	    // // data.forEach(leaf => {
+	    var defObj = {};
 
-	    //   	// if (leaf.type === 'file') {
-	    //   		var leaf = data[0]
-		   //  	var add2toBufferArray = function(buffer) {
-		   //  		console.log("xed")
-	    // 			this.ambiSoundbankTree[leaf] = buffer;
-	    // 		}
-	    // 		console.log(this.path)
-	    // 		console.log(ambiSoundbankTree.children[0])
-	    // 		console.log(ambiSoundbankTree.children[0].path)
-	    // 		var path = ""
-	    // 		console.log(ambiSoundbankTree.children[0].url)
+	    // Get all audio files' paths
+	    ambiSoundbankTree.children.forEach(leaf => {
 
-	    // 		bufferLoader = new this.ambisonic.HOAloader(this.audioContext, this.ambiOrder, ambiSoundbankTree.children[0].url, add2toBufferArray);
-	    // 		bufferLoader.load();
-	    // 		console.log(this.ambiSoundbankTree)
-	    //   	// }
-	    // // });
+	      	if (leaf.type === 'file') {
 
-	    // Load all audio datas
+	        	defObj[leaf.name] = leaf.url;
+	      	}
+	    });
 
-	    console.log(defObj)
+	    this.audioBufferLoader.load(defObj, true);
+		var a = setInterval(() => {
+  			if (this.audioBufferLoader.get('loading')) {
+  				console.log("loading...");
+  			}
 
-	    var bufferLoader;
-	    var path;
-
-	    for (let i = 0; i < defObj.length; i++) {
-	    	path = defObj[i];
-	    	// bufferLoader = new this.ambisonic.HOAloader(this.audioContext, this.order, path, add2toBufferArray);
-	    	// bufferLoader.load();
-	    	// SetInterval(() => {
-	    	// 	console.log(this.audioBufferLoader.get('loading'))
-	    	// }, 1000);
-	    }
+      		else {
+        		console.log("loaded");       
+		        document.dispatchEvent(new Event("audioLoaded"));
+		        clearInterval(a);
+      		}
+    	}, 50);
   	}
 
   	LoadRirs() { // Load the rirs to use
@@ -396,14 +344,19 @@ class Sources {
 	    	this.audio2Source[sources2Attribuate[i][1]] = audioSourceId;
 
 	    	// Update audioSources corresponding to the association ('this.audioSources')
-	    	// For convolving mode
-		    if (this.mode == "convolving") {
-		    	this.audioSources[audioSourceId].UpdateAudioSource(this.Rirs[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[i][1]]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
-	    	}
-
-	    	// For other modes 
-	    	else {
-		    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[sources2Attribuate[i][0]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
+		    switch (this.mode) {
+		    	case "convolving":
+			    	this.audioSources[audioSourceId].UpdateAudioSource(this.Rirs[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[i][1]]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
+			    	break;
+		    	case "ambisonic":
+		    		this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data, this.sourcesData.receivers.files[sources2Attribuate[i][0]])
+		    		break;
+		    	case "streaming":
+		    	case "debug":
+			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[sources2Attribuate[i][0]]])
+		    		break;
+		    	default:
+		    		console.log("no valid mode");
 	    	}
 	    }
 

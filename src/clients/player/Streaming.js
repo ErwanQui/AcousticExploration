@@ -40,7 +40,7 @@ class Streaming {
 	    return (sound);
 	}
 
-	UpdateAudioSource(buffer, value, norm) { // Stop the current playing to play an other source's audioBuffer
+	UpdateAudioSource(buffer) { // Stop the current playing to play an other source's audioBuffer
 
 		this.playingSound.stop();							// Stop the audio
 		this.playingSound.disconnect(this.gain);			// Disconnect it from the tree

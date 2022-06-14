@@ -26,9 +26,7 @@ async function launch($container, index) {
     // register plugins
     // -------------------------------------------------------------------
     client.pluginManager.register('filesystem', pluginFilesystemFactory, {}, []);
-    client.pluginManager.register('audio-buffer-loader', pluginAudioBufferLoaderFactory, {  
-      data: {'steliz_octamic_m02_(ACN-SN3D-2).wav': 'grid_nav_assets/2_ambisonic_encoded_2nd/steliz_octamic_m02_(ACN-SN3D-2)_01-08ch.wav'}
-    }, [])
+    client.pluginManager.register('audio-buffer-loader', pluginAudioBufferLoaderFactory, {}, [])
     // client.pluginManager.register('sync', pluginSyncFactory, {
     //   // choose the clock to synchronize, defaults to:
     //   // (where `startTime` is the time at which the plugin is instantiated)
