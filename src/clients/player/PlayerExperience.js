@@ -29,8 +29,9 @@ class PlayerExperience extends AbstractExperience {
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
       // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving")
       // mode: "streaming",
-      mode: "ambisonic",
-      // mode: "convolving",
+      // mode: "ambisonic",
+      mode: "convolving",
+      mode: "ambiConvolving",
       circleDiameter: 20,                       // Diameter of sources' display
       listenerSize: 16,                         // Size of listener's display
       dataFileName: "",                         // All sources' position and audioDatas' filenames (instantiated in 'start()')
@@ -84,11 +85,16 @@ class PlayerExperience extends AbstractExperience {
         this.parameters.dataFileName = 'scene3.json';
         break;
 
+      case 'ambiConvolving':
+        this.parameters.audioData = 'AudioFiles4';
+        this.parameters.dataFileName = 'scene3.json';
+        break;
+
       default:
         alert("No valid mode");
     }
 
-
+// Sync ?
     // const getTimeFunction = () => this.sync.getSyncTime();
     // const currentTimeToAudioTimeFunction =
     //   currentTime => this.sync.getLocalTime(currentTime);
@@ -143,7 +149,7 @@ class PlayerExperience extends AbstractExperience {
     // //   this.render();
     // // });
     // // this.updateEngines();
-
+//
 
     // Create the objects storer for sources and load their fileDatas
     this.Sources = new Sources(this.filesystem, this.audioBufferLoader, this.parameters)
