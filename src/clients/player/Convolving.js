@@ -51,8 +51,8 @@ class Convolving {
 	    	this.LoadNewRirs(rirs[Files.Rirs["source" + i][rirIndex]], i);
 		}
 
-    	// this.playingSound.connect(this.mirror.in)
-    	// this.playingSound.connect(this.convolver.in)
+      	// this.playingSound.connect(this.convolver.in)
+  	// this.playingSound.connect(this.mirror.in)
     	this.mirror.out.connect(this.rotator.in);
     	this.rotator.out.connect(this.decoder.in);
     	this.decoder.out.connect(this.gain);

@@ -28,8 +28,8 @@ class PlayerExperience extends AbstractExperience {
       nbClosestPoints: 4,                       // Number of closest points searched
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
       // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving")
-      mode: "streaming",
-      // mode: "ambisonic",
+      // mode: "streaming",
+      mode: "ambisonic",
       // mode: "convolving",
       circleDiameter: 20,                       // Diameter of sources' display
       listenerSize: 16,                         // Size of listener's display
@@ -140,62 +140,70 @@ class PlayerExperience extends AbstractExperience {
     // // });
     // // this.updateEngines();
 
+
     // Create the objects storer for sources and load their fileDatas
     this.Sources = new Sources(this.filesystem, this.audioBufferLoader, this.parameters)
     this.Sources.LoadData();
 
-    // Load sources' sound depending on mode (some modes need RIRs in addition of sounds)
-    switch (this.parameters.mode) {
-      case 'debug':
-      case 'streaming':
-      case 'ambisonic':
-        this.Sources.LoadSoundbank();
-        break;
-      case 'convolving':
-        this.Sources.LoadRirs();
-        break;
-      default:
-        alert("No valid mode");
-    }
 
     // Wait until data have been loaded from json files ("dataLoaded" event is create 'this.Sources.LoadData()')
     document.addEventListener("dataLoaded", () => {
 
-      console.log("AudioFiles: " + this.Sources.sourcesData);
+      // Load sources' sound depending on mode (some modes need RIRs in addition of sounds)
+      switch (this.parameters.mode) {
+        case 'debug':
+        case 'streaming':
+          this.Sources.LoadSoundbank();
+          break;
+        case 'ambisonic':
+          this.Sources.LoadAmbiSoundbank();
+          // this.Sources.LoadSoundbank();
+          break;
+        case 'convolving':
+          this.Sources.LoadRirs();
+          break;
+        default:
+          alert("No valid mode");
+      }
 
-      // Instantiate the attribute 'this.range' to get datas' parameters
-      this.Range(this.Sources.sourcesData.receivers.xyz);
+      document.addEventListener("audioLoaded", () => {
 
-      // Instanciate 'this.scale'
-      this.scale = this.Scaling(this.range);
+        console.log("AudioFiles: " + this.Sources.sourcesData);
 
-      // Get offset parameters of the display
-      this.offset = {
-        x: this.range.moyX,
-        y: this.range.minY
-      };
+        // Instantiate the attribute 'this.range' to get datas' parameters
+        this.Range(this.Sources.sourcesData.receivers.xyz);
 
-      // Create, start and store the listener class
-      this.Listener = new Listener(this.offset, this.parameters);
-      this.Listener.start();
+        // Instanciate 'this.scale'
+        this.scale = this.Scaling(this.range);
 
-      // Start the sources display and audio depending on listener's initial position
-      this.Sources.start(this.Listener.listenerPosition);
+        // Get offset parameters of the display
+        this.offset = {
+          x: this.range.moyX,
+          y: this.range.minY
+        };
 
-      // Add event listener for resize window event to resize the display
-      window.addEventListener('resize', () => {
+        // Create, start and store the listener class
+        this.Listener = new Listener(this.offset, this.parameters);
+        this.Listener.start();
 
-        this.scale = this.Scaling(this.range);      // Change the scale
+        // Start the sources display and audio depending on listener's initial position
+        this.Sources.start(this.Listener.listenerPosition);
 
-        if (this.beginPressed) {                    // Check the begin State
-          this.UpdateContainer();                   // Resize the display
-        }
+        // Add event listener for resize window event to resize the display
+        window.addEventListener('resize', () => {
 
+          this.scale = this.Scaling(this.range);      // Change the scale
+
+          if (this.beginPressed) {                    // Check the begin State
+            this.UpdateContainer();                   // Resize the display
+          }
+
+          // Display
+          this.render();
+        })
         // Display
         this.render();
-      })
-      // Display
-      this.render();
+      });
     });
   }
 
