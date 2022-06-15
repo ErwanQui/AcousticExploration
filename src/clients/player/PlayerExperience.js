@@ -334,6 +334,8 @@ class PlayerExperience extends AbstractExperience {
           }, false);            
 
           this.beginPressed = true;         // Update begin State 
+
+          document.dispatchEvent(new Event("rendered"));
         });
         this.initialising = false;          // Update initialising State
       }

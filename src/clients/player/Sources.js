@@ -3,8 +3,9 @@
 //////////////////
 
 import Streaming from './Streaming.js'
-import Convolving from './Convolving.js'
 import Ambisonic from './Ambisonic.js'
+import Convolving from './Convolving.js'
+import AmbiConvolving from './AmbiConvolving.js'
 
 class Sources {
 
@@ -205,8 +206,6 @@ class Sources {
       			console.log("loading...");
       		}
       		else {
-      			console.log(this.audioBufferLoader)
-      			// console.log(this.Rirs)
         		console.log("loaded");       
         		document.dispatchEvent(new Event("audioLoaded"));
         		clearInterval(loader)
@@ -340,7 +339,7 @@ class Sources {
 			    	break;
 
 		    	case "ambiConvolving":
-			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[i][1]]]])
+			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data, this.sourcesData.receivers.files.Rirs, this.closestSourcesId[sources2Attribuate[i][1]])
 			    	break;
 
 		    	default:
