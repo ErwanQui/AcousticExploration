@@ -2,17 +2,14 @@
 /// Convolving.js ///
 /////////////////////
 
-// @note: c'est un peu le bordel et ça marche pas trop... (voir comment faire pour décoder les rirs)
-
 class Convolving {
 
-	constructor (audioContext, order, soundIndex) {
+	constructor (audioContext, order) {
 		
 
 	    // Creating AudioContext
 	    this.audioContext = audioContext;
 	    this.order = order;
-	    // this.soundIndex = soundIndex;
 
 	    this.ambisonic = require("ambisonics");
 	    this.convolvers = [];
@@ -22,76 +19,31 @@ class Convolving {
 	    this.gain = this.audioContext.createGain();
 
 	    this.playingSounds = [];
-	    this.hoaLoaderConvolver;
-	    this.updatersCount = 0;
+	    this.nbAudios;
 	}
 
-	async start (data, files, rirs, rirIndex, value, norm) {
+	async start (data, files, rirIndex, value, norm) {
 
-	    // Creating Gains
-	    // this.convolver = [];
-
-	 //   	this.mirror = new this.ambisonic.sceneRotator(this.audioContext, this.order);
-		// this.rotator = new this.ambisonic.sceneRotator(this.audioContext, this.order);
-		// this.decoder = new this.ambisonic.binDecoder(this.audioContext, this.order);
-	 //    this.gain = this.audioContext.createGain();
-
-	    // init with current content
-    	this.gain.gain.setValueAtTime(value/norm, 0);
-    	// console.log(data)
-    	// console.log(files.Sounds[0])
-    	// console.log(files.Rirs["source" + 0][rirIndex])
-
-    	// this.playingSounds = this.LoadNewSound(data[files.Sounds[this.soundIndex]]);
-    	
-    	for (let i = 0; i < files.Sounds.length; i++) {
-		    this.playingSounds.push(this.LoadNewSound(data[files.Sounds[i]]));
-		    this.convolvers.push(new this.ambisonic.convolver(this.audioContext, this.order));
-		    // this.gains.push(this.audioContext.createGain());
-	    	// console.log(rirs)
-	    	this.playingSounds[i].connect(this.convolvers[i].in);					// Connect the sound to the other nodes
-	    	// this.playingSounds[i].connect(this.mirror.in);					// Connect the sound to the other nodes
-	    	this.convolvers[i].out.connect(this.mirror.in);
-	    	// this.gains[i].out.connect(this.mirror.in);
-	    	// console.log(Files.Rirs)
-	    	// console.log(rirIndex)
-	    	console.log()
-	    	this.LoadNewRir(data[files.Rirs["source" + i][rirIndex]], i);
-		}
-		console.log(this.playingSounds)
-
-		// for (let i = 0; i <)
-
-      	// this.playingSound.connect(this.convolver.in)
-  	// this.playingSound.connect(this.mirror.in)
-    	this.mirror.out.connect(this.rotator.in);
+		//Link audioNodes
+		this.mirror.out.connect(this.rotator.in);
     	this.rotator.out.connect(this.decoder.in);
     	this.decoder.out.connect(this.gain);
     	this.gain.connect(this.audioContext.destination);
 
-    	for (let i = 0; i < files.Sounds.length; i++) {
+	    // Set current and global values
+    	this.gain.gain.setValueAtTime(value/norm, 0);
+    	this.nbAudios = files.Sounds.length;
+    	
+    	for (let i = 0; i < this.nbAudios; i++) {
+		    this.playingSounds.push(this.LoadNewSound(data[files.Sounds[i]]));
+		    this.convolvers.push(this.audioContext.createConvolver());
+	    	this.playingSounds[i].connect(this.convolvers[i]);					// Connect the sound to the other nodes
+	    	this.convolvers[i].connect(this.mirror.in);
+	    	this.UpdateRir(data[files.Rirs["source" + i][rirIndex]], i);
+
     		this.playingSounds[i].start();
     	}
 	}
-
-	hoaAssignFiltersOnLoad(buffer) {
-		// console.log("peut-être")
-		this.convolver[this.updatersCount].updateFilters(buffer);
-		// console.log("oui")
-		this.updatersCount += 1;
-	}
-
-	// LoadNewSounds(buffersData, sounds) { // Create and link the sound to the AudioContext
-	//     // Sound initialisation
-	//     var sources = []
-	//     for (let i = 0; i < sounds.length; i++) {
-	// 	    sources.push(this.audioContext.createBufferSource());		// Create the sound
-	// 	    sources[i].loop = true;                                    	// Set the sound to loop
-	// 	    sources[i].buffer = buffersData[sounds[i]];                             	// Set the sound buffer
-	// 	}
-	// 	// console.log(sources)							
-	//     return (sources);
-	// }
 
 	LoadNewSound(buffer) { // Create the sound
 
@@ -101,35 +53,22 @@ class Convolving {
 	    return (sound);
 	}
 
-	LoadNewRir(buffer, index) { // Create and link the sound to the AudioContext
-	    // Sound initialisation
-	    console.log(buffer)
-	    console.log(index)
-	    this.convolvers[index].updateFilters(buffer);
-	    console.log("ouep")
+	UpdateRir(buffer, index) { // Update convolvers' rirs
 
-//////////// cassé ici .....
-
-		// this.hoaLoaderConvolver = new this.ambisonic.HOAloader(this.audioContext, this.order, bufferUrl, this.hoaAssignFiltersOnLoad)
-		// this.hoaLoaderConvolver.load();		// Create the sound
-		// console.log(this.hoaLoaderConvolver)
+	    this.convolvers[index].buffer = buffer;
 	}
 
-	UpdateAudioSource(bufferUrl, value, norm) {
-		this.updatersCount = 0;
-		// this.playingSound.stop();
-		// this.playingSound.disconnect(this.gain);
-		console.log(bufferUrl)
-		this.LoadNewRir(bufferUrl)
-		// console.log(value/norm)
-		// this.gain.gain.setValueAtTime(value/norm, 0)
-		// this.playingSound.start();
+	UpdateAudioSource(buffer) {
 
+	    // Update sources' rirs
+		for (let i = 0; i < this.nbAudios; i++) {
+			this.UpdateRir(buffer, i);
+		}
 	}
 
-	UpdateGain(value, norm) { // Update Gain and Display of the Source depending on Listener's Position
+	UpdateGain(value, norm) { // Update gain and display of the Ssurce depending on listener's position
 	    
-	    // Update the Gain of the Source
+	    // Update the sain of the source
 	    this.gain.gain.setValueAtTime(value/norm, 0);
   	}
 }

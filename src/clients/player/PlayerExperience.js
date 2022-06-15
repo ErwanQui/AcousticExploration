@@ -30,7 +30,7 @@ class PlayerExperience extends AbstractExperience {
       // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving")
       // mode: "streaming",
       // mode: "ambisonic",
-      mode: "convolving",
+      // mode: "convolving",
       mode: "ambiConvolving",
       circleDiameter: 20,                       // Diameter of sources' display
       listenerSize: 16,                         // Size of listener's display
@@ -87,7 +87,7 @@ class PlayerExperience extends AbstractExperience {
 
       case 'ambiConvolving':
         this.parameters.audioData = 'AudioFiles4';
-        this.parameters.dataFileName = 'scene3.json';
+        this.parameters.dataFileName = 'scene4.json';
         break;
 
       default:
@@ -169,6 +169,10 @@ class PlayerExperience extends AbstractExperience {
           break;
 
         case 'convolving':
+          this.Sources.LoadRirs();
+          break;
+
+        case 'ambiConvolving':
           this.Sources.LoadRirs();
           break;
 

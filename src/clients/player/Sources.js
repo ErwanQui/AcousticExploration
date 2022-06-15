@@ -73,7 +73,11 @@ class Sources {
 					break;
 
 				case 'convolving':
-					this.audioSources.push(new Convolving(this.audioContext, this.ambiOrder, i));
+					this.audioSources.push(new Convolving(this.audioContext, this.ambiOrder));
+					break;
+
+				case 'ambiConvolving':
+					this.audioSources.push(new AmbiConvolving(this.audioContext, this.ambiOrder));
 					break;
 
 				default:
@@ -129,10 +133,11 @@ class Sources {
 		    		break;
 
 		    	case 'convolving':
-		    	// console.log(this.audioBufferLoader.data)
-		    	// console.log(this.sourcesData.receivers.files)
-		    	// console.log(this.closestSourcesId[i])
-        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.Rirs, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
+        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
+		    		break;
+
+		    	case 'ambiConvolving':
+        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
 		    		break;
 
 				default:
@@ -331,7 +336,11 @@ class Sources {
 		    		break;
 
 		    	case "convolving":
-			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.date[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[i][1]]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
+			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[i][1]]]])
+			    	break;
+
+		    	case "ambiConvolving":
+			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[i][1]]]])
 			    	break;
 
 		    	default:
