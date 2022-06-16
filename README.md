@@ -17,7 +17,7 @@ Warning: for ambisonic sounds and rirs, the files must be in format '01_08ch' an
 Warning: only order 2 ambisonic can be used
 
 You should change the json files in "public/grid_nav_assets/assets" to read the good files
-Warning: in "ambiConvolving", more than 2 sounds seems to not be supported by computer
+Warning: in "ambiConvolving", more than 2 sounds seems to not be supported by computer (and 2 sounds is already complicated...)
 
 ## Plugin repository
 
