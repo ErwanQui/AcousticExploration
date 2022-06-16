@@ -5,7 +5,6 @@
 class Convolving {
 
 	constructor (audioContext, order) {
-		
 
 	    // Create global variables
 	    this.audioContext = audioContext;			// AudioContext
