@@ -3,8 +3,9 @@
 //////////////////
 
 import Streaming from './Streaming.js'
-import Convolving from './Convolving.js'
 import Ambisonic from './Ambisonic.js'
+import Convolving from './Convolving.js'
+import AmbiConvolving from './AmbiConvolving.js'
 
 class Sources {
 
@@ -47,13 +48,6 @@ class Sources {
 	    	Norm: 0,
 	    	Exposant: parameters.gainExposant
 	    }
-
-	    // Add RIRs for convolving mode
-	    if (this.mode == "convolving") {
-	    	this.Rirs = {};
-	    }
-
-	    // this.ambisonic = require("ambisonics");
 	}
 
 	async start (listenerPosition) {
@@ -75,7 +69,11 @@ class Sources {
 					break;
 
 				case 'convolving':
-					this.audioSources.push(new Convolving(this.audioContext, this.ambiOrder, i));
+					this.audioSources.push(new Convolving(this.audioContext, this.ambiOrder));
+					break;
+
+				case 'ambiConvolving':
+					this.audioSources.push(new AmbiConvolving(this.audioContext, this.ambiOrder));
 					break;
 
 				default:
@@ -131,7 +129,11 @@ class Sources {
 		    		break;
 
 		    	case 'convolving':
-        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.Rirs, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
+        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
+		    		break;
+
+		    	case 'ambiConvolving':
+        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
 		    		break;
 
 				default:
@@ -159,7 +161,7 @@ class Sources {
 	    // Load audioBuffer
 	    this.audioBufferLoader.load(defObj, true);
 
-	    // Set an interval to get the loading of the audioBuffer and create an event when it's finished
+	    // Set an interval to get the loading state of the audioBuffer and create an event when it's finished
     	var loader = setInterval(() => {
       		if (this.audioBufferLoader.get('loading')) {
       			console.log("loading...");
@@ -183,7 +185,7 @@ class Sources {
 	    // Get all rirs' files' paths
 	    rirbankTree.children.forEach(leaf => {
 	      	if (leaf.type === 'file') {
-	        	this.Rirs[leaf.name] = leaf.url;
+	        	defObj[leaf.name] = leaf.url;
 	      	}
 	    });
 
@@ -192,9 +194,21 @@ class Sources {
 
 	    // Load all audio datas
 	    this.audioBufferLoader.load(defObj, true);
+
+		// Set an interval to get the loading state of the audioBuffer and create an event when it's finished
+    	var loader = setInterval(() => {
+      		if (this.audioBufferLoader.get('loading')) {
+      			console.log("loading...");
+      		}
+      		else {
+        		console.log("loaded");       
+        		document.dispatchEvent(new Event("audioLoaded"));
+        		clearInterval(loader)
+      		}
+    	}, 50);
 	}
 
-  	LoadSound4Rirs(defObj) { // Load the audio datas to use with rirs
+  	LoadSound4Rirs(defObj) { // Load audio datas to use with rirs
 
   		// Get all assets
 	    const soundbankTree = this.filesystem.get('Assets');
@@ -306,8 +320,8 @@ class Sources {
 
 	    	// Update audioSources corresponding to the association ('this.audioSources')
 		    switch (this.mode) {
-		    	case "streaming":
 		    	case "debug":
+		    	case "streaming":
 			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[sources2Attribuate[i][0]]])
 		    		break;
 
@@ -316,7 +330,11 @@ class Sources {
 		    		break;
 
 		    	case "convolving":
-			    	this.audioSources[audioSourceId].UpdateAudioSource(this.Rirs[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[i][1]]]], this.gainsData.Value[audioSourceId], this.gainsData.Norm)
+			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[i][1]]]])
+			    	break;
+
+		    	case "ambiConvolving":
+			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data, this.sourcesData.receivers.files.Rirs, this.closestSourcesId[sources2Attribuate[i][1]])
 			    	break;
 
 		    	default:

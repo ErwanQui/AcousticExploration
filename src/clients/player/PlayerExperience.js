@@ -27,10 +27,11 @@ class PlayerExperience extends AbstractExperience {
       order: 2,                                 // Order of ambisonics
       nbClosestPoints: 4,                       // Number of closest points searched
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
-      // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving")
+      // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
       // mode: "streaming",
-      mode: "ambisonic",
+      // mode: "ambisonic",
       // mode: "convolving",
+      mode: "ambiConvolving",
       circleDiameter: 20,                       // Diameter of sources' display
       listenerSize: 16,                         // Size of listener's display
       dataFileName: "",                         // All sources' position and audioDatas' filenames (instantiated in 'start()')
@@ -84,11 +85,16 @@ class PlayerExperience extends AbstractExperience {
         this.parameters.dataFileName = 'scene3.json';
         break;
 
+      case 'ambiConvolving':
+        this.parameters.audioData = 'AudioFiles4';
+        this.parameters.dataFileName = 'scene4.json';
+        break;
+
       default:
         alert("No valid mode");
     }
 
-
+// Sync ?
     // const getTimeFunction = () => this.sync.getSyncTime();
     // const currentTimeToAudioTimeFunction =
     //   currentTime => this.sync.getLocalTime(currentTime);
@@ -143,7 +149,7 @@ class PlayerExperience extends AbstractExperience {
     // //   this.render();
     // // });
     // // this.updateEngines();
-
+//
 
     // Create the objects storer for sources and load their fileDatas
     this.Sources = new Sources(this.filesystem, this.audioBufferLoader, this.parameters)
@@ -163,6 +169,7 @@ class PlayerExperience extends AbstractExperience {
           break;
 
         case 'convolving':
+        case 'ambiConvolving':
           this.Sources.LoadRirs();
           break;
 
@@ -324,6 +331,7 @@ class PlayerExperience extends AbstractExperience {
           }, false);            
 
           this.beginPressed = true;         // Update begin State 
+
         });
         this.initialising = false;          // Update initialising State
       }
@@ -336,6 +344,7 @@ class PlayerExperience extends AbstractExperience {
     this.Sources.CreateSources(this.container, this.scale, this.offset);        // Create the sources and display them
     this.Listener.Display(this.container);                                      // Add the listener's display to the container
     this.render();                                                              // Update the display
+    document.dispatchEvent(new Event("rendered"));                              // Create an event when the simulation appeared
   }
 
   userAction(mouse) { // Change listener's position when the mouse has been used
