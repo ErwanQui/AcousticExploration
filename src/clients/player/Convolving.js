@@ -7,19 +7,21 @@ class Convolving {
 	constructor (audioContext, order) {
 		
 
-	    // Creating AudioContext
-	    this.audioContext = audioContext;
-	    this.order = order;
+	    // Create global variables
+	    this.audioContext = audioContext;			// AudioContext
+	    this.order = order;							// Ambisonic order
+	    this.nbAudios;								// Number of sources (instanciate in 'start()')
 
+	    // Get ambisonic library
 	    this.ambisonic = require("ambisonics");
+
+	    // Create audioNodes and their containers
+	    this.playingSounds = [];
 	    this.convolvers = [];
 	   	this.mirror = new this.ambisonic.sceneRotator(this.audioContext, this.order);
 		this.rotator = new this.ambisonic.sceneRotator(this.audioContext, this.order);
 		this.decoder = new this.ambisonic.binDecoder(this.audioContext, this.order);
 	    this.gain = this.audioContext.createGain();
-
-	    this.playingSounds = [];
-	    this.nbAudios;
 	}
 
 	async start (data, files, rirIndex, value, norm) {
@@ -33,14 +35,20 @@ class Convolving {
 	    // Set current and global values
     	this.gain.gain.setValueAtTime(value/norm, 0);
     	this.nbAudios = files.Sounds.length;
-    	
+
+    	// Create branch for each source
     	for (let i = 0; i < this.nbAudios; i++) {
-		    this.playingSounds.push(this.LoadNewSound(data[files.Sounds[i]]));
-		    this.convolvers.push(this.audioContext.createConvolver());
-	    	this.playingSounds[i].connect(this.convolvers[i]);					// Connect the sound to the other nodes
-	    	this.convolvers[i].connect(this.mirror.in);
+		    this.playingSounds.push(this.LoadNewSound(data[files.Sounds[i]]));	// Add a bufferSource
+		    this.convolvers.push(this.audioContext.createConvolver());			// Add a convolver
+
+		    // Connect the new branch to the global branch
+	    	this.playingSounds[i].connect(this.convolvers[i]);
+	    	this.convolvers[i].connect(this.mirror.in);	
+
+	    	// Set the rir for the new convolver						
 	    	this.UpdateRir(data[files.Rirs["source" + i][rirIndex]], i);
 
+	    	// Play sound
     		this.playingSounds[i].start();
     	}
 	}
@@ -58,7 +66,7 @@ class Convolving {
 	    this.convolvers[index].buffer = buffer;
 	}
 
-	UpdateAudioSource(buffer) {
+	UpdateAudioSource(buffer) { // Change convolver's buffer when listener's position changes
 
 	    // Update sources' rirs
 		for (let i = 0; i < this.nbAudios; i++) {

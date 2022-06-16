@@ -27,7 +27,7 @@ class PlayerExperience extends AbstractExperience {
       order: 2,                                 // Order of ambisonics
       nbClosestPoints: 4,                       // Number of closest points searched
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
-      // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving")
+      // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
       // mode: "streaming",
       // mode: "ambisonic",
       // mode: "convolving",
@@ -169,9 +169,6 @@ class PlayerExperience extends AbstractExperience {
           break;
 
         case 'convolving':
-          this.Sources.LoadRirs();
-          break;
-
         case 'ambiConvolving':
           this.Sources.LoadRirs();
           break;
@@ -335,7 +332,6 @@ class PlayerExperience extends AbstractExperience {
 
           this.beginPressed = true;         // Update begin State 
 
-          document.dispatchEvent(new Event("rendered"));
         });
         this.initialising = false;          // Update initialising State
       }
@@ -348,6 +344,7 @@ class PlayerExperience extends AbstractExperience {
     this.Sources.CreateSources(this.container, this.scale, this.offset);        // Create the sources and display them
     this.Listener.Display(this.container);                                      // Add the listener's display to the container
     this.render();                                                              // Update the display
+    document.dispatchEvent(new Event("rendered"));                              // Create an event when the simulation appeared
   }
 
   userAction(mouse) { // Change listener's position when the mouse has been used

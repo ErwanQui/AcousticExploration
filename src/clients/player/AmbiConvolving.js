@@ -1,48 +1,55 @@
-/////////////////////
+/////////////////////////
 /// AmbiConvolving.js ///
-/////////////////////
-
-// @note: c'est un peu le bordel et ça marche pas trop... (voir comment faire pour décoder les rirs)
+/////////////////////////
 
 class AmbiConvolving {
 
 	constructor (audioContext, order, soundIndex) {
-		
 
-	    // Creating AudioContext
-	    this.audioContext = audioContext;
-	    this.order = order;
+	    // Create global variables
+	    this.audioContext = audioContext;						// AudioContext
+	    this.order = order;										// Ambisonic order
 	    this.nbFiles = Math.ceil(Math.pow(order + 1, 2)/8);		// Get the number of 8 channels' files
-	    // this.soundIndex = soundIndex;
+	    this.nbAudios;											// Number of sources (instanciate in 'start()')
 
+	    // Get ambisonic library
 	    this.ambisonic = require("ambisonics");
+
+	    // Create audioNodes and their containers
+		this.playingSounds = [];
 	    this.convolvers = [];
 	   	this.mirror = new this.ambisonic.sceneRotator(this.audioContext, this.order);
 		this.rotator = new this.ambisonic.sceneRotator(this.audioContext, this.order);
 		this.decoder = new this.ambisonic.binDecoder(this.audioContext, this.order);
 	    this.gain = this.audioContext.createGain();
-
-	    this.playingSounds = [];
-	    this.hoaLoaderConvolver;
-	    this.updatersCount = 0;
-	    this.nbAudios;
 	}
 
 	async start (data, files, rirIndex, value, norm) {
 
-	    // init with current content
+		// Connect nodes of global branch
+		this.mirror.out.connect(this.rotator.in)
+    	this.rotator.out.connect(this.decoder.in);
+    	this.decoder.out.connect(this.gain);
+    	this.gain.connect(this.audioContext.destination);
+
+	    // Set current and global values
     	this.gain.gain.setValueAtTime(value/(5*norm), 0);
     	this.nbAudios = files.Sounds.length;
-    	
+
+    	// Create branch for each source
     	for (let i = 0; i < this.nbAudios; i++) {
+
+    		// Addd a bufferSource
 		    this.playingSounds.push(this.LoadNewSound(data[files.Sounds[i]]));
 
+		    // Add a convolver and his parameters in an object
 	    	this.convolvers.push({
-	    		convolver: new this.ambisonic.convolver(this.audioContext, this.order),
-	    		bufferSource: undefined,
-	    		channels: []
+	    		convolver: new this.ambisonic.convolver(this.audioContext, this.order),		// Convolver
+	    		bufferSource: undefined,													// Convolver's buffer
+	    		channels: []																// List of channels for each file associate to this rirs
 	    	});
 
+	    	// Set the liste of channels for each file associate to the rirs
 			for (let j = 0; j < this.nbFiles; j++) {
 		    	if (j != this.nbFiles - 1) {
 		    		this.convolvers[i].channels.push(
@@ -56,17 +63,15 @@ class AmbiConvolving {
 		    	}
 		    }
 
-	    	this.playingSounds[i].connect(this.convolvers[i].convolver.in);					// Connect the sound to the other nodes
+		    // Connect the branch to the global branch
+	    	this.playingSounds[i].connect(this.convolvers[i].convolver.in);
 	    	this.convolvers[i].convolver.out.connect(this.mirror.in);
 
+	    	// Set the rir for the new convolver
 	    	this.UpdateRirs(data, files.Rirs["source" + i][rirIndex], i);
 		}
 
-		this.mirror.out.connect(this.rotator.in)
-    	this.rotator.out.connect(this.decoder.in);
-    	this.decoder.out.connect(this.gain);
-    	this.gain.connect(this.audioContext.destination);
-
+    	// Wait that the simulation screen appeared before playing sounds
     	document.addEventListener("rendered", () => {
 	    	for (let i = 0; i < this.nbAudios; i++) {
 			    this.playingSounds[i].start();
@@ -100,28 +105,34 @@ class AmbiConvolving {
 	    return (sound);
 	}
 
-	UpdateRirs(data, file, sourceIndex) { // Create and link the sound to the AudioContext
-	    // Sound initialisation
+	UpdateRirs(data, file, sourceIndex) { // Update convolvers' rirs
+
+	    // Get 8 channels files
     	var slicedFiles = this.SlicePath(file, sourceIndex);
-	    	this.convolvers[sourceIndex].bufferSource = this.concatBuffers(data, slicedFiles);
-	    	this.convolvers[sourceIndex].convolver.updateFilters(this.convolvers[sourceIndex].bufferSource);
+
+    	// Get buffer with concatenate files
+	    this.convolvers[sourceIndex].bufferSource = this.concatBuffers(data, slicedFiles);
+
+	    // Update convolver
+	    this.convolvers[sourceIndex].convolver.updateFilters(this.convolvers[sourceIndex].bufferSource);
 	}
 
-	UpdateAudioSource(data, file, rirIndex) {
+	UpdateAudioSource(data, file, rirIndex) { // Change convolver's buffer when listener's position changes
 
-		// Change the buffer and play the new audio file
+		// Change the convlvers' rirs
 		for (let i = 0; i < this.nbAudios; i++) {
 			this.UpdateRirs(data, file["source" + i][rirIndex], i);
 		}
 	}
 
-	UpdateGain(value, norm) { // Update Gain and Display of the Source depending on Listener's Position
+	UpdateGain(value, norm) { // Update gain and display of the source depending on listener's position
 	    
-	    // Update the Gain of the Source
+	    // @note: the sound was inaudible, so I divide gain by 5
+	    // Update the gain of the source
 	    this.gain.gain.setValueAtTime(value/(5*norm), 0);
   	}
 
-  	concatBuffers(data, files) {
+  	concatBuffers(data, files) { // Get concatenate channels buffer
 
         var length = 0;
         for (let j = 0; j < this.nbFiles; j++) {
@@ -138,8 +149,6 @@ class AmbiConvolving {
         }
         return(concatBuffer);
   	}
-
-
 }
 
 export default AmbiConvolving;

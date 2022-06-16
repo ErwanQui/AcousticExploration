@@ -48,11 +48,6 @@ class Sources {
 	    	Norm: 0,
 	    	Exposant: parameters.gainExposant
 	    }
-
-	    // Add RIRs for convolving mode
-	    if (this.mode == "convolving") {
-	    	this.Rirs = {};
-	    }
 	}
 
 	async start (listenerPosition) {
@@ -166,7 +161,7 @@ class Sources {
 	    // Load audioBuffer
 	    this.audioBufferLoader.load(defObj, true);
 
-	    // Set an interval to get the loading of the audioBuffer and create an event when it's finished
+	    // Set an interval to get the loading state of the audioBuffer and create an event when it's finished
     	var loader = setInterval(() => {
       		if (this.audioBufferLoader.get('loading')) {
       			console.log("loading...");
@@ -200,7 +195,7 @@ class Sources {
 	    // Load all audio datas
 	    this.audioBufferLoader.load(defObj, true);
 
-		// Set an interval to get the loading of the audioBuffer and create an event when it's finished
+		// Set an interval to get the loading state of the audioBuffer and create an event when it's finished
     	var loader = setInterval(() => {
       		if (this.audioBufferLoader.get('loading')) {
       			console.log("loading...");
@@ -213,7 +208,7 @@ class Sources {
     	}, 50);
 	}
 
-  	LoadSound4Rirs(defObj) { // Load the audio datas to use with rirs
+  	LoadSound4Rirs(defObj) { // Load audio datas to use with rirs
 
   		// Get all assets
 	    const soundbankTree = this.filesystem.get('Assets');
