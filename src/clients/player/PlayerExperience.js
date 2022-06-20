@@ -27,11 +27,11 @@ class PlayerExperience extends AbstractExperience {
       order: 2,                                 // Order of ambisonics
       nbClosestPoints: 4,                       // Number of closest points searched
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
-      // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
+      mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
       // mode: "streaming",
       // mode: "ambisonic",
       // mode: "convolving",
-      mode: "ambiConvolving",
+      // mode: "ambiConvolving",
       circleDiameter: 20,                       // Diameter of sources' display
       listenerSize: 16,                         // Size of listener's display
       dataFileName: "",                         // All sources' position and audioDatas' filenames (instantiated in 'start()')
@@ -285,6 +285,7 @@ class PlayerExperience extends AbstractExperience {
 
       // Do this only at beginning
       if (this.initialising) {
+        this.initialising = false;          // Update initialising State
 
         // Assign callbacks once
         var beginButton = document.getElementById("beginButton");
@@ -333,7 +334,6 @@ class PlayerExperience extends AbstractExperience {
           this.beginPressed = true;         // Update begin State 
 
         });
-        this.initialising = false;          // Update initialising State
       }
     });
   }
