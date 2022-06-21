@@ -18,8 +18,8 @@ class PlayerExperience extends AbstractExperience {
     // Require plugins if needed
     this.audioBufferLoader = this.require('audio-buffer-loader');     // To load audioBuffers
     this.filesystem = this.require('filesystem');                     // To get files
-    // this.sync = this.require('sync');                                 // To sync audio sources
-    // this.platform = this.require('platform');                         // To manage plugin for the sync
+    this.sync = this.require('sync');                                 // To sync audio sources
+    this.platform = this.require('platform');                         // To manage plugin for the sync
 
     // Variable parameters
     this.parameters = {
@@ -28,10 +28,10 @@ class PlayerExperience extends AbstractExperience {
       nbClosestPoints: 4,                       // Number of closest points searched
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
       // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
-      // mode: "streaming",
+      mode: "streaming",
       // mode: "ambisonic",
       // mode: "convolving",
-      mode: "ambiConvolving",
+      // mode: "ambiConvolving",
       circleDiameter: 20,                       // Diameter of sources' display
       listenerSize: 16,                         // Size of listener's display
       dataFileName: "",                         // All sources' position and audioDatas' filenames (instantiated in 'start()')
@@ -94,65 +94,8 @@ class PlayerExperience extends AbstractExperience {
         alert("No valid mode");
     }
 
-// Sync ?
-    // const getTimeFunction = () => this.sync.getSyncTime();
-    // const currentTimeToAudioTimeFunction =
-    //   currentTime => this.sync.getLocalTime(currentTime);
-
-    // this.scheduler = new Scheduler(getTimeFunction, {
-    //   currentTimeToAudioTimeFunction
-    // });
-
-    // // define simple engines for the scheduler
-    // this.metroAudio = {
-    //   // `currentTime` is the current time of the scheduler (aka the syncTime)
-    //   // `audioTime` is the audioTime as computed by `currentTimeToAudioTimeFunction`
-    //   // `dt` is the time between the actual call of the function and the time of the
-    //   // scheduled event
-    //   advanceTime: (currentTime, audioTime, dt) => {
-    //     const env = this.audioContext.createGain();
-    //     env.connect(this.audioContext.destination);
-    //     env.gain.value = 0;
-    //     console.log("audio")
-    //     const sine = this.audioContext.createOscillator();
-    //     sine.connect(env);
-    //     sine.frequency.value = 200 * (this.client.id % 10 + 1);
-
-    //     env.gain.setValueAtTime(0, audioTime);
-    //     env.gain.linearRampToValueAtTime(1, audioTime + 0.01);
-    //     env.gain.exponentialRampToValueAtTime(0.0001, audioTime + 0.1);
-
-    //     sine.start(audioTime);
-    //     sine.stop(audioTime + 0.1);
-
-    //     return currentTime + 1;
-    //   }
-    // }
-
-    // this.metroVisual = {
-    //   advanceTime: (currentTime, audioTime, dt) => {
-    //     if (!this.$beat) {
-    //       this.$beat = document.querySelector(`#beat-${this.client.id}`);
-    //     }
-
-    //     // console.log(`go in ${dt * 1000}`)
-    //     // this.$beat.active = true;
-    //     setTimeout(() => this.$beat.active = true, Math.round(dt * 1000));
-
-    //     return currentTime + 1;
-    //   }
-    // };
-
-
-    // // this.globals.subscribe(updates => {
-    // //   this.updateEngines();
-    // //   this.render();
-    // // });
-    // // this.updateEngines();
-//
-
     // Create the objects storer for sources and load their fileDatas
-    this.Sources = new Sources(this.filesystem, this.audioBufferLoader, this.parameters)
+    this.Sources = new Sources(this.filesystem, this.audioBufferLoader, this.parameters, this.platform, this.sync)
     this.Sources.LoadData();
 
     // Wait until data have been loaded from json files ("dataLoaded" event is create 'this.Sources.LoadData()')

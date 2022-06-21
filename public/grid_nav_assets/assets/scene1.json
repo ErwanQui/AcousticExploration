@@ -26,7 +26,6 @@
     ],
 
   "files":[
-   " steliz_octamic_m18_bin.wav",
     "steliz_octamic_m01_bin.wav",
     "steliz_octamic_m02_bin.wav",
     "steliz_octamic_m03_bin.wav",
@@ -43,7 +42,8 @@
     "steliz_octamic_m14_bin.wav",
     "steliz_octamic_m15_bin.wav",
     "steliz_octamic_m16_bin.wav",
-    "steliz_octamic_m17_bin.wav"
+    "steliz_octamic_m17_bin.wav",
+    "steliz_octamic_m18_bin.wav"
     ]
   },
 

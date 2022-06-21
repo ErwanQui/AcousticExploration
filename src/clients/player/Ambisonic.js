@@ -20,6 +20,9 @@ class Ambisonic {
 		this.rotator = new this.ambisonic.sceneRotator(this.audioContext, this.order);
 		this.decoder = new this.ambisonic.binDecoder(this.audioContext, this.order);
 	    this.gain = this.audioContext.createGain();
+
+	    this.syncAudio
+		this.duration = duration
 	}
 
 	async start (data, file, index, value, norm) {
