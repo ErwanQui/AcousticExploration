@@ -27,8 +27,8 @@ class PlayerExperience extends AbstractExperience {
       order: 2,                                 // Order of ambisonics
       nbClosestPoints: 4,                       // Number of closest points searched
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
-      mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
-      // mode: "streaming",
+      // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
+      mode: "streaming",
       // mode: "ambisonic",
       // mode: "convolving",
       // mode: "ambiConvolving",
