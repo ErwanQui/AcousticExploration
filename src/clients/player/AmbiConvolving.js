@@ -22,6 +22,8 @@ class AmbiConvolving {
 		this.rotator = new this.ambisonic.sceneRotator(this.audioContext, this.order);
 		this.decoder = new this.ambisonic.binDecoder(this.audioContext, this.order);
 	    this.gain = this.audioContext.createGain();
+
+	    this.rirBuffers = {};
 	}
 
 	async start (data, files, rirIndex, value, norm) {
@@ -35,6 +37,7 @@ class AmbiConvolving {
 	    // Set current and global values
     	this.gain.gain.setValueAtTime(value/(5*norm), 0);
     	this.nbAudios = files.Sounds.length;
+
 
     	// Create branch for each source
     	for (let i = 0; i < this.nbAudios; i++) {
@@ -66,9 +69,12 @@ class AmbiConvolving {
 		    // Connect the branch to the global branch
 	    	this.playingSounds[i].connect(this.convolvers[i].convolver.in);
 	    	this.convolvers[i].convolver.out.connect(this.mirror.in);
+		}
 
-	    	// Set the rir for the new convolver
-	    	this.UpdateRirs(data, files.Rirs["source" + i][rirIndex], i);
+		this.LoadAllConcatBuffers(data, files.Rirs);
+
+		for (let i = 0; i < this.nbAudios; i++) {
+	    	this.UpdateRirs(data, i, rirIndex);
 		}
 
     	// Wait that the simulation screen appeared before playing sounds
@@ -105,13 +111,10 @@ class AmbiConvolving {
 	    return (sound);
 	}
 
-	UpdateRirs(data, file, sourceIndex) { // Update convolvers' rirs
-
-	    // Get 8 channels files
-    	var slicedFiles = this.SlicePath(file, sourceIndex);
+	UpdateRirs(data, sourceIndex, rirIndex) { // Update convolvers' rirs
 
     	// Get buffer with concatenate files
-	    this.convolvers[sourceIndex].bufferSource = this.concatBuffers(data, slicedFiles);
+	    this.convolvers[sourceIndex].bufferSource = this.rirBuffers["source" + sourceIndex][rirIndex]
 
 	    // Update convolver
 	    this.convolvers[sourceIndex].convolver.updateFilters(this.convolvers[sourceIndex].bufferSource);
@@ -121,7 +124,7 @@ class AmbiConvolving {
 
 		// Change the convlvers' rirs
 		for (let i = 0; i < this.nbAudios; i++) {
-			this.UpdateRirs(data, file["source" + i][rirIndex], i);
+			this.UpdateRirs(data, i, rirIndex);
 		}
 	}
 
@@ -130,6 +133,18 @@ class AmbiConvolving {
 	    // @note: the sound was inaudible, so I divide gain by 5
 	    // Update the gain of the source
 	    this.gain.gain.setValueAtTime(value/(5*norm), 0);
+  	}
+
+  	LoadAllConcatBuffers(data, files) { // Conacatenate all loaded files and store it
+
+  		var slicedFiles;
+  		for (let i = 0; i < this.nbAudios; i++){
+  			this.rirBuffers["source" + i] = [];
+  			files["source" + i].forEach((file) => {
+  				slicedFiles = this.SlicePath(file, i);										// Get the path of sliced files
+  				this.rirBuffers["source" + i].push(this.concatBuffers(data, slicedFiles));	// Concatenate buffer of sliced files
+  			})
+  		}
   	}
 
   	concatBuffers(data, files) { // Get concatenate channels buffer

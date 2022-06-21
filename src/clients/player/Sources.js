@@ -7,9 +7,12 @@ import Ambisonic from './Ambisonic.js'
 import Convolving from './Convolving.js'
 import AmbiConvolving from './AmbiConvolving.js'
 
+import { Scheduler } from 'waves-masters';
+
+
 class Sources {
 
-	constructor (filesystem, audioBufferLoader, parameters) {
+	constructor (filesystem, audioBufferLoader, parameters, platform, sync) {
 
 	    // Create the datas' storer
 	    this.sourcesData;
@@ -22,6 +25,15 @@ class Sources {
 
 		// Get files
 	   	this.filesystem = filesystem;
+
+
+
+	    this.platform = platform;
+	    this.sync = sync;
+	    this.duration = 0
+
+
+
 
 	    // Global parameters
 	    this.nbSources;											// Create the number of sources object
@@ -52,16 +64,29 @@ class Sources {
 
 	async start (listenerPosition) {
 
+
+	    const getTimeFunction = () => this.sync.getSyncTime();
+	    // Provide a conversion function that allows the scheduler to compute
+	    // the audio time from it own scheduling time reference.
+	    // As `currentTime` is in the sync time reference we gave in
+	    // `getTimeFunction` and that the sync plugin is configured to use
+	    // the audio clock as a local reference, we therefore just need to convert
+	    // back to the local time.
+	    const currentTimeToAudioTimeFunction =
+	      currentTime => this.sync.getLocalTime(currentTime);
+console.log(this.sync.getSyncTime())
+	    this.scheduler = new Scheduler(getTimeFunction, {
+	      currentTimeToAudioTimeFunction
+	    });
+
+
 		// Add the audioSources depending on the mode chosen
 		for (let i = 0; i < this.nbActiveSources - 1; i++) {
 			switch (this.mode) {
 
 				case 'debug':
-					this.audioSources.push(new Streaming(this.audioContext));
-					break;
-
 				case 'streaming':
-					this.audioSources.push(new Streaming(this.audioContext));
+					this.audioSources.push(new Streaming(this.audioContext, this.duration));
 					break;
 
 				case 'ambisonic':
@@ -122,18 +147,22 @@ class Sources {
 		    	case 'debug':
 		    	case 'streaming':
 	        		this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm);  	
+		    		this.UpdateEngines(i, true)
 					break;
 
 		    	case 'ambisonic':
         			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
+		    		this.UpdateEngines(i, true)
 		    		break;
 
 		    	case 'convolving':
         			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
+		    		this.UpdateEngines(i, true)
 		    		break;
 
 		    	case 'ambiConvolving':
         			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
+		    		this.UpdateEngines(i, true)
 		    		break;
 
 				default:
@@ -167,6 +196,13 @@ class Sources {
       			console.log("loading...");
       		}
       		else {
+      			this.sourcesData.receivers.files.forEach(buffer => {
+      				console.log(this.audioBufferLoader.data[buffer].duration)
+      				if (this.audioBufferLoader.data[buffer].duration > this.duration) {
+      					this.duration = this.audioBufferLoader.data[buffer].duration;
+      				}
+      			})
+      			console.log(this.duration)
         		console.log("loaded");       
         		document.dispatchEvent(new Event("audioLoaded"));
         		clearInterval(loader)
@@ -322,19 +358,27 @@ class Sources {
 		    switch (this.mode) {
 		    	case "debug":
 		    	case "streaming":
+		    		this.UpdateEngines(audioSourceId, false)
 			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[sources2Attribuate[i][0]]])
+			    	this.UpdateEngines(audioSourceId, true)
 		    		break;
 
 		    	case "ambisonic":
+		    		this.UpdateEngines(audioSourceId, false)
 		    		this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data, this.sourcesData.receivers.files[sources2Attribuate[i][0]])
+		    		this.UpdateEngines(audioSourceId, true)
 		    		break;
 
 		    	case "convolving":
+			    	this.UpdateEngines(audioSourceId, false)
 			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[i][1]]]])
+			    	this.UpdateEngines(audioSourceId, true)
 			    	break;
 
 		    	case "ambiConvolving":
+			    	this.UpdateEngines(audioSourceId, false)
 			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data, this.sourcesData.receivers.files.Rirs, this.closestSourcesId[sources2Attribuate[i][1]])
+			    	this.UpdateEngines(audioSourceId, true)
 			    	break;
 
 		    	default:
@@ -429,6 +473,18 @@ class Sources {
 	    }
 	    else {
 	      	return (Infinity);
+		}
+  	}
+
+  	UpdateEngines(sourceIndex, adding) {
+  		if (adding) {
+			const nextTime = Math.ceil(this.sync.getSyncTime());
+			this.scheduler.add(this.audioSources[sourceIndex].GetSyncBuffer(), nextTime);
+		}
+		else {
+			if (this.scheduler.has(this.audioSources[sourceIndex].GetSyncBuffer())) {
+				this.scheduler.remove(this.audioSources[sourceIndex].GetSyncBuffer());
+			}
 		}
   	}
 }

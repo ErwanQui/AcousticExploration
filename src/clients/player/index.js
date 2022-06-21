@@ -27,11 +27,11 @@ async function launch($container, index) {
     // -------------------------------------------------------------------
     client.pluginManager.register('filesystem', pluginFilesystemFactory, {}, []);
     client.pluginManager.register('audio-buffer-loader', pluginAudioBufferLoaderFactory, {}, [])
-    // client.pluginManager.register('sync', pluginSyncFactory, {
-    //   // choose the clock to synchronize, defaults to:
-    //   // (where `startTime` is the time at which the plugin is instantiated)
-    //   getTimeFunction: () => audioContext.currentTime,
-    // }, []);
+    client.pluginManager.register('sync', pluginSyncFactory, {
+      // choose the clock to synchronize, defaults to:
+      // (where `startTime` is the time at which the plugin is instantiated)
+      getTimeFunction: () => audioContext.currentTime,
+    }, []);
     client.pluginManager.register('platform', pluginPlatformFactory, {
       features: [
         ['web-audio', audioContext],
