@@ -12,8 +12,8 @@ class Streaming {
 	    this.gain;                            	// Gain's object
 		this.syncAudio
 		this.duration = duration;
-		this.filesPath = "AudioFiles0/";
-		// this.filesPath = "AudioFiles1/";
+		// this.filesPath = "AudioFiles0/";
+		this.filesPath = "AudioFiles1/";
 		this.sourceIndex = sourceIndex;
 		this.initialized = false;
 	}
