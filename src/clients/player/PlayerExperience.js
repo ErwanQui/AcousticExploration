@@ -104,26 +104,26 @@ class PlayerExperience extends AbstractExperience {
       console.log("json files: " + this.parameters.dataFileName + " has been read");
 
       // Load sources' sound depending on mode (some modes need RIRs in addition of sounds)
-      switch (this.parameters.mode) {
-        case 'debug':
-        case 'streaming':
-        case 'ambisonic':
-          this.Sources.LoadSoundbank();
-          break;
+      // switch (this.parameters.mode) {
+      //   case 'debug':
+      //   case 'streaming':
+      //   case 'ambisonic':
+      //     this.Sources.LoadSoundbank();
+      //     break;
 
-        case 'convolving':
-        case 'ambiConvolving':
-          this.Sources.LoadRirs();
-          break;
+      //   case 'convolving':
+      //   case 'ambiConvolving':
+      //     this.Sources.LoadRirs();
+      //     break;
 
-        default:
-          alert("No valid mode");
-      }
+      //   default:
+      //     alert("No valid mode");
+      // }
 
       // Wait until audioBuffer has been loaded ("dataLoaded" event is create 'this.Sources.LoadSoundBank()')
-      document.addEventListener("audioLoaded", () => {
+      // document.addEventListener("audioLoaded", () => {
 
-        console.log("Audio buffers have been loaded from source: " + this.parameters.audioData);
+        // console.log("Audio buffers have been loaded from source: " + this.parameters.audioData);
 
         // Instantiate the attribute 'this.range' to get datas' parameters
         this.Range(this.Sources.sourcesData.receivers.xyz);
@@ -140,11 +140,11 @@ class PlayerExperience extends AbstractExperience {
         // Create, start and store the listener class
         this.Listener = new Listener(this.offset, this.parameters);
         this.Listener.start();
-
+        console.log("ici")
         // Start the sources display and audio depending on listener's initial position
         this.Sources.start(this.Listener.listenerPosition);
-
         // Add event listener for resize window event to resize the display
+        console.log("bah oui")
         window.addEventListener('resize', () => {
 
           this.scale = this.Scaling(this.range);      // Change the scale
@@ -158,7 +158,7 @@ class PlayerExperience extends AbstractExperience {
         })
         // Display
         this.render();
-      });
+      // });
     });
   }
 

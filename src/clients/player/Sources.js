@@ -31,7 +31,7 @@ class Sources {
 	    this.platform = platform;
 	    this.sync = sync;
 	    this.duration = 0
-
+	    this.syncBuffers = []
 
 
 
@@ -86,7 +86,7 @@ console.log(this.sync.getSyncTime())
 
 				case 'debug':
 				case 'streaming':
-					this.audioSources.push(new Streaming(this.audioContext, this.duration));
+					this.audioSources.push(new Streaming(this.audioContext, this.duration, i));
 					break;
 
 				case 'ambisonic':
@@ -146,8 +146,18 @@ console.log(this.sync.getSyncTime())
 			switch (this.mode) {
 		    	case 'debug':
 		    	case 'streaming':
-	        		this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm);  	
-		    		this.UpdateEngines(i, true)
+	        		// this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm);  	
+	        		this.audioSources[i].start(this.sourcesData.receivers.files[this.closestSourcesId[i]], this.gainsData.Value[i], this.gainsData.Norm);  	
+			    	this.syncBuffers.push(undefined)
+
+			    	document.addEventListener("audioLoaded" + i, () => {
+			    		if (this.syncBuffers[i] != undefined) {
+			    			this.UpdateEngines(i, false);
+			    		}
+			    		console.log(this.audioSources[i].GetSyncBuffer())
+			    		this.syncBuffers[i] = this.audioSources[i].GetSyncBuffer()
+		    			this.UpdateEngines(i, true);
+		    		});
 					break;
 
 		    	case 'ambisonic':
@@ -172,94 +182,94 @@ console.log(this.sync.getSyncTime())
 		}
 	}
 
-  	LoadSoundbank() { // Load the audio datas to use
+ //  	LoadSoundbank() { // Load the audio datas to use
 
-  		// Get all audio datas
-	    const soundbankTree = this.filesystem.get(this.fileData.Audio);
+ //  		// Get all audio datas
+	//     const soundbankTree = this.filesystem.get(this.fileData.Audio);
 
-	    // Initiate an object to store audios' paths
-	    var defObj = {};
+	//     // Initiate an object to store audios' paths
+	//     var defObj = {};
 
-	    // Get all audio files' paths
-	    soundbankTree.children.forEach(leaf => {
-	      	if (leaf.type === 'file') {
-	        	defObj[leaf.name] = leaf.url;
-	      	}
-	    });
+	//     // Get all audio files' paths
+	//     soundbankTree.children.forEach(leaf => {
+	//       	if (leaf.type === 'file') {
+	//         	defObj[leaf.name] = leaf.url;
+	//       	}
+	//     });
 
-	    // Load audioBuffer
-	    this.audioBufferLoader.load(defObj, true);
+	//     // Load audioBuffer
+	//     this.audioBufferLoader.load(defObj, true);
 
-	    // Set an interval to get the loading state of the audioBuffer and create an event when it's finished
-    	var loader = setInterval(() => {
-      		if (this.audioBufferLoader.get('loading')) {
-      			console.log("loading...");
-      		}
-      		else {
-      			this.sourcesData.receivers.files.forEach(buffer => {
-      				console.log(this.audioBufferLoader.data[buffer].duration)
-      				if (this.audioBufferLoader.data[buffer].duration > this.duration) {
-      					this.duration = this.audioBufferLoader.data[buffer].duration;
-      				}
-      			})
-      			console.log(this.duration)
-        		console.log("loaded");       
-        		document.dispatchEvent(new Event("audioLoaded"));
-        		clearInterval(loader)
-      		}
-    	}, 50);
-  	}
+	//     // Set an interval to get the loading state of the audioBuffer and create an event when it's finished
+ //    	var loader = setInterval(() => {
+ //      		if (this.audioBufferLoader.get('loading')) {
+ //      			console.log("loading...");
+ //      		}
+ //      		else {
+ //      			this.sourcesData.receivers.files.forEach(buffer => {
+ //      				console.log(this.audioBufferLoader.data[buffer].duration)
+ //      				if (this.audioBufferLoader.data[buffer].duration > this.duration) {
+ //      					this.duration = this.audioBufferLoader.data[buffer].duration;
+ //      				}
+ //      			})
+ //      			console.log(this.duration)
+ //        		console.log("loaded");       
+ //        		document.dispatchEvent(new Event("audioLoaded"));
+ //        		clearInterval(loader)
+ //      		}
+ //    	}, 50);
+ //  	}
 
-  	LoadRirs() { // Load the rirs to use
+ //  	LoadRirs() { // Load the rirs to use
 
-  		// Get all rirs' datas
-	    const rirbankTree = this.filesystem.get(this.fileData.Audio);
+ //  		// Get all rirs' datas
+	//     const rirbankTree = this.filesystem.get(this.fileData.Audio);
 
-	    // Initiate an object to store audios' paths
-	    var defObj = {};
+	//     // Initiate an object to store audios' paths
+	//     var defObj = {};
 
-	    // Get all rirs' files' paths
-	    rirbankTree.children.forEach(leaf => {
-	      	if (leaf.type === 'file') {
-	        	defObj[leaf.name] = leaf.url;
-	      	}
-	    });
+	//     // Get all rirs' files' paths
+	//     rirbankTree.children.forEach(leaf => {
+	//       	if (leaf.type === 'file') {
+	//         	defObj[leaf.name] = leaf.url;
+	//       	}
+	//     });
 
-	    // Get all audio dats
-	    defObj = this.LoadSound4Rirs(defObj);
+	//     // Get all audio dats
+	//     defObj = this.LoadSound4Rirs(defObj);
 
-	    // Load all audio datas
-	    this.audioBufferLoader.load(defObj, true);
+	//     // Load all audio datas
+	//     this.audioBufferLoader.load(defObj, true);
 
-		// Set an interval to get the loading state of the audioBuffer and create an event when it's finished
-    	var loader = setInterval(() => {
-      		if (this.audioBufferLoader.get('loading')) {
-      			console.log("loading...");
-      		}
-      		else {
-        		console.log("loaded");       
-        		document.dispatchEvent(new Event("audioLoaded"));
-        		clearInterval(loader)
-      		}
-    	}, 50);
-	}
+	// 	// Set an interval to get the loading state of the audioBuffer and create an event when it's finished
+ //    	var loader = setInterval(() => {
+ //      		if (this.audioBufferLoader.get('loading')) {
+ //      			console.log("loading...");
+ //      		}
+ //      		else {
+ //        		console.log("loaded");       
+ //        		document.dispatchEvent(new Event("audioLoaded"));
+ //        		clearInterval(loader)
+ //      		}
+ //    	}, 50);
+	// }
 
-  	LoadSound4Rirs(defObj) { // Load audio datas to use with rirs
+ //  	LoadSound4Rirs(defObj) { // Load audio datas to use with rirs
 
-  		// Get all assets
-	    const soundbankTree = this.filesystem.get('Assets');
+ //  		// Get all assets
+	//     const soundbankTree = this.filesystem.get('Assets');
 
-	    // Read 'soundbankTree' to find the audio files
-	    soundbankTree.children.forEach(branch => {
-	      	if (branch.type === 'directory') {
-	      		branch.children.forEach(leaf => {
-	        		defObj[leaf.name] = leaf.url;	
-	           	});
-	      	}
-	    });
+	//     // Read 'soundbankTree' to find the audio files
+	//     soundbankTree.children.forEach(branch => {
+	//       	if (branch.type === 'directory') {
+	//       		branch.children.forEach(leaf => {
+	//         		defObj[leaf.name] = leaf.url;	
+	//            	});
+	//       	}
+	//     });
 
-  		return(defObj)
-	}
+ //  		return(defObj)
+	// }
 
   	LoadData() { // Load the data from the json file
 
@@ -358,9 +368,10 @@ console.log(this.sync.getSyncTime())
 		    switch (this.mode) {
 		    	case "debug":
 		    	case "streaming":
-		    		this.UpdateEngines(audioSourceId, false)
-			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[sources2Attribuate[i][0]]])
-			    	this.UpdateEngines(audioSourceId, true)
+		    		// this.UpdateEngines(audioSourceId, false)
+			    	// this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[sources2Attribuate[i][0]]])
+			    	this.audioSources[audioSourceId].loadSample(this.sourcesData.receivers.files[sources2Attribuate[i][0]])
+			    	// this.UpdateEngines(audioSourceId, true)
 		    		break;
 
 		    	case "ambisonic":
@@ -479,11 +490,11 @@ console.log(this.sync.getSyncTime())
   	UpdateEngines(sourceIndex, adding) {
   		if (adding) {
 			const nextTime = Math.ceil(this.sync.getSyncTime());
-			this.scheduler.add(this.audioSources[sourceIndex].GetSyncBuffer(), nextTime);
+			this.scheduler.add(this.syncBuffers[sourceIndex], nextTime);
 		}
 		else {
-			if (this.scheduler.has(this.audioSources[sourceIndex].GetSyncBuffer())) {
-				this.scheduler.remove(this.audioSources[sourceIndex].GetSyncBuffer());
+			if (this.scheduler.has(this.syncBuffers[sourceIndex])) {
+				this.scheduler.remove(this.syncBuffers[sourceIndex]);
 			}
 		}
   	}
