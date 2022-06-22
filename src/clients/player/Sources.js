@@ -71,13 +71,43 @@ class Sources {
 	    // As `currentTime` is in the sync time reference we gave in
 	    // `getTimeFunction` and that the sync plugin is configured to use
 	    // the audio clock as a local reference, we therefore just need to convert
-	    // back to the local time.
-	    const currentTimeToAudioTimeFunction =
-	      currentTime => this.sync.getLocalTime(currentTime);
-console.log(this.sync.getSyncTime())
-	    this.scheduler = new Scheduler(getTimeFunction, {
-	      currentTimeToAudioTimeFunction
-	    });
+	    // // back to the local time.
+	    // const currentTimeToAudioTimeFunction =
+	    //   	currentTime => this.sync.getLocalTime(currentTime);
+
+	    var currentTimeToAudioTimeFunction = [];
+	    var tempTime;
+		console.log(this.sync.getSyncTime())
+		switch (this.mode) {
+			case 'debug':
+			case 'streaming':
+				this.scheduler = new Scheduler(getTimeFunction, {
+		      		currentTimeToAudioTimeFunction
+		    	});
+				break;
+
+			case 'ambisonic':
+				this.schedulers = [];
+				console.log(this.nbActiveSources)
+				for (let i = 0; i < (this.nbActiveSources - 1)*(Math.ceil(Math.pow(this.ambiOrder, 2)/8 + 1)); i++) {
+		    		currentTimeToAudioTimeFunction.push(currentTime => this.sync.getLocalTime(currentTime));
+		    		tempTime = currentTimeToAudioTimeFunction[i];
+		    		this.schedulers.push(new Scheduler(getTimeFunction, 
+		      			{tempTime}
+		    		));
+		    	}
+		    	break;
+			case 'convolving':
+				this.schedulers = [];
+				console.log(this.nbActiveSources)
+				for (let i = 0; i < (this.nbActiveSources - 1)*(this.sourcesData.receivers.files.Sounds.length); i++) {
+		    		currentTimeToAudioTimeFunction.push(currentTime => this.sync.getLocalTime(currentTime));
+		    		tempTime = currentTimeToAudioTimeFunction[i];
+		    		this.schedulers.push(new Scheduler(getTimeFunction, 
+		      			{tempTime}
+		    		));
+		    	}
+		}
 
 
 		// Add the audioSources depending on the mode chosen
@@ -86,7 +116,7 @@ console.log(this.sync.getSyncTime())
 
 				case 'debug':
 				case 'streaming':
-					this.audioSources.push(new Streaming(this.audioContext, this.duration));
+					this.audioSources.push(new Streaming(this.audioContext));
 					break;
 
 				case 'ambisonic':
@@ -146,22 +176,22 @@ console.log(this.sync.getSyncTime())
 			switch (this.mode) {
 		    	case 'debug':
 		    	case 'streaming':
-	        		this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm);  	
+	        		this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm, this.duration);  	
 		    		this.UpdateEngines(i, true)
 					break;
 
 		    	case 'ambisonic':
-        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
-		    		this.UpdateEngines(i, true)
+        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm, this.duration);    	
+		    		this.UpdateEngines4MultipleSources(i, true)
 		    		break;
 
 		    	case 'convolving':
-        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
-		    		this.UpdateEngines(i, true)
+        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm, this.duration);    	
+		    		this.UpdateEngines4MultipleSources(i, true)
 		    		break;
 
 		    	case 'ambiConvolving':
-        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
+        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm, this.duration);    	
 		    		this.UpdateEngines(i, true)
 		    		break;
 
@@ -196,12 +226,30 @@ console.log(this.sync.getSyncTime())
       			console.log("loading...");
       		}
       		else {
-      			this.sourcesData.receivers.files.forEach(buffer => {
-      				console.log(this.audioBufferLoader.data[buffer].duration)
-      				if (this.audioBufferLoader.data[buffer].duration > this.duration) {
-      					this.duration = this.audioBufferLoader.data[buffer].duration;
-      				}
-      			})
+      			switch (this.mode) {
+		    		case 'debug':
+		    		case 'streaming':
+      					this.sourcesData.receivers.files.forEach(file => {
+      						console.log(this.audioBufferLoader.data[file].duration)
+		      				if (this.audioBufferLoader.data[file].duration > this.duration) {
+		      					this.duration = this.audioBufferLoader.data[file].duration;
+		      				}
+      					})
+      					break;
+
+      				case 'ambisonic':
+		      			this.sourcesData.receivers.files.forEach(file => {
+		      				var slicedFiles = this.audioSources[0].SlicePath(file);
+		      				for (let i = 0; i < slicedFiles.length; i++) {
+			      				console.log(this.audioBufferLoader.data[slicedFiles[i]].duration)
+			      				if (this.audioBufferLoader.data[slicedFiles[i]].duration > this.duration) {
+			      					this.duration = this.audioBufferLoader.data[slicedFiles[i]].duration;
+			      				}
+			      			}
+		      			})
+		      			break;
+		      	}
+		      	this.duration += 1;
       			console.log(this.duration)
         		console.log("loaded");       
         		document.dispatchEvent(new Event("audioLoaded"));
@@ -237,6 +285,31 @@ console.log(this.sync.getSyncTime())
       			console.log("loading...");
       		}
       		else {
+      			switch (this.mode) {
+		    		case 'convolving':
+		    		// case 'streaming':
+      					this.sourcesData.receivers.files.Sounds.forEach(file => {
+      						console.log(this.audioBufferLoader.data[file].duration)
+		      				if (this.audioBufferLoader.data[file].duration > this.duration) {
+		      					this.duration = this.audioBufferLoader.data[file].duration;
+		      				}
+      					})
+      					break;
+
+      				// case 'ambisonic':
+		      		// 	this.sourcesData.receivers.files.forEach(file => {
+		      		// 		var slicedFiles = this.audioSources[0].SlicePath(file);
+		      		// 		for (let i = 0; i < slicedFiles.length; i++) {
+			      	// 			console.log(this.audioBufferLoader.data[slicedFiles[i]].duration)
+			      	// 			if (this.audioBufferLoader.data[slicedFiles[i]].duration > this.duration) {
+			      	// 				this.duration = this.audioBufferLoader.data[slicedFiles[i]].duration;
+			      	// 			}
+			      	// 		}
+		      		// 	})
+		      		// 	break;
+		      	}
+		      	this.duration += 1;
+      			console.log(this.duration)
         		console.log("loaded");       
         		document.dispatchEvent(new Event("audioLoaded"));
         		clearInterval(loader)
@@ -364,15 +437,15 @@ console.log(this.sync.getSyncTime())
 		    		break;
 
 		    	case "ambisonic":
-		    		this.UpdateEngines(audioSourceId, false)
+		    		this.UpdateEngines4MultipleSources(audioSourceId, false)
 		    		this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data, this.sourcesData.receivers.files[sources2Attribuate[i][0]])
-		    		this.UpdateEngines(audioSourceId, true)
+		    		this.UpdateEngines4MultipleSources(audioSourceId, true)
 		    		break;
 
 		    	case "convolving":
-			    	this.UpdateEngines(audioSourceId, false)
+			    	// this.UpdateEngines(audioSourceId, false)
 			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[i][1]]]])
-			    	this.UpdateEngines(audioSourceId, true)
+			    	// this.UpdateEngines(audioSourceId, true)
 			    	break;
 
 		    	case "ambiConvolving":
@@ -479,6 +552,8 @@ console.log(this.sync.getSyncTime())
   	UpdateEngines(sourceIndex, adding) {
   		if (adding) {
 			const nextTime = Math.ceil(this.sync.getSyncTime());
+			console.log(this.audioSources[sourceIndex].GetSyncBuffer())
+			console.log(this.audioSources[sourceIndex])
 			this.scheduler.add(this.audioSources[sourceIndex].GetSyncBuffer(), nextTime);
 		}
 		else {
@@ -486,6 +561,27 @@ console.log(this.sync.getSyncTime())
 				this.scheduler.remove(this.audioSources[sourceIndex].GetSyncBuffer());
 			}
 		}
+  	}
+
+  	UpdateEngines4MultipleSources(sourceIndex, adding) {
+  		var sourceBuffers = this.audioSources[sourceIndex].GetSyncBuffers()
+  		console.log(sourceBuffers)
+  		if (adding) {
+			const nextTime = Math.ceil(this.sync.getSyncTime());
+			for (let i = 0; i < sourceBuffers.length; i++) {
+				console.log(this.schedulers)
+				console.log(sourceIndex*sourceBuffers.length)
+				this.schedulers[sourceIndex*sourceBuffers.length + i].add(sourceBuffers[i], nextTime);
+			}
+		}
+		else {
+			for (let i = 0; i < sourceBuffers.length; i++) {
+				if (this.schedulers[sourceIndex*sourceBuffers.length + i].has(sourceBuffers[i])) {
+					this.schedulers[sourceIndex*sourceBuffers.length + i].remove(sourceBuffers[i]);
+				}
+			}
+		}
+		console.log(this.schedulers)
   	}
 }
 

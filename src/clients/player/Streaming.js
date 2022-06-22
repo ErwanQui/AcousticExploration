@@ -4,20 +4,22 @@
 
 class Streaming {
 
-	constructor (audioContext, duration) {
+	constructor (audioContext) {
 		
 	    // Creating AudioContext
 	    this.audioContext = audioContext;		// Get audioContext
 	    this.playingSound;                    	// BufferSource's object
 	    this.gain;                            	// Gain's object
 		this.syncAudio
-		this.duration = duration
+		this.duration;
 	}
 
-	async start (buffer, value, norm) {
+	async start (buffer, value, norm, duration) {
 
 	    // Create the gain
 	    this.gain = this.audioContext.createGain();
+
+	    this.duration = duration
 
 	    // Initiate with current gain's value
     	this.gain.gain.setValueAtTime(value/norm, 0);
@@ -39,7 +41,6 @@ class Streaming {
 	    var sound = this.audioContext.createBufferSource();		// Create the sound
 	    sound.loop = true;                                    	// Set the sound to loop
 	    sound.buffer = buffer;                                	// Set the sound buffer
-	    sound.connect(this.gain);								// Connect the sound to the other nodes
 	    return (sound);
 	}
 
@@ -49,16 +50,8 @@ class Streaming {
 
 		    advanceTime: (currentTime, audioTime, dt) => {
 
-		        const env = this.audioContext.createGain();
-		        env.connect(this.gain);
-		        env.gain.value = 0;
-
 		        const sine = this.LoadNewSound(buffer);
-		        sine.connect(env);
-
-		        env.gain.setValueAtTime(0, audioTime);
-		        env.gain.linearRampToValueAtTime(1, audioTime + 0.01);
-		        env.gain.exponentialRampToValueAtTime(0.0001, audioTime + 0.1);
+		        sine.connect(this.gain);
 
 		        sine.start(this.duration*Math.ceil(audioTime/this.duration));
 		        sine.stop(this.duration*Math.ceil(audioTime/this.duration) + buffer.duration);

@@ -21,29 +21,24 @@ class Ambisonic {
 		this.decoder = new this.ambisonic.binDecoder(this.audioContext, this.order);
 	    this.gain = this.audioContext.createGain();
 
-	    this.syncAudio
-		this.duration = duration
-	}
+	    this.syncAudio = []; 
+		this.duration;
+		this.channels = [];
 
-	async start (data, file, index, value, norm) {
-
-		// Set the object for the multiple 8 channels' sources
 		for (let i = 0; i < this.nbFiles; i++) {
-	    	if (i != this.nbFiles - 1) {
-	    		this.playingSounds.push({
-	    			bufferSource: undefined,
-	    			channels: [this.addLeadingZeros(8*i + 1, 2), this.addLeadingZeros(8*(i + 1), 2)]  
-	    		});
+			if (i != this.nbFiles - 1) {
+	    		this.channels.push([this.addLeadingZeros(8*i + 1, 2), this.addLeadingZeros(8*(i + 1), 2)])
 	    	}
 	    	else {
-	    		this.playingSounds.push({
-	    			bufferSource: undefined,
-	    			channels: [this.addLeadingZeros(8*i + 1, 2), this.addLeadingZeros(Math.pow(this.order + 1, 2), 2)]
-				});
+	    		this.channels.push([this.addLeadingZeros(8*i + 1, 2), this.addLeadingZeros(Math.pow(this.order + 1, 2), 2)])
 	    	}
-	    }
+		}
+	}
+
+	async start (data, file, index, value, norm, duration) {
 
 		// Change the path to get audios of 8 channels
+		this.duration = duration
 		var files = this.SlicePath(file[index]);
 
 	    // Connect the audioNodes
@@ -55,10 +50,23 @@ class Ambisonic {
 	    // init with current content
     	this.gain.gain.setValueAtTime(value/norm, 0)
 
+    	var buffer;
     	// Load the sound from the buffers and play them
     	for (let i = 0; i < this.nbFiles; i++) {
-	    	this.playingSounds[i].bufferSource = this.LoadNewSound(data[files[i]]);
-	    	this.playingSounds[i].bufferSource.start();
+    		buffer = data[files[i]];
+	    	this.syncAudio.push({
+
+			    advanceTime: (currentTime, audioTime, dt) => {
+
+			        const sine = this.LoadNewSound(buffer);
+			        sine.connect(this.mirror.in);
+
+			        sine.start(this.duration*Math.ceil(audioTime/this.duration));
+			        sine.stop(this.duration*Math.ceil(audioTime/this.duration) + buffer.duration);
+
+			        return currentTime + this.duration;
+		    	}
+	    	});
 	    }
 	}
 
@@ -75,7 +83,7 @@ class Ambisonic {
 	ConcatenatePath(fileWithoutExt, fileExt) { // Add the channels' infos in the paths to get the good files
 		var files = [];
 		for (let i = 0; i < this.nbFiles; i++) {
-			files.push(fileWithoutExt + "_" + this.playingSounds[i].channels[0] + "-" + this.playingSounds[i].channels[1] + "ch" + fileExt)
+			files.push(fileWithoutExt + "_" + this.channels[i][0] + "-" + this.channels[i][1] + "ch" + fileExt)
 		}
 		return (files);
 	}
@@ -85,7 +93,6 @@ class Ambisonic {
 	    var sound = this.audioContext.createBufferSource();			// Create the sound
 	    sound.loop = true;                                    		// Set the sound to loop
 	    sound.buffer = buffer;                                		// Set the sound buffer
-	    sound.connect(this.mirror.in);								// Connect the sound to the other nodes
 	    return (sound);
 	}
 
@@ -93,13 +100,25 @@ class Ambisonic {
 
 		// Change the path to get audio of 8 channels
 		var files = this.SlicePath(file);
+		var buffer;
 
 		// Change the buffer and play the new audio file
-		for (let i = 0; i < this.nbFiles; i++) {
-			this.playingSounds[i].bufferSource.stop();									// Stop the audio
-			this.playingSounds[i].bufferSource.disconnect(this.mirror.in);				// Disconnect it from the tree
-			this.playingSounds[i].bufferSource = this.LoadNewSound(data[files[i]]);		// Load the new audioBuffer and link the new node
-			this.playingSounds[i].bufferSource.start();									// Play the new audio	
+		for (let i = 0; i < this.nbFiles; i++) {								// Play the new audio	
+		
+			buffer = data[files[i]];
+			this.syncAudio[i] = {
+
+			    advanceTime: (currentTime, audioTime, dt) => {
+
+			        const sine = this.LoadNewSound(buffer);
+			        sine.connect(this.mirror.in);
+
+			        sine.start(this.duration*Math.ceil(audioTime/this.duration));
+			        sine.stop(this.duration*Math.ceil(audioTime/this.duration) + buffer.duration);
+
+			        return currentTime + this.duration;
+		    	}
+	    	}
 		}
 	}
 
@@ -107,6 +126,12 @@ class Ambisonic {
 	    
 	    // Update the gain of the source
 	    this.gain.gain.setValueAtTime(value/norm, 0);
+	    console.log(this.gain.gain)
+  	}
+
+  	GetSyncBuffers() {
+
+  		return(this.syncAudio)
   	}
 }
 

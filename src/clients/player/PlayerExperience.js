@@ -28,9 +28,9 @@ class PlayerExperience extends AbstractExperience {
       nbClosestPoints: 4,                       // Number of closest points searched
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
       // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
-      mode: "streaming",
+      // mode: "streaming",
       // mode: "ambisonic",
-      // mode: "convolving",
+      mode: "convolving",
       // mode: "ambiConvolving",
       circleDiameter: 20,                       // Diameter of sources' display
       listenerSize: 16,                         // Size of listener's display
@@ -103,6 +103,25 @@ class PlayerExperience extends AbstractExperience {
 
       console.log("json files: " + this.parameters.dataFileName + " has been read");
 
+      // Instantiate the attribute 'this.range' to get datas' parameters
+      this.Range(this.Sources.sourcesData.receivers.xyz);
+
+      // Instanciate 'this.scale'
+      this.scale = this.Scaling(this.range);
+
+      // Get offset parameters of the display
+      this.offset = {
+        x: this.range.moyX,
+        y: this.range.minY
+      };
+
+      // Create, start and store the listener class
+      this.Listener = new Listener(this.offset, this.parameters);
+      this.Listener.start();
+
+      // Start the sources display and audio depending on listener's initial position
+      this.Sources.start(this.Listener.listenerPosition);
+
       // Load sources' sound depending on mode (some modes need RIRs in addition of sounds)
       switch (this.parameters.mode) {
         case 'debug':
@@ -124,25 +143,6 @@ class PlayerExperience extends AbstractExperience {
       document.addEventListener("audioLoaded", () => {
 
         console.log("Audio buffers have been loaded from source: " + this.parameters.audioData);
-
-        // Instantiate the attribute 'this.range' to get datas' parameters
-        this.Range(this.Sources.sourcesData.receivers.xyz);
-
-        // Instanciate 'this.scale'
-        this.scale = this.Scaling(this.range);
-
-        // Get offset parameters of the display
-        this.offset = {
-          x: this.range.moyX,
-          y: this.range.minY
-        };
-
-        // Create, start and store the listener class
-        this.Listener = new Listener(this.offset, this.parameters);
-        this.Listener.start();
-
-        // Start the sources display and audio depending on listener's initial position
-        this.Sources.start(this.Listener.listenerPosition);
 
         // Add event listener for resize window event to resize the display
         window.addEventListener('resize', () => {

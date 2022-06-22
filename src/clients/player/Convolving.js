@@ -21,9 +21,12 @@ class Convolving {
 		this.rotator = new this.ambisonic.sceneRotator(this.audioContext, this.order);
 		this.decoder = new this.ambisonic.binDecoder(this.audioContext, this.order);
 	    this.gain = this.audioContext.createGain();
+
+	    this.syncAudio = []; 
+		this.duration;
 	}
 
-	async start (data, files, rirIndex, value, norm) {
+	async start (data, files, rirIndex, value, norm, duration) {
 
 		//Link audioNodes
 		this.mirror.out.connect(this.rotator.in);
@@ -34,14 +37,34 @@ class Convolving {
 	    // Set current and global values
     	this.gain.gain.setValueAtTime(value/norm, 0);
     	this.nbAudios = files.Sounds.length;
+    	var buffer;
+    	this.duration = duration;
 
     	// Create branch for each source
     	for (let i = 0; i < this.nbAudios; i++) {
 		    this.playingSounds.push(this.LoadNewSound(data[files.Sounds[i]]));	// Add a bufferSource
 		    this.convolvers.push(this.audioContext.createConvolver());			// Add a convolver
 
+    		buffer = data[files.Sounds[i]];
+    		console.log(buffer)
+	    	this.syncAudio.push({
+
+			    advanceTime: (currentTime, audioTime, dt) => {
+
+			        const sine = this.LoadNewSound(buffer);
+			        sine.connect(this.convolvers[i]);
+
+			        sine.start(this.duration*Math.ceil(audioTime/this.duration));
+			        sine.stop(this.duration*Math.ceil(audioTime/this.duration) + buffer.duration);
+
+			        return currentTime + this.duration;
+		    	}
+	    	});
+
+
+
 		    // Connect the new branch to the global branch
-	    	this.playingSounds[i].connect(this.convolvers[i]);
+	    	// this.playingSounds[i].connect(this.convolvers[i]);
 	    	this.convolvers[i].connect(this.mirror.in);	
 
 	    	// Set the rir for the new convolver						
@@ -77,6 +100,10 @@ class Convolving {
 	    
 	    // Update the sain of the source
 	    this.gain.gain.setValueAtTime(value/norm, 0);
+  	}
+
+  	GetSyncBuffers() {
+  		return(this.syncAudio)
   	}
 }
 
