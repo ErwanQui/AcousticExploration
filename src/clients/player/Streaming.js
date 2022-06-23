@@ -13,8 +13,8 @@ class Streaming {
 		this.syncAudio
 		this.duration = duration;
 		// this.filesPath = "AudioFiles0/";
-		this.filesPath = "AudioFiles1/";
-		// this.filesPath = "AudioFilesPiano/";
+		// this.filesPath = "AudioFiles1/";
+		this.filesPath = "AudioFilesPiano/";
 		this.sourceIndex = sourceIndex;
 		this.initialized = false;
 		this.connect = false;

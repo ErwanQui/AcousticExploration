@@ -71,10 +71,10 @@ class PlayerExperience extends AbstractExperience {
         break;
 
       case 'streaming':
-        this.parameters.audioData = 'AudioFiles1';
-        this.parameters.dataFileName = 'scene1.json';
-        // this.parameters.audioData = 'AudioFilesPiano';
-        // this.parameters.dataFileName = 'scenePiano.json';
+        // this.parameters.audioData = 'AudioFiles1';
+        // this.parameters.dataFileName = 'scene1.json';
+        this.parameters.audioData = 'AudioFilesPiano';
+        this.parameters.dataFileName = 'scenePiano.json';
         break;
 
       case 'ambisonic':
