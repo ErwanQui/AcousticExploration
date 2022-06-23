@@ -13,8 +13,8 @@ class Streaming {
 		this.syncAudio
 		this.duration = duration;
 		// this.filesPath = "AudioFiles0/";
-		// this.filesPath = "AudioFiles1/";
-		this.filesPath = "AudioFilesPiano/";
+		this.filesPath = "AudioFiles1/";
+		// this.filesPath = "AudioFilesPiano/";
 		this.sourceIndex = sourceIndex;
 		this.initialized = false;
 		this.connect = false;
@@ -127,7 +127,8 @@ class Streaming {
 	    var fetchSound = new XMLHttpRequest(); // Load the Sound with XMLHttpRequest
 	    fetchSound.open("GET",this.filesPath + url, true); // Path to Audio File
 	    fetchSound.responseType = "arraybuffer"; // Read as Binary Data
-	    fetchSound.onload = (() => {
+	    fetchSound.onload = (() => { // ∆∆∆∆∆∆∆∆ c'est lui qu'il faut améliorer ∆∆∆∆∆∆∆∆
+	    	console.log("e")
 	        this.audioContext.decodeAudioData(fetchSound.response, ((buffer) => {
 	        	console.log(buffer)
 	        	this.UpdateAudioSource(buffer);
