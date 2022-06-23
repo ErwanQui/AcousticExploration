@@ -14,8 +14,10 @@ class Streaming {
 		this.duration = duration;
 		// this.filesPath = "AudioFiles0/";
 		this.filesPath = "AudioFiles1/";
+		// this.filesPath = "AudioFilesPiano/";
 		this.sourceIndex = sourceIndex;
 		this.initialized = false;
+		this.connect = false;
 	}
 
 	async start (url, value, norm) {
@@ -49,25 +51,68 @@ class Streaming {
 	}
 
 	UpdateAudioSource(buffer) { // Stop the current playing to play an other source's audioBuffer
+
+		this.changing = true;
+		var tempPlayingSound;
+
    		this.syncAudio = {
 
 		    advanceTime: (currentTime, audioTime, dt) => {
+		    	var duration = buffer.duration
+		    	// var duration = 6
 
-		        const env = this.audioContext.createGain();
-		        env.connect(this.gain);
-		        env.gain.value = 0;
+		    	if (this.changing) {
+			        // const env = this.audioContext.createGain();
+			        // env.connect(this.gain);
+			        // env.gain.value = 0;
 
-		        const sine = this.LoadNewSound(buffer);
-		        sine.connect(env);
+			        tempPlayingSound = this.LoadNewSound(buffer);
+			        tempPlayingSound.connect(this.gain);
 
-		        env.gain.setValueAtTime(0, audioTime);
-		        env.gain.linearRampToValueAtTime(1, audioTime + 0.01);
-		        env.gain.exponentialRampToValueAtTime(0.0001, audioTime + 0.1);
-		        console.log(buffer)
-		        sine.start(buffer.duration*Math.ceil(audioTime/buffer.duration));
-		        sine.stop(buffer.duration*Math.ceil(audioTime/buffer.duration) + buffer.duration);
+			        if (this.connect) {
+			        	this.playingSound.disconnect(this.gain)
+			        	this.connect = false;
+			        } 
 
-		        return currentTime + buffer.duration;
+			        this.playingSound = tempPlayingSound;
+			        this.playingSound.connect(this.gain);
+			      	this.connect = true
+			      	// tempPlayingSound.disconnect(this.gain);
+
+			        // env.gain.setValueAtTime(0, audioTime);
+			        // env.gain.linearRampToValueAtTime(1, audioTime + 0.01);
+			        // env.gain.exponentialRampToValueAtTime(0.0001, audioTime + 0.1);
+
+			        // sine.start(buffer.duration*Math.ceil(audioTime/buffer.duration));
+			        // sine.stop(buffer.duration*Math.ceil(audioTime/buffer.duration) + buffer.duration);
+
+			        console.log(audioTime, duration*Math.ceil(audioTime/duration))
+			        console.log(duration*(Math.ceil(audioTime/duration) - 1))
+			        console.log(duration*Math.ceil(audioTime/duration))
+
+			        this.playingSound.start(audioTime, audioTime - duration*(Math.ceil(audioTime/duration) - 1));
+			        this.playingSound.stop(duration*Math.ceil(audioTime/duration));
+
+
+
+			        this.changing = false;
+			        console.log(true)
+			        return currentTime + duration*Math.ceil(audioTime/duration) - audioTime;
+			    }
+			    else {
+
+			        this.playingSound = this.LoadNewSound(buffer);
+			        this.playingSound.connect(this.gain);
+
+			        console.log(false, buffer)
+			        console.log(audioTime, duration*Math.ceil(audioTime/duration))
+
+
+			        this.playingSound.start(audioTime);
+			        this.playingSound.stop(audioTime + duration);
+
+			        return currentTime + duration;
+			    }
 	    	}
     	}
 
