@@ -127,6 +127,8 @@ class Streaming {
 	    var fetchSound = new XMLHttpRequest(); // Load the Sound with XMLHttpRequest
 	    fetchSound.open("GET",this.filesPath + url, true); // Path to Audio File
 	    fetchSound.responseType = "arraybuffer"; // Read as Binary Data
+	    fetchSound.timeout = 10000;
+	    fetchSound.ontimeout = (() => {console.log('timeout', fetchSound)});
 	    fetchSound.onload = (() => { // ∆∆∆∆∆∆∆∆ c'est lui qu'il faut améliorer ∆∆∆∆∆∆∆∆
 	    	console.log("e")
 	        this.audioContext.decodeAudioData(fetchSound.response, ((buffer) => {
