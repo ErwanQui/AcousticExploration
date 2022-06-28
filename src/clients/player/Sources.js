@@ -81,7 +81,8 @@ console.log(this.sync.getSyncTime())
 
 
 		// Add the audioSources depending on the mode chosen
-		for (let i = 0; i < this.nbActiveSources - 1; i++) {
+		// for (let i = 0; i < this.nbActiveSources - 1; i++) {
+		for (let i = 0; i < 1; i++) {
 			switch (this.mode) {
 
 				case 'debug':
@@ -137,7 +138,8 @@ console.log(this.sync.getSyncTime())
     	}
 
     	// Start each source
-    	for (let i = 0; i < this.nbActiveSources - 1; i++) {
+    	// for (let i = 0; i < this.nbActiveSources - 1; i++) {
+    	for (let i = 0; i < 1; i++) {
 
     		// Set sources' color for the starting position of the listener
 			this.UpdateClosestSourcesColor(i);
