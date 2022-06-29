@@ -20,6 +20,7 @@ class PlayerExperience extends AbstractExperience {
     this.filesystem = this.require('filesystem');                     // To get files
     this.sync = this.require('sync');                                 // To sync audio sources
     this.platform = this.require('platform');                         // To manage plugin for the sync
+    this.audioStream = this.require('audio-streams');                         // To manage plugin for the sync
 
     // Variable parameters
     this.parameters = {
@@ -71,10 +72,10 @@ class PlayerExperience extends AbstractExperience {
         break;
 
       case 'streaming':
-        this.parameters.audioData = 'AudioFiles1';
-        this.parameters.dataFileName = 'scene1.json';
-        // this.parameters.audioData = 'AudioFilesPiano';
-        // this.parameters.dataFileName = 'scenePiano.json';
+        // this.parameters.audioData = 'AudioFiles1';
+        // this.parameters.dataFileName = 'scene1.json';
+        this.parameters.audioData = 'AudioFilesPiano';
+        this.parameters.dataFileName = 'scenePiano.json';
         break;
 
       case 'ambisonic':
@@ -97,7 +98,7 @@ class PlayerExperience extends AbstractExperience {
     }
 
     // Create the objects storer for sources and load their fileDatas
-    this.Sources = new Sources(this.filesystem, this.audioBufferLoader, this.parameters, this.platform, this.sync)
+    this.Sources = new Sources(this.filesystem, this.audioBufferLoader, this.parameters, this.platform, this.sync, this.audioStream)
     this.Sources.LoadData();
 
     // Wait until data have been loaded from json files ("dataLoaded" event is create 'this.Sources.LoadData()')

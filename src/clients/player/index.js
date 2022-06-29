@@ -8,6 +8,8 @@ import pluginAudioBufferLoaderFactory from '@soundworks/plugin-audio-buffer-load
 import pluginFilesystemFactory from '@soundworks/plugin-filesystem/client';
 import pluginSyncFactory from '@soundworks/plugin-sync/client';
 import pluginPlatformFactory from '@soundworks/plugin-platform/client';
+import pluginAudioStreamsFactory from '@soundworks/plugin-audio-streams/client';
+
 
 import PlayerExperience from './PlayerExperience.js';
 
@@ -36,7 +38,10 @@ async function launch($container, index) {
       features: [
         ['web-audio', audioContext],
       ]
-    }, []);   
+    }, []);
+    client.pluginManager.register('audio-streams', pluginAudioStreamsFactory, {
+      audioContext,
+    }, ['platform']);
     // -------------------------------------------------------------------
     // launch application
     // -------------------------------------------------------------------

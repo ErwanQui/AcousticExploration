@@ -8,6 +8,8 @@ import pluginAudioBufferLoaderFactory from '@soundworks/plugin-audio-buffer-load
 import pluginFilesystemFactory from '@soundworks/plugin-filesystem/server';
 import pluginSyncFactory from '@soundworks/plugin-sync/server';
 import pluginPlatformFactory from '@soundworks/plugin-platform/server';
+import pluginAudioStreamsFactory from '@soundworks/plugin-audio-streams/server';
+
 
 import PlayerExperience from './PlayerExperience.js';
 
@@ -31,6 +33,7 @@ server.router.use('AudioFiles3', serveStatic(path.join('public', 'grid_nav_asset
 server.router.use('AudioFiles4', serveStatic(path.join('public', 'grid_nav_assets/4_ambisonic_rirs_2nd')));
 server.router.use('AudioFilesPiano', serveStatic(path.join('public', 'piano')));
 server.router.use('Assets', serveStatic(path.join('public', 'grid_nav_assets/assets')));
+server.router.use('/public/piano', serveStatic(path.join('public', 'piano')));
 
 
 import fs from 'fs';
@@ -88,6 +91,11 @@ server.pluginManager.register('filesystem', pluginFilesystemFactory, {
     path: path.join(process.cwd(), 'public/piano'),
     publicDirectory: 'AudioFilesPiano',
   }]
+}, []);
+
+server.pluginManager.register('audio-streams', pluginAudioStreamsFactory, {
+  directory: 'public/piano',
+  cache: true,
 }, []);
 
 server.pluginManager.register('audio-buffer-loader', pluginAudioBufferLoaderFactory, {}, []);

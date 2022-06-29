@@ -12,7 +12,7 @@ import { Scheduler } from 'waves-masters';
 
 class Sources {
 
-	constructor (filesystem, audioBufferLoader, parameters, platform, sync) {
+	constructor (filesystem, audioBufferLoader, parameters, platform, sync, audioStream) {
 
 	    // Create the datas' storer
 	    this.sourcesData;
@@ -25,6 +25,8 @@ class Sources {
 
 		// Get files
 	   	this.filesystem = filesystem;
+
+	   	this.audioStream = audioStream
 
 
 
@@ -87,7 +89,7 @@ console.log(this.sync.getSyncTime())
 
 				case 'debug':
 				case 'streaming':
-					this.audioSources.push(new Streaming(this.audioContext, this.duration, i));
+					this.audioSources.push(new Streaming(this.audioContext, this.duration, i, this.audioStream));
 					break;
 
 				case 'ambisonic':
@@ -148,9 +150,6 @@ console.log(this.sync.getSyncTime())
 			switch (this.mode) {
 		    	case 'debug':
 		    	case 'streaming':
-	        		// this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm);  	
-	        		this.audioSources[i].start(this.sourcesData.receivers.files[this.closestSourcesId[i]], this.gainsData.Value[i], this.gainsData.Norm);  	
-			    	this.syncBuffers.push(undefined)
 
 			    	document.addEventListener("audioLoaded" + i, () => {
 			    		if (this.syncBuffers[i] != undefined) {
@@ -160,6 +159,13 @@ console.log(this.sync.getSyncTime())
 			    		this.syncBuffers[i] = this.audioSources[i].GetSyncBuffer()
 		    			this.UpdateEngines(i, true);
 		    		});
+		    	
+		    		console.log("hey")
+	        		// this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm);  	
+	        		this.audioSources[i].start(this.sourcesData.receivers.files[this.closestSourcesId[i]], this.gainsData.Value[i], this.gainsData.Norm);  	
+			    	this.syncBuffers.push(undefined)
+			    	console.log("rehey")
+
 					break;
 
 		    	case 'ambisonic':
@@ -373,7 +379,7 @@ console.log(this.sync.getSyncTime())
 		    		// this.UpdateEngines(audioSourceId, false)
 			    	// this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[sources2Attribuate[i][0]]])
 			    	this.audioSources[audioSourceId].loadSample(this.sourcesData.receivers.files[sources2Attribuate[i][0]])
-			    	// this.UpdateEngines(audioSourceId, true)
+			    	this.UpdateEngines(audioSourceId, true)
 		    		break;
 
 		    	case "ambisonic":
@@ -490,6 +496,7 @@ console.log(this.sync.getSyncTime())
   	}
 
   	UpdateEngines(sourceIndex, adding) {
+  		console.log("hello")
   		if (adding) {
 			const nextTime = Math.ceil(this.sync.getSyncTime());
 			this.scheduler.add(this.syncBuffers[sourceIndex], nextTime);
