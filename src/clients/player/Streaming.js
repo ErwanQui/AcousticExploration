@@ -202,15 +202,15 @@ class Streaming {
 			    }
 			    else {
 
-			        this.playingSound = this.LoadNewSound(buffer);
-			        this.playingSound.connect(this.gain);
+			        // this.playingSound = this.LoadNewSound(buffer);
+			        // this.playingSound.connect(this.gain);
 
 			        console.log(false, buffer)
 			        console.log(audioTime, duration*Math.ceil(audioTime/duration))
 
 
-			        this.playingSound.start(audioTime);
-			        this.playingSound.stop(audioTime + duration);
+			        audio.start(audioTime);
+			        audio.stop(audioTime + duration);
 
 			        return currentTime + duration;
 			    }

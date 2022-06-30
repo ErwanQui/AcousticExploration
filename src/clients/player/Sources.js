@@ -83,8 +83,8 @@ console.log(this.sync.getSyncTime())
 
 
 		// Add the audioSources depending on the mode chosen
-		// for (let i = 0; i < this.nbActiveSources - 1; i++) {
-		for (let i = 0; i < 1; i++) {
+		for (let i = 0; i < this.nbActiveSources - 1; i++) {
+		// for (let i = 0; i < 1; i++) {
 			switch (this.mode) {
 
 				case 'debug':
@@ -140,8 +140,8 @@ console.log(this.sync.getSyncTime())
     	}
 
     	// Start each source
-    	// for (let i = 0; i < this.nbActiveSources - 1; i++) {
-    	for (let i = 0; i < 1; i++) {
+    	for (let i = 0; i < this.nbActiveSources - 1; i++) {
+    	// for (let i = 0; i < 1; i++) {
 
     		// Set sources' color for the starting position of the listener
 			this.UpdateClosestSourcesColor(i);
@@ -152,6 +152,7 @@ console.log(this.sync.getSyncTime())
 		    	case 'streaming':
 
 			    	document.addEventListener("audioLoaded" + i, () => {
+			    		console.log("audioDispatch")
 			    		if (this.syncBuffers[i] != undefined) {
 			    			this.UpdateEngines(i, false);
 			    		}
@@ -365,9 +366,11 @@ console.log(this.sync.getSyncTime())
 
 	    // Update the audioSources with new Sources ('sources2Attribuate')
 	    for (let i = 0; i < availableAudioSources.length; i++) {
+	    // for (let i = 0; i < 1; i++) {
 
 	    	// Get the available audio source's id
 	    	audioSourceId = availableAudioSources[i];
+	    	console.log(this.audioSources, audioSourceId)
 
 	    	// Add a new association between 'this.closestSourceId' and the corresponding Source
 	    	this.audio2Source[sources2Attribuate[i][1]] = audioSourceId;
@@ -376,10 +379,11 @@ console.log(this.sync.getSyncTime())
 		    switch (this.mode) {
 		    	case "debug":
 		    	case "streaming":
-		    		// this.UpdateEngines(audioSourceId, false)
+		    	console.warn("change")
+		    		this.UpdateEngines(audioSourceId, false)
 			    	// this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[sources2Attribuate[i][0]]])
 			    	this.audioSources[audioSourceId].loadSample(this.sourcesData.receivers.files[sources2Attribuate[i][0]])
-			    	this.UpdateEngines(audioSourceId, true)
+			    	// this.UpdateEngines(audioSourceId, true)
 		    		break;
 
 		    	case "ambisonic":
@@ -408,6 +412,7 @@ console.log(this.sync.getSyncTime())
 
 	    // Update display and gain of activ sources
 	    for (let i = 0; i < this.nbActiveSources - 1; i++) {
+	    // for (let i = 0; i < 1; i++) {
 		    this.UpdateClosestSourcesColor(i);
 		    this.audioSources[i].UpdateGain(this.gainsData.Value[this.Index(i, this.audio2Source)[1]], this.gainsData.Norm);
 	    }
@@ -499,10 +504,15 @@ console.log(this.sync.getSyncTime())
   		console.log("hello")
   		if (adding) {
 			const nextTime = Math.ceil(this.sync.getSyncTime());
+			console.log(this.syncBuffers[sourceIndex], sourceIndex)
 			this.scheduler.add(this.syncBuffers[sourceIndex], nextTime);
+			console.log(this.syncBuffers[sourceIndex], sourceIndex)
 		}
 		else {
+			console.log(this.syncBuffers[sourceIndex], sourceIndex)
+			console.log(this.scheduler.has(this.syncBuffers[sourceIndex]))
 			if (this.scheduler.has(this.syncBuffers[sourceIndex])) {
+				console.log("oui")
 				this.scheduler.remove(this.syncBuffers[sourceIndex]);
 			}
 		}
