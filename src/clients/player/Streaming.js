@@ -80,7 +80,7 @@ class Streaming {
 	}
 
 
-	UpdateAudioSource(audio) { // Stop the current playing to play an other source's audioBuffer
+	UpdateAudioSource(url) { // Stop the current playing to play an other source's audioBuffer
 
 		this.changing = true;
 		var tempPlayingSound;
@@ -89,42 +89,56 @@ class Streaming {
    		this.syncAudio = {
 
 		    advanceTime: (currentTime, audioTime, dt) => {
-		    	var duration = audio.duration
 		    	// var duration = 6
 
 		    	if (this.changing) {
 
+		    		var tempAudio = this.audioStream.createStreamSource();
+					console.log(url)
+			      	tempAudio.streamId = url;
+			      	this.audioDuration = tempAudio.duration
+
+
 			        if (this.connect) {
-			        	audio.disconnect(this.gain)
+			        	this.audio.disconnect(this.gain)
+			        	this.audio.stop()
 			        	this.connect = false;
 			        } 
 
+			        this.audio = tempAudio;
 
+
+			        console.log(audioTime, this.audioDuration*Math.ceil(audioTime/this.audioDuration))
+			        console.log(audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1))
+			        console.log(this.audioDuration*Math.ceil(audioTime/this.audioDuration))
+
+			      	this.audio.connect(this.gain);
+			        this.audio.start(audioTime, audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1));
 			      	this.connect = true
-
-			        console.log(audioTime, duration*Math.ceil(audioTime/duration))
-			        console.log(audioTime - duration*(Math.ceil(audioTime/duration) - 1))
-			        console.log(duration*Math.ceil(audioTime/duration))
-
-			        audio.start(audioTime, audioTime - duration*(Math.ceil(audioTime/duration) - 1));
-			        audio.stop(duration*Math.ceil(audioTime/duration));
+			        this.audio.stop(this.audioDuration*Math.ceil(audioTime/this.audioDuration));
 
 
 
 			        this.changing = false;
 			        console.log(true)
-			        return currentTime + duration*Math.ceil(audioTime/duration) - audioTime;
+			        return currentTime + this.audioDuration*Math.ceil(audioTime/this.audioDuration) - audioTime;
 			    }
 			    else {
+			    	this.audio = this.audioStream.createStreamSource();
+					console.log(url)
+			      	this.audio.streamId = url;
+			      	// var duration = this.audio.duration
+			      	this.audio.connect(this.gain);
 
-			        console.log(false, audio)
-			        console.log(audioTime, duration*Math.ceil(audioTime/duration))
+			        console.log(false, this.audio)
+			        console.log(audioTime, this.audioDuration*Math.ceil(audioTime/this.audioDuration))
+			        console.log(audioTime, this.audioDuration)
 
 
-			        audio.start(audioTime);
-			        audio.stop(audioTime + duration);
+			        this.audio.start(audioTime);
+			        this.audio.stop(audioTime + this.audioDuration);
 
-			        return currentTime + duration;
+			        return currentTime + this.audioDuration;
 			    }
 	    	}
     	}
@@ -156,17 +170,17 @@ class Streaming {
 	loadSample(url) {
 		// console.log(url)
 
-		var src = this.audioStream.createStreamSource();
-		console.log(url)
-      	src.streamId = url;
-      	src.connect(this.gain);
+		// var src = this.audioStream.createStreamSource();
+		// console.log(url)
+  //     	src.streamId = url;
+  //     	src.connect(this.gain);
 
       	// this.streamSource.set(url, src);
       	// src.addEventListener('ended', () => this.streamSources.delete(streamId));
-      	console.log(src)
+      	// console.log(src)
       	// src.start()
       	// src.loop = true;
-      	this.UpdateAudioSource(src);
+      	this.UpdateAudioSource(url);
       	// src.start();
       	// const src = this.streamSources.get(streamId);
       	// this.streamSources.delete(streamId);
