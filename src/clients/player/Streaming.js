@@ -103,7 +103,7 @@ class Streaming {
 			      	this.connect = true
 
 			        console.log(audioTime, duration*Math.ceil(audioTime/duration))
-			        console.log(duration*(Math.ceil(audioTime/duration) - 1))
+			        console.log(audioTime - duration*(Math.ceil(audioTime/duration) - 1))
 			        console.log(duration*Math.ceil(audioTime/duration))
 
 			        audio.start(audioTime, audioTime - duration*(Math.ceil(audioTime/duration) - 1));
