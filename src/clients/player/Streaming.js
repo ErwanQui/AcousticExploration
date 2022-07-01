@@ -4,7 +4,7 @@
 
 class Streaming {
 
-	constructor (audioContext, duration, sourceIndex, audioStream) {
+	constructor (audioContext, duration, sourceIndex, audioStream, playingState) {
 		// console.log(audioStream)
 	    // Creating AudioContext
 	    this.audioContext = audioContext;		// Get audioContext
@@ -26,16 +26,27 @@ class Streaming {
 		this.begin = true
 		this.fileHead = []
 		this.globalBuffer = [];
+		this.playingState = playingState
+		this.audio;
 
 	}
 
 	async start (url, value, norm) {
+		// console.log(this.playingState)
+
+		console.info("Starting source: " + this.sourceIndex)
 
 	    // Create the gain
 	    this.gain = this.audioContext.createGain();
 
 	    // Initiate with current gain's value
-    	this.gain.gain.setValueAtTime(value/norm, 0);
+    	
+    	if (this.playingState) {
+    		this.gain.gain.setValueAtTime(value/norm, 0);
+    	}
+    	else {
+    		this.gain.gain.setValueAtTime(0, 0);
+    	}
 
     	// Load the sound from the buffer
     	// this.playingSound = this.LoadNewSound(buffer);
@@ -47,6 +58,7 @@ class Streaming {
     	// Play the sound
     	// this.playingSound.start();
     	// this.UpdateAudioSource(buffer);
+    	// console.log("File played: " + url)
     	this.loadSample(url);
 	}
 
@@ -61,9 +73,9 @@ class Streaming {
 
 	ConcatBuffer(buffer1, buffer2) {
 		var intArray1 = new Uint8Array(buffer1)
-		console.log(buffer1)
-		console.log(intArray1)
-		console.log("jackkkiie")
+		// console.log(buffer1)
+		// console.log(intArray1)
+		// console.log("jackkkiie")
 		var intArray2 = new Uint8Array(buffer2)
  		var concatArray = intArray1.concat(this.intArray2);
 		var concatBuffer = new ArrayBuffer(concatArray.length - 44)
@@ -79,22 +91,47 @@ class Streaming {
  		return(concatBuffer)
 	}
 
+	ChangePlayingState(state) {
+		if (this.playingState != state) {
+			if (state) {
+				// this.audio.start(audioTime, audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1));
+			    this.audio.connect(this.gain);
+			    console.log("AudioSources " + this.sourceIndex + " is now connected")
+				this.connect = true
+				// this.audio.stop(this.audioDuration*Math.ceil(audioTime/this.audioDuration));
+			}
+			else {
+				// this.audio.start();
+				this.audio.disconnect(this.gain);
+				console.log("AudioSources " + this.sourceIndex + " is now disconnected")
+				this.connect = false;
+				// this.audio.stop();
+			}
+			this.playingState = state;
+		}
+		// console.log(this.sourceIndex, this.playingState)
+
+	}
+
 
 	UpdateAudioSource(url) { // Stop the current playing to play an other source's audioBuffer
 
 		this.changing = true;
 		var tempPlayingSound;
-		console.log('bonjour')
+		// console.log('bonjour')
+		// console.log(url)
 
    		this.syncAudio = {
 
 		    advanceTime: (currentTime, audioTime, dt) => {
 		    	// var duration = 6
+		    	// console.log(this.sourceIndex)
+		    	// console.log(audioTime)
 
 		    	if (this.changing) {
 
 		    		var tempAudio = this.audioStream.createStreamSource();
-					console.log(url)
+					// console.log(url)
 			      	tempAudio.streamId = url;
 			      	this.audioDuration = tempAudio.duration
 
@@ -107,43 +144,54 @@ class Streaming {
 
 			        this.audio = tempAudio;
 
+			        // console.log(audioTime, this.audioDuration*Math.ceil(audioTime/this.audioDuration))
+			        // console.log(audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1))
+			        // console.log(this.audioDuration*Math.ceil(audioTime/this.audioDuration))
+			      	
 
-			        console.log(audioTime, this.audioDuration*Math.ceil(audioTime/this.audioDuration))
-			        console.log(audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1))
-			        console.log(this.audioDuration*Math.ceil(audioTime/this.audioDuration))
 
-			      	this.audio.connect(this.gain);
-			        this.audio.start(audioTime, audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1));
-			      	this.connect = true
-			        this.audio.stop(this.audioDuration*Math.ceil(audioTime/this.audioDuration));
-
+			      	// if (this.playingState) {
+				    this.audio.start(audioTime, audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1));
+			      	
+			      	if (this.playingState) {
+			      		this.audio.connect(this.gain);
+			      		console.log("AudioSources " + this.sourceIndex + " is now connected")
+			      		this.connect = true
+			      	}
+				    
+				    this.audio.stop(this.audioDuration*Math.ceil(audioTime/this.audioDuration));
+					// }
 
 
 			        this.changing = false;
-			        console.log(true)
+			        // console.log(true)
 			        return currentTime + this.audioDuration*Math.ceil(audioTime/this.audioDuration) - audioTime;
 			    }
 			    else {
 			    	this.audio = this.audioStream.createStreamSource();
-					console.log(url)
+					// console.log(url)
 			      	this.audio.streamId = url;
 			      	// var duration = this.audio.duration
-			      	this.audio.connect(this.gain);
 
-			        console.log(false, this.audio)
-			        console.log(audioTime, this.audioDuration*Math.ceil(audioTime/this.audioDuration))
-			        console.log(audioTime, this.audioDuration)
+			      	if (this.playingState) {
+			      		this.audio.connect(this.gain);
+			      	}
 
+			        // console.log(false, this.audio)
+			        // console.log(audioTime, this.audioDuration*Math.ceil(audioTime/this.audioDuration))
+			        // console.log(audioTime, this.audioDuration)
 
-			        this.audio.start(audioTime);
-			        this.audio.stop(audioTime + this.audioDuration);
+			        // if (this.playingState) {
+				        this.audio.start(audioTime);
+				        this.audio.stop(audioTime + this.audioDuration);
+				    // }
 
 			        return currentTime + this.audioDuration;
 			    }
 	    	}
     	}
 
-    	console.log(this.syncAudio, this.sourceIndex)
+    	// console.log(this.syncAudio, this.sourceIndex)
    		document.dispatchEvent(new Event("audioLoaded" + this.sourceIndex));
 
 	}
@@ -180,6 +228,7 @@ class Streaming {
       	// console.log(src)
       	// src.start()
       	// src.loop = true;
+      	console.log("File played: " + url)
       	this.UpdateAudioSource(url);
       	// src.start();
       	// const src = this.streamSources.get(streamId);
@@ -191,7 +240,8 @@ class Streaming {
 	UpdateGain(value, norm) { // Update gain
 	    
 	    // Update the gain of the source
-	    console.log(this.gain)
+	    // console.log(this.gain)
+	    // console.log(this.sourceIndex, value, norm)
 	    this.gain.gain.setValueAtTime(value/norm, 0);
   	}
 
