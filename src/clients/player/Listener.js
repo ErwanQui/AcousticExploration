@@ -57,7 +57,7 @@ class Listener {
     UpdateListenerDisplay(offset, scale) { // Update listener's display
 
 	    this.display.style.transform = "translate(" + 
-	    	((this.listenerPosition.x - offset.x)*scale - this.circleSpacing) + "px, " + 
+	    	((this.listenerPosition.x - offset.x)*scale) + "px, " + 
 	    	((this.listenerPosition.y - offset.y)*scale) + "px) rotate(45deg)";
     }
 }
