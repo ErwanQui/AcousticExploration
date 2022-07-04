@@ -314,8 +314,14 @@ class Sources {
 		          		tempSourcesPosition.push({x: this.sourcesData.receivers.xyz[i][0], y:this.sourcesData.receivers.xyz[i][1]});
 		        	}
 
+		        	var tempInstrumentsPositions = [];
+		        	for (let i = 0; i < this.sourcesData.sources_xy.length; i++) {
+		          		tempInstrumentsPositions.push({x: this.sourcesData.sources_xy[i][0], y:this.sourcesData.sources_xy[i][1]});
+		        	}
+
 		        	// Update sourcesData object
 		        	this.sourcesData.receivers.xyz = tempSourcesPosition;
+		        	this.sourcesData.sources_xy = tempInstrumentsPositions;
 
 		        	// Create an event to inform that the file's data can be used
 		          	document.dispatchEvent(new Event("dataLoaded"));
@@ -356,6 +362,7 @@ class Sources {
 			    	this.audioSources[this.audio2Source[i]].ChangePlayingState(false, this.sync.getLocalTime(this.sync.getSyncTime()));
 		          	console.log("Source " + i + " is now inactive")
 		          	this.audioSources[this.audio2Source[i]].UpdateGain(0, 1);
+		          	// console.warn(this.gainsData.Value)
 
 
 		          	if (this.Index(previousClosestSourcesId[i], this.closestSourcesId)[0]) {
@@ -468,13 +475,14 @@ class Sources {
 		    // console.log(i, this.gainsData)
 		    // console.log(this.audio2Source)
 		    // console.log(this.Index(i, this.audio2Source))
-		    console.log("AudioSource " + this.audio2Source[i] + " is active")
+		    console.log("AudioSource " + this.audio2Source[i] + " is active with the value " + (this.gainsData.Value[i]/this.gainsData.Norm))
 		    this.UpdateClosestSourcesColor(i);
 		    this.audioSources[this.audio2Source[i]].ChangePlayingState(true);
 		    // if ((this.Index(i, this.audio2Source)[1]) < this.nbActiveSources) {
 		    // console.log(this.audio2Source[i])
 		    // console.log(this.gainsData)
 		    this.audioSources[this.audio2Source[i]].UpdateGain(this.gainsData.Value[i], this.gainsData.Norm);
+
 	    	// }
 	    	// else {
 		    // 	this.audioSources[i].UpdateGain(0, 1);
@@ -543,7 +551,7 @@ class Sources {
 	    var sourceValue = this.gainsData.Value[index]/this.gainsData.Norm;
 
 	    // Update source's display
-	    console.log("Source " + this.closestSourcesId[index] + " is now colored with the init gainValue:" + sourceValue)
+	    console.log("Source " + this.closestSourcesId[index] + " is now colored with the init gainValue: " + sourceValue)
 	    this.sources[this.closestSourcesId[index]].style.background = "rgb(0, " + 255*(4*Math.pow(sourceValue, 2)) + ", 0)";
   	}
 

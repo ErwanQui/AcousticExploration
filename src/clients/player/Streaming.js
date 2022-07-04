@@ -19,7 +19,7 @@ class Streaming {
 		// this.filesPath = "AudioFilesPiano/";
 		this.sourceIndex = sourceIndex;
 		this.initialized = false;
-		this.connect = false;
+		// this.connect = false;
 		this.previousBuffer = [];
 		this.restBuffer = [];
 		this.count = 0;
@@ -64,14 +64,14 @@ class Streaming {
     	this.loadSample(url);
 	}
 
-	LoadNewSound(buffer) { // Create and link the sound to the audioContext
+	// LoadNewSound(buffer) { // Create and link the sound to the audioContext
 
-	    var sound = this.audioContext.createBufferSource();		// Create the sound
-	    sound.loop = true;                                    	// Set the sound to loop
-	    sound.buffer = buffer;                                	// Set the sound buffer
-	    sound.connect(this.gain);								// Connect the sound to the other nodes
-	    return (sound);
-	}
+	//     var sound = this.audioContext.createBufferSource();		// Create the sound
+	//     sound.loop = true;                                    	// Set the sound to loop
+	//     sound.buffer = buffer;                                	// Set the sound buffer
+	//     sound.connect(this.gain);								// Connect the sound to the other nodes
+	//     return (sound);
+	// }
 
 	ConcatBuffer(buffer1, buffer2) {
 		var intArray1 = new Uint8Array(buffer1)
@@ -97,16 +97,16 @@ class Streaming {
 		if (this.playingState != state) {
 			if (state) {
 				// this.audio.start(audioTime, audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1));
-			    this.audio.connect(this.gain);
-			    console.log("AudioSources " + this.sourceIndex + " is now connected")
-				this.connect = true
+			    // this.audio.connect(this.gain);
+			    console.log("AudioSources " + this.sourceIndex + " is now playing")
+				// this.connect = true
 				// this.audio.stop(this.audioDuration*Math.ceil(audioTime/this.audioDuration));
 			}
 			else {
 				// this.audio.start();
-				this.audio.disconnect(this.gain);
-				console.log("AudioSources " + this.sourceIndex + " is now disconnected")
-				this.connect = false;
+				// this.audio.disconnect(this.gain);
+				console.log("AudioSources " + this.sourceIndex + " is no more playing")
+				// this.connect = false;
 				// this.audio.stop();
 			}
 			this.playingState = state;
@@ -165,14 +165,14 @@ class Streaming {
 
 			      	// if (this.playingState) {
 				    this.audio.start(audioTime, audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1));
-			      	console.error("The audioTime is " + audioTime)
-			      	console.error("The time to start is " + (audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1)))
-			      	console.error("It corresponds at a beginning at " + (this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1)))
-			      	if (this.playingState) {
-			      		this.audio.connect(this.gain);
-			      		console.log("AudioSources " + this.sourceIndex + " is now connected")
-			      		this.connect = true
-			      	}
+			      	// console.error("The audioTime is " + audioTime)
+			      	// console.error("The time to start is " + (audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1)))
+			      	// console.error("It corresponds at a beginning at " + (this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1)))
+			      	// if (this.playingState) {
+		      		this.audio.connect(this.gain);
+		      		console.log("AudioSources " + this.sourceIndex + " is now connected")
+		      		// this.connect = true
+			      	// }
 				    
 				    this.audio.stop(this.audioDuration*Math.ceil(audioTime/this.audioDuration));
 					// }
@@ -188,9 +188,9 @@ class Streaming {
 			      	this.audio.streamId = url;
 			      	// var duration = this.audio.duration
 
-			      	if (this.playingState) {
+			      	// if (this.playingState) {
 			      		this.audio.connect(this.gain);
-			      	}
+			      	// }
 
 			        // console.log(false, this.audio)
 			        // console.log(audioTime, this.audioDuration*Math.ceil(audioTime/this.audioDuration))

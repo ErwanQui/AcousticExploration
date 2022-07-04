@@ -26,8 +26,8 @@ class PlayerExperience extends AbstractExperience {
     this.parameters = {
       audioContext: audioContext,               // Global audioContext
       order: 2,                                 // Order of ambisonics
-      nbClosestSources: 5,                       // Number of closest points searched
-      nbClosestPoints: 5,                       // Number of closest points searched
+      nbClosestSources: 3,                       // Number of closest points searched
+      nbClosestPoints: 3,                       // Number of closest points searched
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
       // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
       mode: "streaming",
@@ -132,7 +132,8 @@ class PlayerExperience extends AbstractExperience {
         // console.log("Audio buffers have been loaded from source: " + this.parameters.audioData);
 
         // Instantiate the attribute 'this.range' to get datas' parameters
-        this.Range(this.Sources.sourcesData.receivers.xyz);
+        console.log(this.Sources.sourcesData.sources_xy)
+        this.Range(this.Sources.sourcesData.receivers.xyz, this.Sources.sourcesData.sources_xy);
 
         // Instanciate 'this.scale'
         this.scale = this.Scaling(this.range);
@@ -143,9 +144,14 @@ class PlayerExperience extends AbstractExperience {
           y: this.range.minY
         };
 
+        var listenerInitPos = {
+          x: this.positionRange.moyX,
+          y: this.positionRange.minY
+        };
+
         // Create, start and store the listener class
-        this.Listener = new Listener(this.offset, this.parameters);
-        this.Listener.start();
+        this.Listener = new Listener(listenerInitPos, this.parameters);
+        this.Listener.start(this.scale, this.offset);
         console.log("ici")
         // Start the sources display and audio depending on listener's initial position
         this.Sources.start(this.Listener.listenerPosition);
@@ -168,32 +174,73 @@ class PlayerExperience extends AbstractExperience {
     });
   }
 
-  Range(positions) { // Store the array properties in 'this.range'
+  Range(audioSourcesPositions, sourcesPositions) { // Store the array properties in 'this.range'
+    // console.log(sourcesPositions)
 
     this.range = {
-      minX: positions[0].x,
-      maxX: positions[0].x,
-      minY: positions[0].y, 
-      maxY: positions[0].y,
+      minX: audioSourcesPositions[0].x,
+      maxX: audioSourcesPositions[0].x,
+      minY: audioSourcesPositions[0].y, 
+      maxY: audioSourcesPositions[0].y,
     };
-    for (let i = 1; i < positions.length; i++) {
-      if (positions[i].x < this.range.minX) {
-        this.range.minX = positions[i].x;
+    this.positionRange = {
+      minX: audioSourcesPositions[0].x,
+      maxX: audioSourcesPositions[0].x,
+      minY: audioSourcesPositions[0].y, 
+      maxY: audioSourcesPositions[0].y,
+    };
+
+    for (let i = 1; i < audioSourcesPositions.length; i++) {
+      if (audioSourcesPositions[i].x < this.range.minX) {
+        this.range.minX = audioSourcesPositions[i].x;
+        this.positionRange.minX = audioSourcesPositions[i].x;
       }
-      if (positions[i].x > this.range.maxX) {
-        this.range.maxX = positions[i].x;
+      if (audioSourcesPositions[i].x > this.range.maxX) {
+        this.range.maxX = audioSourcesPositions[i].x;
+        this.positionRange.maxX = audioSourcesPositions[i].x;
       }
-      if (positions[i].y < this.range.minY) {
-        this.range.minY = positions[i].y;
+      if (audioSourcesPositions[i].y < this.range.minY) {
+        this.range.minY = audioSourcesPositions[i].y;
+        this.positionRange.minY = audioSourcesPositions[i].y;
       }
-      if (positions[i].y > this.range.maxY) {
-        this.range.maxY = positions[i].y;
+      if (audioSourcesPositions[i].y > this.range.maxY) {
+        this.range.maxY = audioSourcesPositions[i].y;
+        this.positionRange.maxY = audioSourcesPositions[i].y;
+      }
+    }
+
+    this.positionRange.moyX = (this.range.maxX + this.range.minX)/2;
+    this.positionRange.moyY = (this.range.maxY + this.range.minY)/2;
+    this.positionRange.rangeX = this.range.maxX - this.range.minX;
+    this.positionRange.rangeY = this.range.maxY - this.range.minY;
+
+    // var D = {tempRange: this.range};
+    // this.positionRange = D.tempRange;
+
+    for (let i = 0; i < sourcesPositions.length; i++) {
+      console.log(this.range.minX)
+
+      if (sourcesPositions[i].x < this.range.minX) {
+        this.range.minX = sourcesPositions[i].x;
+
+      }
+      if (sourcesPositions[i].x > this.range.maxX) {
+        this.range.maxX = sourcesPositions[i].x;
+      }
+      if (sourcesPositions[i].y < this.range.minY) {
+        this.range.minY = sourcesPositions[i].y;
+      }
+      if (sourcesPositions[i].y > this.range.maxY) {
+        this.range.maxY = sourcesPositions[i].y;
       }
     }
     this.range.moyX = (this.range.maxX + this.range.minX)/2;
     this.range.moyY = (this.range.maxY + this.range.minY)/2;
     this.range.rangeX = this.range.maxX - this.range.minX;
     this.range.rangeY = this.range.maxY - this.range.minY;
+
+    // console.log(this.range.minX)
+    // console.log(this.positionRange.minX)
   }
 
   Scaling(rangeValues) { // Store the greatest scale that displays all the elements in 'this.scale'
@@ -220,12 +267,20 @@ class PlayerExperience extends AbstractExperience {
           </div>
         </div>
         <div id="game" style="visibility: hidden;">
-          <div id="circleContainer" style="text-align: center; position: absolute; left: 50%">
+          <div id="instrumentContainer" style="text-align: center; position: absolute; left: 50%">
             <div id="selector" style="position: absolute;
               height: ${this.range.rangeY*this.scale}px;
               width: ${this.range.rangeX*this.scale}px;
+              background: z-index: 0;
+              transform: translate(${(-this.range.rangeX/2)*this.scale}px, ${this.parameters.circleDiameter/2}px);">
+            </div>
+          </div>
+          <div id="circleContainer" style="text-align: center; position: absolute; left: 50%">
+            <div id="selector" style="position: absolute;
+              height: ${this.positionRange.rangeY*this.scale}px;
+              width: ${this.positionRange.rangeX*this.scale}px;
               background: yellow; z-index: 0;
-              transform: translate(${(-this.range.rangeX*this.scale)/2}px, ${this.parameters.circleDiameter/2}px);">
+              transform: translate(${((this.positionRange.minX - this.range.minX - this.range.rangeX/2)*this.scale)}px, ${(this.positionRange.minY - this.range.minY)*this.scale + this.parameters.circleDiameter/2}px);">
             </div>
             
           </div>
@@ -290,10 +345,55 @@ class PlayerExperience extends AbstractExperience {
   onBeginButtonClicked() { // Begin audioContext and add the sources display to the display
 
     // Create and display objects
+    this.CreateInstruments();
     this.Sources.CreateSources(this.container, this.scale, this.offset);        // Create the sources and display them
     this.Listener.Display(this.container);                                      // Add the listener's display to the container
     this.render();                                                              // Update the display
     document.dispatchEvent(new Event("rendered"));                              // Create an event when the simulation appeared
+  }
+
+  CreateInstruments() {
+    var container = document.getElementById('instrumentContainer')
+    var circleDiameter = this.parameters.circleDiameter;
+    this.instruments = []
+    for (let i = 0; i < this.Sources.sourcesData.sources_xy.length; i++) {
+
+      this.instruments.push(document.createElement('div'))
+
+        // Create the source's display
+      // this.sources.push(document.createElement('div'));        // Create a new element
+      this.instruments[i].id = "instrument" + i;                       // Set the circle id
+      this.instruments[i].innerHTML = "S";                       // Set the circle value (i+1)
+
+      // Change form and position of the element to get a circle at the good place;
+      this.instruments[i].style.position = "absolute";
+      this.instruments[i].style.margin = "0 " + (-circleDiameter/2) + "px";
+      this.instruments[i].style.width = circleDiameter + "px";
+      this.instruments[i].style.height = circleDiameter + "px";
+      this.instruments[i].style.borderRadius = circleDiameter + "px";
+      this.instruments[i].style.lineHeight = circleDiameter + "px";
+      this.instruments[i].style.background = "red";
+      this.instruments[i].style.zIndex = 1;
+      this.instruments[i].style.transform = "translate(" + 
+        ((this.Sources.sourcesData.sources_xy[i].x - this.offset.x)*this.scale) + "px, " + 
+        ((this.Sources.sourcesData.sources_xy[i].y - this.offset.y)*this.scale) + "px)";
+
+      console.log((this.Sources.sourcesData))
+      console.log((this.Sources.sourcesData.sources_xy[i].x - this.offset.x)*this.scale)
+      console.log((this.Sources.sourcesData.sources_xy[i].y - this.offset.y)*this.scale)
+
+      // Add the circle's display to the global container
+      container.appendChild(this.instruments[i]);
+      console.log("zblo")
+    }
+  }
+
+  UpdateInstrumentsDisplay() {
+    for (let i = 0; i < this.Sources.sourcesData.sources_xy.length; i++) {
+      this.instruments[i].style.transform = "translate(" + 
+        ((this.Sources.sourcesData.sources_xy[i].x - this.offset.x)*this.scale) + "px, " + 
+        ((this.Sources.sourcesData.sources_xy[i].y - this.offset.y)*this.scale) + "px)";
+    }
   }
 
   userAction(mouse) { // Change listener's position when the mouse has been used
@@ -303,7 +403,7 @@ class PlayerExperience extends AbstractExperience {
     var tempY = this.range.minY + (mouse.clientY - this.parameters.circleDiameter/2)/(this.scale);
 
     // Check if the value is in the values range
-    if (tempX >= this.range.minX && tempX <= this.range.maxX && tempY >= this.range.minY && tempY <= this.range.maxY) {
+    if (tempX >= this.positionRange.minX && tempX <= this.positionRange.maxX && tempY >= this.positionRange.minY && tempY <= this.positionRange.maxY) {
       console.log("Updating")
 
       // Update objects and their display
@@ -328,6 +428,7 @@ class PlayerExperience extends AbstractExperience {
 
     this.Sources.UpdateSourcesPosition(this.scale, this.offset);      // Update sources' display
     this.Listener.UpdateListenerDisplay(this.offset, this.scale);     // Update listener's display
+    this.UpdateInstrumentsDisplay();     // Update listener's display
   }
 }
 
