@@ -15,7 +15,8 @@ class Streaming {
 		this.duration = duration;
 		// this.filesPath = "AudioFiles0/";
 		// this.filesPath = "AudioFiles1/";
-		this.filesPath = "AudioFilesPiano/";
+		this.filesPath = "AudioFilesMusic1/";
+		// this.filesPath = "AudioFilesPiano/";
 		this.sourceIndex = sourceIndex;
 		this.initialized = false;
 		this.connect = false;
@@ -28,6 +29,7 @@ class Streaming {
 		this.globalBuffer = [];
 		this.playingState = playingState
 		this.audio;
+		this.initiate = true;
 
 	}
 
@@ -110,7 +112,10 @@ class Streaming {
 			this.playingState = state;
 		}
 		// console.log(this.sourceIndex, this.playingState)
+	}
 
+	StopAudio() {
+		this.audio.stop();
 	}
 
 
@@ -136,11 +141,19 @@ class Streaming {
 			      	this.audioDuration = tempAudio.duration
 
 
-			        if (this.connect) {
-			        	this.audio.disconnect(this.gain)
+			        // if (this.connect) {
+			        // 	this.audio.disconnect(this.gain)
+			        // 	// console.log()
+			        // 	this.connect = false;
+			        // }
+			        console.log(this.audio)
+			        if (!this.initiate) {
 			        	this.audio.stop()
-			        	this.connect = false;
-			        } 
+			        }
+			        else {
+			        	this.initiate = false
+			        }
+
 
 			        this.audio = tempAudio;
 
@@ -152,7 +165,9 @@ class Streaming {
 
 			      	// if (this.playingState) {
 				    this.audio.start(audioTime, audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1));
-			      	
+			      	console.error("The audioTime is " + audioTime)
+			      	console.error("The time to start is " + (audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1)))
+			      	console.error("It corresponds at a beginning at " + (this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1)))
 			      	if (this.playingState) {
 			      		this.audio.connect(this.gain);
 			      		console.log("AudioSources " + this.sourceIndex + " is now connected")

@@ -26,7 +26,7 @@ class PlayerExperience extends AbstractExperience {
     this.parameters = {
       audioContext: audioContext,               // Global audioContext
       order: 2,                                 // Order of ambisonics
-      nbClosestSources: 3,                       // Number of closest points searched
+      nbClosestSources: 5,                       // Number of closest points searched
       nbClosestPoints: 5,                       // Number of closest points searched
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
       // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
@@ -74,13 +74,15 @@ class PlayerExperience extends AbstractExperience {
 
       case 'streaming':
         // this.parameters.audioData = 'AudioFiles1';
-        // this.parameters.dataFileName = 'scene1.json';
-        this.parameters.audioData = 'AudioFilesPiano';
-        this.parameters.dataFileName = 'scenePiano.json';
+        this.parameters.audioData = 'AudioFilesMusic1';
+        this.parameters.dataFileName = 'scene1.json';
+        // this.parameters.audioData = 'AudioFilesPiano';
+        // this.parameters.dataFileName = 'scenePiano.json';
         break;
 
       case 'ambisonic':
         this.parameters.audioData = 'AudioFiles2';
+        // this.parameters.audioData = 'AudioFilesSpeech1';
         this.parameters.dataFileName = 'scene2.json';
         break;
 

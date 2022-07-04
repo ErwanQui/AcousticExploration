@@ -360,6 +360,7 @@ class Sources {
 
 		          	if (this.Index(previousClosestSourcesId[i], this.closestSourcesId)[0]) {
 		          		availableAudioSources.push(this.audio2Source[i]);						// Set the audioSource as waiting for a source
+						this.audio          		
 		          	}
 		        }
 
@@ -471,7 +472,7 @@ class Sources {
 		    this.UpdateClosestSourcesColor(i);
 		    this.audioSources[this.audio2Source[i]].ChangePlayingState(true);
 		    // if ((this.Index(i, this.audio2Source)[1]) < this.nbActiveSources) {
-		    console.log(this.audio2Source[i])
+		    // console.log(this.audio2Source[i])
 		    // console.log(this.gainsData)
 		    this.audioSources[this.audio2Source[i]].UpdateGain(this.gainsData.Value[i], this.gainsData.Norm);
 	    	// }
@@ -570,6 +571,7 @@ class Sources {
   		// console.log(this.audioSources)
   		if (adding) {
 			const nextTime = Math.ceil(this.sync.getSyncTime());
+			console.error("ok")
 			// console.log(this.syncBuffers[sourceIndex], sourceIndex)
 			this.scheduler.add(this.syncBuffers[sourceIndex], nextTime);
 			// console.log(this.syncBuffers[sourceIndex], sourceIndex)

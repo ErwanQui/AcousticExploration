@@ -28,12 +28,15 @@ server.router.use('vendors', serveStatic(path.join('.vendors', 'public')));
 server.router.use('images', serveStatic(path.join('public', 'images')));
 server.router.use('AudioFiles0', serveStatic(path.join('public', 'grid_nav_assets/0_debug_grid')));
 server.router.use('AudioFiles1', serveStatic(path.join('public', 'grid_nav_assets/1_binaural_encoded')));
+server.router.use('AudioFilesMusic1', serveStatic(path.join('public', 'grid_nav_assets/1_binaural_encoded_music')));
+server.router.use('AudioFilesMusic2', serveStatic(path.join('public', 'grid_nav_assets/2_ambisonic_encoded_2nd_music')));
 server.router.use('AudioFiles2', serveStatic(path.join('public', 'grid_nav_assets/2_ambisonic_encoded_2nd')));
 server.router.use('AudioFiles3', serveStatic(path.join('public', 'grid_nav_assets/3_binaural_rirs')));
 server.router.use('AudioFiles4', serveStatic(path.join('public', 'grid_nav_assets/4_ambisonic_rirs_2nd')));
 server.router.use('AudioFilesPiano', serveStatic(path.join('public', 'piano')));
 server.router.use('Assets', serveStatic(path.join('public', 'grid_nav_assets/assets')));
 server.router.use('/public/piano', serveStatic(path.join('public', 'piano')));
+server.router.use('/public/grid_nav_assets/1_binaural_encoded_music', serveStatic(path.join('public', 'grid_nav_assets/1_binaural_encoded_music')));
 
 
 import fs from 'fs';
@@ -72,6 +75,16 @@ server.pluginManager.register('filesystem', pluginFilesystemFactory, {
     publicDirectory: 'AudioFiles1',
   },
   {
+    name: 'AudioFilesMusic1',
+    path: path.join(process.cwd(), 'public/grid_nav_assets/1_binaural_encoded_music'),
+    publicDirectory: 'AudioFilesMusic1',
+  },
+  {
+    name: 'AudioFilesMusic2',
+    path: path.join(process.cwd(), 'public/grid_nav_assets/2_ambisonic_encoded_2nd_music'),
+    publicDirectory: 'AudioFilesMusic2',
+  },
+  {
     name: 'AudioFiles2',
     path: path.join(process.cwd(), 'public/grid_nav_assets/2_ambisonic_encoded_2nd'),
     publicDirectory: 'AudioFiles2',
@@ -94,7 +107,11 @@ server.pluginManager.register('filesystem', pluginFilesystemFactory, {
 }, []);
 
 server.pluginManager.register('audio-streams', pluginAudioStreamsFactory, {
-  directory: 'public/piano',
+//   directory: 'public/piano',
+//   cache: true,
+// },
+// {
+  directory: 'public/grid_nav_assets/1_binaural_encoded_music',
   cache: true,
 }, []);
 
