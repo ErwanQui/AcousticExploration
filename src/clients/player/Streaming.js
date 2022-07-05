@@ -129,6 +129,7 @@ class Streaming {
    		this.syncAudio = {
 
 		    advanceTime: (currentTime, audioTime, dt) => {
+		    	// console.log(url)
 		    	// var duration = 6
 		    	// console.log(this.sourceIndex)
 		    	// console.log(audioTime)
@@ -183,6 +184,8 @@ class Streaming {
 			        return currentTime + this.audioDuration*Math.ceil(audioTime/this.audioDuration) - audioTime;
 			    }
 			    else {
+			    	// console.log(url)
+
 			    	this.audio = this.audioStream.createStreamSource();
 					// console.log(url)
 			      	this.audio.streamId = url;
