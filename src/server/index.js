@@ -2,6 +2,9 @@ console.log("chocolatine")
 
 
 import 'source-map-support/register';
+
+console.log("bah")
+
 import { Server } from '@soundworks/core/server';
 import path from 'path';
 import serveStatic from 'serve-static';
@@ -13,6 +16,7 @@ import pluginSyncFactory from '@soundworks/plugin-sync/server';
 import pluginPlatformFactory from '@soundworks/plugin-platform/server';
 import pluginAudioStreamsFactory from '@soundworks/plugin-audio-streams/server';
 
+console.log("hmmm")
 
 import PlayerExperience from './PlayerExperience.js';
 
@@ -41,6 +45,7 @@ server.router.use('Assets', serveStatic(path.join('public', 'grid_nav_assets/ass
 server.router.use('/public/piano', serveStatic(path.join('public', 'piano')));
 server.router.use('/public/grid_nav_assets/1_binaural_encoded_music', serveStatic(path.join('public', 'grid_nav_assets/1_binaural_encoded_music')));
 
+console.log("oui")
 
 import fs from 'fs';
 // import JSON5 from 'json5';
