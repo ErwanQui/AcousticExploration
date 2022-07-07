@@ -1,3 +1,6 @@
+console.log("chocolatine")
+
+
 import 'source-map-support/register';
 import { Server } from '@soundworks/core/server';
 import path from 'path';
