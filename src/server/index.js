@@ -1,7 +1,7 @@
 console.log("chocolatine")
 
 
-import 'source-map-support/register';
+// import 'source-map-support/register';
 
 console.log("bah")
 
