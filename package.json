@@ -31,6 +31,7 @@
     "@soundworks/template-helpers": "^1.0.1",
     "@webcomponents/webcomponentsjs": "^2.4.3",
     "ambisonics": "^0.4.0",
+    "ci": "^2.2.0",
     "core-js": "^3.6.5",
     "delaunator": "^5.0.0",
     "json5": "^2.1.0",
