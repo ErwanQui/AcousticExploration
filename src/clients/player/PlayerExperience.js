@@ -63,6 +63,25 @@ class PlayerExperience extends AbstractExperience {
 
     console.log("You are using " + this.parameters.mode + " mode.");
 
+    setInterval(() => {
+      
+      function success(pos) {
+        var crd = pos.coords;
+
+        console.log('Votre position actuelle est :');
+        console.log(`Latitude : ${crd.latitude}`);
+        console.log(`Longitude : ${crd.longitude}`);
+        console.log(`La précision est de ${crd.accuracy} mètres.`);
+      }
+
+      function error(err) {
+        console.warn(`ERREUR (${err.code}): ${err.message}`);
+      }
+
+      navigator.geolocation.getCurrentPosition(success, error);
+
+    }, 1000);
+
     // Switch files' names and audios, depending on the mode chosen
     switch (this.parameters.mode) {
       case 'debug':
