@@ -63,24 +63,24 @@ class PlayerExperience extends AbstractExperience {
 
     console.log("You are using " + this.parameters.mode + " mode.");
 
-    setInterval(() => {
+    // setInterval(() => {
       
-      function success(pos) {
-        var crd = pos.coords;
+    //   function success(pos) {
+    //     var crd = pos.coords;
 
-        console.log('Votre position actuelle est :');
-        console.log(`Latitude : ${crd.latitude}`);
-        console.log(`Longitude : ${crd.longitude}`);
-        console.log(`La précision est de ${crd.accuracy} mètres.`);
-      }
+    //     console.log('Votre position actuelle est :');
+    //     console.log(`Latitude : ${crd.latitude}`);
+    //     console.log(`Longitude : ${crd.longitude}`);
+    //     console.log(`La précision est de ${crd.accuracy} mètres.`);
+    //   }
 
-      function error(err) {
-        console.warn(`ERREUR (${err.code}): ${err.message}`);
-      }
+    //   function error(err) {
+    //     console.warn(`ERREUR (${err.code}): ${err.message}`);
+    //   }
 
-      navigator.geolocation.getCurrentPosition(success, error);
+    //   navigator.geolocation.getCurrentPosition(success, error);
 
-    }, 1000);
+    // }, 1000);
 
     // Switch files' names and audios, depending on the mode chosen
     switch (this.parameters.mode) {
@@ -162,6 +162,11 @@ class PlayerExperience extends AbstractExperience {
 
         // Start the sources display and audio depending on listener's initial position
         this.Sources.start(this.Listener.listenerPosition);
+
+        document.addEventListener('ListenerMove', () => {
+          this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
+          this.UpdateContainer
+        })
 
         // Add event listener for resize window event to resize the display
         window.addEventListener('resize', () => {

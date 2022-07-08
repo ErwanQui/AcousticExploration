@@ -7,10 +7,20 @@ class Listener {
 	constructor (position, parameters) {
 
 	    // User's begin position
-	    this.listenerPosition = {
+	    this.initListenerPosition = {
 	      x: position.x,
 	      y: position.y,
 	    };
+	    this.listenerPosition = {
+	      x: this.initListenerPosition.x,
+	      y: this.initListenerPosition.y,
+	    };
+
+	    navigator.geolocation.getCurrentPosition((pos) => {
+	    	this.initPosX = pos.coords.latitude;
+	    	this.initPosY = pos.coords.longitude;
+	    }, this.Error);
+
 
 	    // Parameter's for the display of user's position
 	    this.display;													// Html element for the display (build in 'start()')
@@ -32,11 +42,48 @@ class Listener {
 		this.display.style.transform = "rotate(45deg)";
 	}
 
+	LatLong2Meter(value) {
+		return (value * (Math.PI*6371000/180))
+	}
+
 	Display (container) { // Add the listener's display to the container
 
 		// @note: we can't do it in 'start()' because the container wasn't created
 		container.appendChild(this.display);
+
+	    // navigator.geolocation.getCurrentPosition((pos) => {
+	    // 	this.initPosX = pos.coords.latitude;
+	    // 	this.initPosY = pos.coords.longitude;
+	    // }, this.Error);
+
+		setInterval(() => {
+			this.UpdatePos();
+		}, 100);
 	} 
+
+	Success(pos) {
+        var crd = pos.coords;
+
+        console.log('Votre position actuelle est :');
+        console.log(`Latitude : ${crd.latitude}`);
+        console.log(`Longitude : ${crd.longitude}`);
+        console.log(`La précision est de ${crd.accuracy} mètres.`);
+
+    }
+
+    UpdatePos() {
+		navigator.geolocation.getCurrentPosition((pos) => {
+			this.listenerPosition.x = this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX);
+			this.listenerPosition.y = this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY);
+			// console.log(pos)
+			console.log(this.listenerPosition)
+			document.dispatchEvent(new Event("ListenerMove"));
+		}, this.Error);
+    }
+
+	Error(err) {
+        console.warn(`ERREUR (${err.code}): ${err.message}`);
+    }
 
 	UpdateListener(position, offset, scale) { // Update listener
 
