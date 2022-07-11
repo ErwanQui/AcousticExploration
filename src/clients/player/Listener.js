@@ -59,12 +59,12 @@ class Listener {
 	    // this.cacahuete = document.createElement('div')
 	    // conatiner.appendChildthis
 
-		// setInterval(() => {
-		// 	this.UpdatePos();
-		// }, 100);
-		navigator.geolocation.watchPosition((pos) => {
-			this.UpdatePos(pos);
-		}, this.Error);
+		setInterval(() => {
+			this.UpdatePos();
+		}, 100);
+		// navigator.geolocation.watchPosition((pos) => {
+		// 	this.UpdatePos(pos);
+		// }, this.Error);
 	} 
 
 	Success(pos) {
@@ -79,7 +79,7 @@ class Listener {
 
     UpdatePos(pos) {
     	// console.log("pos")
-		// navigator.geolocation.getCurrentPosition((pos) => {
+		navigator.geolocation.getCurrentPosition((pos) => {
 			console.log(pos.coords.latitude)
 			console.log(pos.coords.longitude)
 			console.log(this.LatLong2Meter(pos.coords.latitude - this.initPosX))
@@ -90,7 +90,7 @@ class Listener {
 			console.log(this.listenerPosition)
 			this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 			document.dispatchEvent(new Event("ListenerMove"));
-		// }, this.Error);
+		}, this.Error);
     }
 
 	Error(err) {
