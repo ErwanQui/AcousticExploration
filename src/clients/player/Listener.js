@@ -75,9 +75,10 @@ class Listener {
     }
 
     UpdatePos() {
-    	console.log("pos")
+    	// console.log("pos")
 		navigator.geolocation.getCurrentPosition((pos) => {
-			console.log(pos)
+			console.log(pos.coords.latitude)
+			console.log(pos.coords.longitude)
 			console.log(this.LatLong2Meter(pos.coords.latitude - this.initPosX))
 			console.log(this.LatLong2Meter(pos.coords.longitude - this.initPosY))
 			this.listenerPosition.x = this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX);
