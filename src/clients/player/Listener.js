@@ -24,7 +24,7 @@ class Listener {
 
 	    // Parameter's for the display of user's position
 	    this.display;													// Html element for the display (build in 'start()')
-	    this.displaySize = parameters.listenerSize*5;						// Size of the listener's display
+	    this.displaySize = parameters.listenerSize;						// Size of the listener's display
 	    this.circleSpacing = parameters.circleDiameter/2;				// Size of sources to set an offset
 	}
 
@@ -80,7 +80,7 @@ class Listener {
 			this.listenerPosition.y = this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY)/10;
 			// console.log(pos)
 			console.log(this.listenerPosition)
-			this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
+			// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 			document.dispatchEvent(new Event("ListenerMove"));
 		}, this.Error);
     }

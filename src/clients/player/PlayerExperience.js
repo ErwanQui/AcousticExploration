@@ -155,6 +155,13 @@ class PlayerExperience extends AbstractExperience {
         console.log("ici")
         // Start the sources display and audio depending on listener's initial position
         this.Sources.start(this.Listener.listenerPosition);
+
+        document.addEventListener('ListenerMove', () => {
+          this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
+          this.UpdateContainer()
+          this.render();
+        })
+        
         // Add event listener for resize window event to resize the display
         console.log("bah oui")
         window.addEventListener('resize', () => {
