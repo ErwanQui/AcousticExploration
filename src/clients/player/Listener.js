@@ -52,8 +52,8 @@ class Listener {
 		window.addEventListener("deviceorientation", event => {
 			console.log(event.alpha)
 	      	this.orientationDisplay.style.transform = "translate(" + 
-	      		(Math.cos(event.alpha)*20 + this.displaySize/2-2) + "px, " + 
-	      		(Math.sin(event.alpha)*20 + this.displaySize/2-2) + "px)";
+	      		(Math.cos(Math.PI*event.alpha/180)*20 + this.displaySize/2-2) + "px, " + 
+	      		(Math.sin(Math.PI*event.alpha/180)*20 + this.displaySize/2-2) + "px)";
 		}, true);
 
 
