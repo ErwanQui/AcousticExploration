@@ -277,6 +277,7 @@ class PlayerExperience extends AbstractExperience {
           </div>
           <div>
             <input type="button" id="beginButton" value="Begin Game"/>
+            <input type="checkbox" id="debugging" value="debug"/> Debug
           </div>
         </div>
         <div id="game" style="visibility: hidden;">
@@ -306,6 +307,13 @@ class PlayerExperience extends AbstractExperience {
 
         // Assign callbacks once
         var beginButton = document.getElementById("beginButton");
+
+        var debugging = document.getElementById('debugging');
+
+        debugging.addEventListener("change", (box) => {
+          console.log(box.target.checked)
+          this.Listener.ChangeDebug(box.target.checked);
+        })
 
         beginButton.addEventListener("click", () => {
 

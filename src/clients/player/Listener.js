@@ -4,7 +4,9 @@
 
 class Listener {
 
-	constructor (position, parameters) {
+	constructor (position, parameters, debugging) {
+
+		this.debugging = false;
 
 	    // User's begin position
 	    this.initListenerPosition = {
@@ -17,17 +19,23 @@ class Listener {
 	    };
 
 		// document.addEventListener("deviceready", () => {
-		    navigator.geolocation.getCurrentPosition((pos) => {
-		    	this.initPosX = pos.coords.latitude;
-		    	this.initPosY = pos.coords.longitude;
-		    }, this.Error);
+	    navigator.geolocation.getCurrentPosition((pos) => {
+	    	this.initPosX = pos.coords.latitude;
+	    	this.initPosY = pos.coords.longitude;
+	    }, this.Error);
 		// }, false);
 
 		this.count = 0;
 		this.posInitialising = true;
 	    // Parameter's for the display of user's position
 	    this.display;													// Html element for the display (build in 'start()')
-	    this.displaySize = parameters.listenerSize*5;						// Size of the listener's display
+	    
+	    // if (debugging) {
+	    // 	this.displaySize = parameters.listenerSize*5;						// Size of the listener's display
+	    // }
+	    // else {
+	    	this.displaySize = parameters.listenerSize;
+	    // }
 	    this.circleSpacing = parameters.circleDiameter/2;				// Size of sources to set an offset
 	}
 
@@ -47,6 +55,18 @@ class Listener {
 
 	LatLong2Meter(value) {
 		return (value * (Math.PI*6371000/180))
+	}
+
+	ChangeDebug(value) {
+		if (value) {
+			this.display.style.height = this.displaySize*5 + "px";
+			this.display.style.width = this.displaySize*5 + "px";
+		}
+		else {
+			this.display.style.height = this.displaySize + "px";
+			this.display.style.width = this.displaySize + "px";
+		}
+		this.debugging = value;
 	}
 
 	Display (container) { // Add the listener's display to the container
@@ -129,21 +149,25 @@ class Listener {
 			console.log(this.LatLong2Meter(pos.coords.longitude - this.initPosY))
 			// this.listenerPosition.x = this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX);
 			// this.listenerPosition.y = this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY);
-	   			this.ListenerStep(this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX), this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY))			
+	   		this.ListenerStep(this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX), this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY))			
 			// console.log(pos)
 			console.log(this.listenerPosition)
-			this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
-			var debugging = document.createElement('div')
-			debugging.innerHTML = pos.coords.latitude + " / " + pos.coords.longitude;
-			this.display.appendChild(debugging)
-			var debugging2 = document.createElement('div')
-			debugging2.innerHTML = pos.coords.accuracy;
-			this.display.appendChild(debugging2)
-			var debugging3 = document.createElement('div')
-			debugging3.innerHTML = this.count;
-			this.display.appendChild(debugging3)
-			// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
-			this.count += 1;
+
+			if (this.debugging) {
+				this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
+				var debugging = document.createElement('div')
+				debugging.innerHTML = pos.coords.latitude + " / " + pos.coords.longitude;
+				this.display.appendChild(debugging)
+				var debugging2 = document.createElement('div')
+				debugging2.innerHTML = pos.coords.accuracy;
+				this.display.appendChild(debugging2)
+				var debugging3 = document.createElement('div')
+				debugging3.innerHTML = this.count;
+				this.display.appendChild(debugging3)
+				// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
+				this.count += 1;
+			}
+
 			// document.dispatchEvent(new Event("ListenerMove"));
 		}, this.Error);
     }
