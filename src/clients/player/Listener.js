@@ -23,7 +23,7 @@ class Listener {
 		    }, this.Error);
 		// }, false);
 
-
+		this.count = 0;
 	    // Parameter's for the display of user's position
 	    this.display;													// Html element for the display (build in 'start()')
 	    this.displaySize = parameters.listenerSize*5;						// Size of the listener's display
@@ -94,7 +94,11 @@ class Listener {
 			var debugging = document.createElement('div')
 			debugging.innerHTML = pos.coords.latitude + " / " + pos.coords.longitude;
 			this.display.appendChild(debugging)
+			var debugging2 = document.createElement('div')
+			debugging2.innerHTML = this.count;
+			this.display.appendChild(debugging2)
 			// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
+			this.count += 1;
 			document.dispatchEvent(new Event("ListenerMove"));
 		}, this.Error);
     }
