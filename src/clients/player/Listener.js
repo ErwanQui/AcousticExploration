@@ -91,6 +91,10 @@ class Listener {
 			// console.log(pos)
 			console.log(this.listenerPosition)
 			this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
+			var debugging = document.createElement('div')
+			debugging.innerHTML = pos.coords.latitude + " / " + pos.coords.longitude;
+			this.display.appendChild(debugging)
+			// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 			document.dispatchEvent(new Event("ListenerMove"));
 		}, this.Error);
     }
