@@ -156,7 +156,13 @@ class PlayerExperience extends AbstractExperience {
         // Start the sources display and audio depending on listener's initial position
         this.Sources.start(this.Listener.listenerPosition);
 
-        document.addEventListener('ListenerMove', () => {
+        // document.addEventListener('ListenerMove', () => {
+        //   this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
+        //   this.UpdateContainer()
+        //   this.render();
+        // })
+
+        document.addEventListener('Moving', () => {
           this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
           this.UpdateContainer()
           this.render();

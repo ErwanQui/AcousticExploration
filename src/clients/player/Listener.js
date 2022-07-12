@@ -24,6 +24,7 @@ class Listener {
 		// }, false);
 
 		this.count = 0;
+		this.posInitialising = true;
 	    // Parameter's for the display of user's position
 	    this.display;													// Html element for the display (build in 'start()')
 	    this.displaySize = parameters.listenerSize*5;						// Size of the listener's display
@@ -83,6 +84,8 @@ class Listener {
 	    // Update Listener's dipslay depending on offset and scale
       	this.initListenerPosition.x = offset.x + (position.clientX - window.innerWidth/2)/scale;
       	this.initListenerPosition.y = offset.y + (position.clientY - this.circleSpacing)/scale;
+      	this.listenerPosition.x = offset.x + (position.clientX - window.innerWidth/2)/scale;
+      	this.listenerPosition.y = offset.y + (position.clientY - this.circleSpacing)/scale;
 
 	    navigator.geolocation.getCurrentPosition((pos) => {
 	    	this.initPosX = pos.coords.latitude;
@@ -92,15 +95,41 @@ class Listener {
       	this.UpdateListenerDisplay(offset, scale);    	
     }
 
-    UpdatePos(pos) {
+    ListenerStep(positionX, positionY) {
+    	if (positionX != this.listenerPosition.x || positionY != this.listenerPosition.y) {
+			var nbStep = 50*Math.ceil(Math.max(Math.abs(positionX - this.listenerPosition.x), Math.abs(positionY - this.listenerPosition.y)));
+			var step = [(positionX - this.listenerPosition.x)/nbStep, (positionY - this.listenerPosition.y)/nbStep]
+			var dpct = 0;
+			clearInterval(this.moving)
+			this.moving = setInterval(() => {
+				if (dpct < nbStep) {
+					this.listenerPosition.x += step[0];
+					this.listenerPosition.y += step[1];
+					dpct += 1;
+					// this.UpdateListenerDisplay(offset, scale);
+					document.dispatchEvent(new Event("Moving"));                              // Create an event when the simulation appeared
+				}
+				else {
+					clearInterval(this.moving)
+				}
+			}, 10)
+		}
+	} 
+
+    UpdatePos() {
     	// console.log("pos")
 		navigator.geolocation.getCurrentPosition((pos) => {
+			if (this.posInitialising && pos.coords.latitude != undefined) {
+				this.posInitialising = false;
+				document.dispatchEvent(new Event("Moving"));
+			}
 			console.log(pos.coords.latitude)
 			console.log(pos.coords.longitude)
 			console.log(this.LatLong2Meter(pos.coords.latitude - this.initPosX))
 			console.log(this.LatLong2Meter(pos.coords.longitude - this.initPosY))
-			this.listenerPosition.x = this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX);
-			this.listenerPosition.y = this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY);
+			// this.listenerPosition.x = this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX);
+			// this.listenerPosition.y = this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY);
+	   			this.ListenerStep(this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX), this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY))			
 			// console.log(pos)
 			console.log(this.listenerPosition)
 			this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
@@ -115,7 +144,7 @@ class Listener {
 			this.display.appendChild(debugging3)
 			// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 			this.count += 1;
-			document.dispatchEvent(new Event("ListenerMove"));
+			// document.dispatchEvent(new Event("ListenerMove"));
 		}, this.Error);
     }
 
