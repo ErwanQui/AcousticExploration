@@ -95,8 +95,11 @@ class Listener {
 			debugging.innerHTML = pos.coords.latitude + " / " + pos.coords.longitude;
 			this.display.appendChild(debugging)
 			var debugging2 = document.createElement('div')
-			debugging2.innerHTML = this.count;
+			debugging2.innerHTML = pos.coords.accuracy;
 			this.display.appendChild(debugging2)
+			var debugging3 = document.createElement('div')
+			debugging3.innerHTML = this.count;
+			this.display.appendChild(debugging3)
 			// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 			this.count += 1;
 			document.dispatchEvent(new Event("ListenerMove"));
