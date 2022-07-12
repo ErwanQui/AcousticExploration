@@ -79,6 +79,19 @@ class Listener {
 
     }
 
+    Reset(position, offset, scale) {
+	    // Update Listener's dipslay depending on offset and scale
+      	this.initListenerPosition.x = offset.x + (position.clientX - window.innerWidth/2)/scale;
+      	this.initListenerPosition.y = offset.y + (position.clientY - this.circleSpacing)/scale;
+
+	    navigator.geolocation.getCurrentPosition((pos) => {
+	    	this.initPosX = pos.coords.latitude;
+	    	this.initPosY = pos.coords.longitude;
+	    }, this.Error);
+
+      	this.UpdateListenerDisplay(offset, scale);    	
+    }
+
     UpdatePos(pos) {
     	// console.log("pos")
 		navigator.geolocation.getCurrentPosition((pos) => {

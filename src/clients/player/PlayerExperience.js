@@ -414,7 +414,8 @@ class PlayerExperience extends AbstractExperience {
       console.log("Updating")
 
       // Update objects and their display
-      this.Listener.UpdateListener(mouse, this.offset, this.scale);                   // Update the listener's position
+      // this.Listener.UpdateListener(mouse, this.offset, this.scale);                   // Update the listener's position
+      this.Listener.Reset(mouse, this.offset, this.scale);
       this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
       this.render();                                                                  // Update the display
     }
