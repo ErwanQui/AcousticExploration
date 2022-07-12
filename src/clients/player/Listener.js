@@ -18,15 +18,6 @@ class Listener {
 	      y: this.initListenerPosition.y,
 	    };
 
-		// document.addEventListener("deviceready", () => {
-	    navigator.geolocation.getCurrentPosition((pos) => {
-	    	this.initPosX = pos.coords.latitude;
-	    	this.initPosY = pos.coords.longitude;
-	    }, this.Error);
-		// }, false);
-
-		this.count = 0;
-		this.posInitialising = true;
 	    // Parameter's for the display of user's position
 	    this.display;													// Html element for the display (build in 'start()')
 	    
@@ -34,9 +25,42 @@ class Listener {
 	    // 	this.displaySize = parameters.listenerSize*5;						// Size of the listener's display
 	    // }
 	    // else {
-	    	this.displaySize = parameters.listenerSize;
+	    this.displaySize = parameters.listenerSize;
 	    // }
 	    this.circleSpacing = parameters.circleDiameter/2;				// Size of sources to set an offset
+	
+
+
+	    // Position
+		// document.addEventListener("deviceready", () => {
+	    navigator.geolocation.getCurrentPosition((pos) => {
+	    	this.initPosX = pos.coords.latitude;
+	    	this.initPosY = pos.coords.longitude;
+	    }, this.Error);
+		// }, false);
+
+
+		// Orientation
+
+		this.orientationDisplay = document.createElement("div");
+	    this.orientationDisplay.style.width = 5 + "px";
+	    this.orientationDisplay.style.height = 5 + "px";
+       	this.orientationDisplay.style.borderRadius = 5 + "px";
+       	this.orientationDisplay.style.lineHeight =  5 + "px";
+       	this.orientationDisplay.style.background =  "red";
+
+		window.addEventListener("deviceorientation", event => {
+			console.log(event.alpha)
+	      	this.orientationDisplay.style.transform = "translate(" + 
+	      		(Math.cos(event.alpha)*20 + this.displaySize/2-2) + "px, " + 
+	      		(Math.sin(event.alpha)*20 + this.displaySize/2-2) + "px)";
+		}, true);
+
+
+
+		this.count = 0;
+		this.posInitialising = true;
+
 	}
 
 	async start () {
@@ -51,6 +75,8 @@ class Listener {
 		this.display.style.textAlign = "center";
 		this.display.style.zIndex = 1;
 		this.display.style.transform = "rotate(45deg)";
+
+		this.display.appendChild(this.orientationDisplay)
 	}
 
 	LatLong2Meter(value) {
