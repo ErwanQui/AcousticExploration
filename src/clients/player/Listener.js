@@ -16,10 +16,12 @@ class Listener {
 	      y: this.initListenerPosition.y,
 	    };
 
-	    navigator.geolocation.getCurrentPosition((pos) => {
-	    	this.initPosX = pos.coords.latitude;
-	    	this.initPosY = pos.coords.longitude;
-	    }, this.Error);
+		// document.addEventListener("deviceready", () => {
+		    navigator.geolocation.getCurrentPosition((pos) => {
+		    	this.initPosX = pos.coords.latitude;
+		    	this.initPosY = pos.coords.longitude;
+		    }, this.Error);
+		// }, false);
 
 
 	    // Parameter's for the display of user's position
