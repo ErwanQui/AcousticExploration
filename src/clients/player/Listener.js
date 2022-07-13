@@ -38,6 +38,7 @@ class Listener {
 	    	this.initPosY = pos.coords.longitude;
 	    }, this.Error);
 		// }, false);
+		this.north = geolocationCoordinates.heading;
 
 
 		// Orientation
@@ -201,9 +202,9 @@ class Listener {
 				// debugging.innerHTML = pos.coords.latitude + " / " + pos.coords.longitude;
 				debugging.innerHTML = this.initStore;
 				this.display.appendChild(debugging)
-				// var debugging2 = document.createElement('div')
-				// debugging2.innerHTML = pos.coords.accuracy;
-				// this.display.appendChild(debugging2)
+				var debugging2 = document.createElement('div')
+				debugging2.innerHTML = this.north;
+				this.display.appendChild(debugging2)
 				// var debugging3 = document.createElement('div')
 				// debugging3.innerHTML = this.count;
 				// this.display.appendChild(debugging3)
