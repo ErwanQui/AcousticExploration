@@ -37,7 +37,7 @@ class Listener {
 	    	this.initPosX = pos.coords.latitude;
 	    	this.initPosY = pos.coords.longitude;
 	    	this.north = pos.coords.heading;
-	    }, this.Error);
+	    }, this.Error, {enableHighAccuracy: true});
 		// }, false);
 		// this.north = geolocationCoordinatesInstance.heading;
 
@@ -184,7 +184,7 @@ class Listener {
 				this.posInitialising = false;
 				document.dispatchEvent(new Event("Moving"));
 			}
-			console.log(pos.coords.heading)
+			console.log(pos.coords)
 			// console.log(pos.coords.latitude)
 			// console.log(pos.coords.longitude)
 			// console.log(this.LatLong2Meter(pos.coords.latitude - this.initPosX))
@@ -217,7 +217,7 @@ class Listener {
 			}
 
 			// document.dispatchEvent(new Event("ListenerMove"));
-		}, this.Error);
+		}, this.Error, {enableHighAccuracy: true});
     }
 
 	Error(err) {
