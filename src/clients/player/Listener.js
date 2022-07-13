@@ -36,9 +36,10 @@ class Listener {
 	    navigator.geolocation.getCurrentPosition((pos) => {
 	    	this.initPosX = pos.coords.latitude;
 	    	this.initPosY = pos.coords.longitude;
+	    	this.north = pos.coords.heading;
 	    }, this.Error);
 		// }, false);
-		this.north = geolocationCoordinates.heading;
+		// this.north = geolocationCoordinatesInstance.heading;
 
 
 		// Orientation
@@ -70,7 +71,6 @@ class Listener {
 			this.store = event.alpha;
 			// }
 		}, true);
-
 
 
 		this.count = 0;
