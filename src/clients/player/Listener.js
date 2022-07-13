@@ -42,7 +42,7 @@ class Listener {
 
 		// Orientation
 		this.initiateOrientation = true;
-		this.initOrientation;
+		this.initOrientation = 135;
 		this.initStore = 10000;
 		this.store = 10000;
 
@@ -55,11 +55,13 @@ class Listener {
 
 		window.addEventListener("deviceorientation", event => {
 			console.log(event.alpha)
-			if (this.initiateOrientation && event.alpha != 0) {
-				this.initiateOrientation = false;
-				this.initOrientation = event.alpha;
-				this.initStore = event.alpha
-			}
+
+			// always at 90° when begin
+			// if (this.initiateOrientation && event.alpha != 0) {
+			// 	this.initiateOrientation = false;
+			// 	this.initOrientation = event.alpha;
+			// 	this.initStore = event.alpha
+			// }
 			else {
 		      	this.orientationDisplay.style.transform = "translate(" + 
 		      		(Math.cos(-Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2) + "px, " + 
