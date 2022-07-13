@@ -151,6 +151,7 @@ class Listener {
 	    navigator.geolocation.getCurrentPosition((pos) => {
 	    	this.initPosX = pos.coords.latitude;
 	    	this.initPosY = pos.coords.longitude;
+	    	this.north = pos.coords.heading;
 	    }, this.Error);
 
       	this.UpdateListenerDisplay(offset, scale);    	
