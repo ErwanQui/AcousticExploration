@@ -64,7 +64,7 @@ class Listener {
 		      	this.orientationDisplay.style.transform = "translate(" + 
 		      		(Math.cos(-Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2) + "px, " + 
 		      		(Math.sin(-Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2) + "px)";
-				this.store = event.alpha - this.initOrientation;
+				this.store = event.alpha;
 			}
 		}, true);
 
