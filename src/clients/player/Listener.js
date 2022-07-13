@@ -204,10 +204,11 @@ class Listener {
 				debugging.innerHTML = this.initStore;
 				this.display.appendChild(debugging)
 				if (pos.coords.heading != null) {
-					var debugging2 = document.createElement('div')
-					debugging2.innerHTML = pos.coords.heading;
-					this.display.appendChild(debugging2)
+					this.north = pos.coords.heading
 				}
+				var debugging2 = document.createElement('div')
+				debugging2.innerHTML = this.north;
+				this.display.appendChild(debugging2)
 				// var debugging3 = document.createElement('div')
 				// debugging3.innerHTML = this.count;
 				// this.display.appendChild(debugging3)
