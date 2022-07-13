@@ -151,7 +151,6 @@ class Listener {
 	    navigator.geolocation.getCurrentPosition((pos) => {
 	    	this.initPosX = pos.coords.latitude;
 	    	this.initPosY = pos.coords.longitude;
-	    	this.north = pos.coords.heading;
 	    }, this.Error);
 
       	this.UpdateListenerDisplay(offset, scale);    	
@@ -185,10 +184,11 @@ class Listener {
 				this.posInitialising = false;
 				document.dispatchEvent(new Event("Moving"));
 			}
-			console.log(pos.coords.latitude)
-			console.log(pos.coords.longitude)
-			console.log(this.LatLong2Meter(pos.coords.latitude - this.initPosX))
-			console.log(this.LatLong2Meter(pos.coords.longitude - this.initPosY))
+			console.log(pos.coords.heading)
+			// console.log(pos.coords.latitude)
+			// console.log(pos.coords.longitude)
+			// console.log(this.LatLong2Meter(pos.coords.latitude - this.initPosX))
+			// console.log(this.LatLong2Meter(pos.coords.longitude - this.initPosY))
 			// this.listenerPosition.x = this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX);
 			// this.listenerPosition.y = this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY);
 	   		this.ListenerStep(this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX), this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY))			
@@ -203,9 +203,11 @@ class Listener {
 				// debugging.innerHTML = pos.coords.latitude + " / " + pos.coords.longitude;
 				debugging.innerHTML = this.initStore;
 				this.display.appendChild(debugging)
-				var debugging2 = document.createElement('div')
-				debugging2.innerHTML = this.north;
-				this.display.appendChild(debugging2)
+				if (pos.coords.heading != null) {
+					var debugging2 = document.createElement('div')
+					debugging2.innerHTML = pos.coords.heading;
+					this.display.appendChild(debugging2)
+				}
 				// var debugging3 = document.createElement('div')
 				// debugging3.innerHTML = this.count;
 				// this.display.appendChild(debugging3)
