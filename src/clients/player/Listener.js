@@ -55,7 +55,7 @@ class Listener {
 
 		window.addEventListener("deviceorientation", event => {
 			console.log(event.alpha)
-			if (this.initiateOrientation) {
+			if (this.initiateOrientation && event.alpha != 0) {
 				this.initiateOrientation = false;
 				this.initOrientation = event.alpha;
 				this.initStore = event.alpha
@@ -190,9 +190,9 @@ class Listener {
 	   		this.ListenerStep(this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX), this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY))			
 			// console.log(pos)
 			console.log(this.listenerPosition)
-			if (this.store != undefined) {
+			// if (this.store != undefined) {
 				this.display.innerHTML = this.store
-			}
+			// } 
 			if (this.debugging) {
 				// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 				var debugging = document.createElement('div')
