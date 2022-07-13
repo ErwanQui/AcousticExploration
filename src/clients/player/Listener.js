@@ -193,9 +193,9 @@ class Listener {
 			// console.log(pos)
 			console.log(this.listenerPosition)
 			// if (this.store != undefined) {
-				this.display.innerHTML = this.store
 			// } 
 			if (this.debugging) {
+				this.display.innerHTML = this.store
 				// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 				var debugging = document.createElement('div')
 				// debugging.innerHTML = pos.coords.latitude + " / " + pos.coords.longitude;
