@@ -41,6 +41,8 @@ class Listener {
 
 
 		// Orientation
+		this.initiateOrientation = true;
+		this.initOrientation;
 
 		this.orientationDisplay = document.createElement("div");
 	    this.orientationDisplay.style.width = 5 + "px";
@@ -51,9 +53,15 @@ class Listener {
 
 		window.addEventListener("deviceorientation", event => {
 			console.log(event.alpha)
-	      	this.orientationDisplay.style.transform = "translate(" + 
-	      		(-Math.cos(Math.PI*event.alpha/180)*20 + this.displaySize/2-2) + "px, " + 
-	      		(-Math.sin(Math.PI*event.alpha/180)*20 + this.displaySize/2-2) + "px)";
+			if (this.initiateOrientation) {
+				this.initiateOrientation = false;
+				this.initOrientation = event.alpha;
+			}
+			else {
+		      	this.orientationDisplay.style.transform = "translate(" + 
+		      		(Math.cos(Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2) + "px, " + 
+		      		(Math.sin(Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2) + "px)";
+			}
 		}, true);
 
 

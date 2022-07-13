@@ -276,7 +276,7 @@ class PlayerExperience extends AbstractExperience {
             <h1 style="margin: 20px 0">${this.client.type} [id: ${this.client.id}]</h1>
           </div>
           <div>
-            <input type="button" id="beginButton" value="Begin Game"/>
+            <input type="button" id="beginButton" value="Begin Game"/>Lay the phone flat and facing the app usage space
             <input type="checkbox" id="debugging" value="debug"/> Debug
           </div>
         </div>
