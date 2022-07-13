@@ -43,6 +43,8 @@ class Listener {
 		// Orientation
 		this.initiateOrientation = true;
 		this.initOrientation;
+		this.initStore = 10000;
+		this.store = 10000;
 
 		this.orientationDisplay = document.createElement("div");
 	    this.orientationDisplay.style.width = 5 + "px";
@@ -56,11 +58,13 @@ class Listener {
 			if (this.initiateOrientation) {
 				this.initiateOrientation = false;
 				this.initOrientation = event.alpha;
+				this.initStore = event.alpha
 			}
 			else {
 		      	this.orientationDisplay.style.transform = "translate(" + 
 		      		(Math.cos(-Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2) + "px, " + 
 		      		(Math.sin(-Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2) + "px)";
+				this.store = event.alpha - this.initOrientation;
 			}
 		}, true);
 
@@ -186,18 +190,21 @@ class Listener {
 	   		this.ListenerStep(this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX), this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY))			
 			// console.log(pos)
 			console.log(this.listenerPosition)
-			this.display.innerHTML = this.initOrientation
+			if (this.store != undefined) {
+				this.display.innerHTML = this.store
+			}
 			if (this.debugging) {
-				this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
+				// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 				var debugging = document.createElement('div')
-				debugging.innerHTML = pos.coords.latitude + " / " + pos.coords.longitude;
+				// debugging.innerHTML = pos.coords.latitude + " / " + pos.coords.longitude;
+				debugging.innerHTML = this.initStore;
 				this.display.appendChild(debugging)
-				var debugging2 = document.createElement('div')
-				debugging2.innerHTML = pos.coords.accuracy;
-				this.display.appendChild(debugging2)
-				var debugging3 = document.createElement('div')
-				debugging3.innerHTML = this.count;
-				this.display.appendChild(debugging3)
+				// var debugging2 = document.createElement('div')
+				// debugging2.innerHTML = pos.coords.accuracy;
+				// this.display.appendChild(debugging2)
+				// var debugging3 = document.createElement('div')
+				// debugging3.innerHTML = this.count;
+				// this.display.appendChild(debugging3)
 				// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 				this.count += 1;
 			}
