@@ -186,7 +186,7 @@ class Listener {
 	   		this.ListenerStep(this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX), this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY))			
 			// console.log(pos)
 			console.log(this.listenerPosition)
-
+			this.display.innerHTML = this.initOrientation
 			if (this.debugging) {
 				this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 				var debugging = document.createElement('div')
