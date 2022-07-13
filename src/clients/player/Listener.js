@@ -42,7 +42,7 @@ class Listener {
 
 		// Orientation
 		this.initiateOrientation = true;
-		this.initOrientation = 45;
+		this.initOrientation = 135;
 		this.initStore = 10000;
 		this.store = 10000;
 
@@ -64,8 +64,8 @@ class Listener {
 			// }
 			// else {
 	      	this.orientationDisplay.style.transform = "translate(" + 
-	      		(Math.cos(Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2) + "px, " + 
-	      		(Math.sin(Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2) + "px)";
+	      		(Math.cos(-(Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2)) + "px, " + 
+	      		(Math.sin(-(Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2)) + "px)";
 			this.store = event.alpha;
 			// }
 		}, true);
