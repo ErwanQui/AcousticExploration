@@ -62,7 +62,7 @@ class Listener {
        	this.orientationDisplay2.style.lineHeight =  8 + "px";
        	this.orientationDisplay2.style.background =  "green";
 
-      	this.orientationDisplay.style.transform = "translate(" + 
+      	this.orientationDisplay2.style.transform = "translate(" + 
       		(Math.cos(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px, " + 
       		(Math.sin(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px)";
 
@@ -228,7 +228,7 @@ class Listener {
 				this.count += 1;
 			}
 
-			this.orientationDisplay.style.transform = "translate(" + 
+			this.orientationDisplay2.style.transform = "translate(" + 
 	      		(Math.cos(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px, " + 
 	      		(Math.sin(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px)";
 
