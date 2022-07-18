@@ -55,6 +55,17 @@ class Listener {
        	this.orientationDisplay.style.lineHeight =  5 + "px";
        	this.orientationDisplay.style.background =  "red";
 
+		this.orientationDisplay2 = document.createElement("div");
+	    this.orientationDisplay2.style.width = 8 + "px";
+	    this.orientationDisplay2.style.height = 8 + "px";
+       	this.orientationDisplay2.style.borderRadius = 8 + "px";
+       	this.orientationDisplay2.style.lineHeight =  8 + "px";
+       	this.orientationDisplay2.style.background =  "green";
+
+      	this.orientationDisplay.style.transform = "translate(" + 
+      		(Math.cos(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px, " + 
+      		(Math.sin(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px)";
+
 		window.addEventListener("deviceorientation", event => {
 			console.log(event.alpha)
 
@@ -92,6 +103,7 @@ class Listener {
 		this.display.style.transform = "rotate(45deg)";
 
 		this.display.appendChild(this.orientationDisplay)
+		this.display.appendChild(this.orientationDisplay2)
 	}
 
 	LatLong2Meter(value) {
@@ -215,6 +227,10 @@ class Listener {
 				// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 				this.count += 1;
 			}
+
+			this.orientationDisplay.style.transform = "translate(" + 
+	      		(Math.cos(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px, " + 
+	      		(Math.sin(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px)";
 
 			// document.dispatchEvent(new Event("ListenerMove"));
 		}, this.Error, {enableHighAccuracy: true});
