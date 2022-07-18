@@ -207,7 +207,10 @@ class Listener {
 			// console.log(pos)
 			console.log(this.listenerPosition)
 			// if (this.store != undefined) {
-			// } 
+			// }
+							if (pos.coords.heading != null) {
+					this.north = pos.coords.heading
+				}
 			if (this.debugging) {
 				this.display.innerHTML = this.store
 				// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
@@ -215,9 +218,7 @@ class Listener {
 				// debugging.innerHTML = pos.coords.latitude + " / " + pos.coords.longitude;
 				debugging.innerHTML = this.initStore;
 				this.display.appendChild(debugging)
-				if (pos.coords.heading != null) {
-					this.north = pos.coords.heading
-				}
+
 				var debugging2 = document.createElement('div')
 				debugging2.innerHTML = this.north;
 				this.display.appendChild(debugging2)
