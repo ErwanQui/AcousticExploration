@@ -208,7 +208,7 @@ class Listener {
 			console.log(this.listenerPosition)
 			// if (this.store != undefined) {
 			// }
-							if (pos.coords.heading != null) {
+			if (pos.coords.heading != null) {
 					this.north = pos.coords.heading
 				}
 			if (this.debugging) {
