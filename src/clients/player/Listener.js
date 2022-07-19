@@ -201,9 +201,11 @@ class Listener {
 			var nbStep = 50*Math.ceil(distance);
 			var step = [(distance*this.orientationAbscisse)/nbStep, (distance*this.orientationOrdonnate)/nbStep]
 			var dpct = 0;
+			console.log(nbStep)
 			clearInterval(this.moving)
 			this.moving = setInterval(() => {
 				if (dpct < nbStep) {
+					console.log(step)
 					this.listenerPosition.x += step[0];
 					this.listenerPosition.y += step[1];
 					dpct += 1;
@@ -226,7 +228,8 @@ class Listener {
 			}
 			this.diffLat = pos.coords.latitude - this.initPosX
 			this.diffLong = pos.coords.longitude - this.initPosY
-			if (this.diffLat != 0 && this.diffLong != 0) {
+			console.log(this.diffLat)
+			if (this.diffLat != 0 || this.diffLong != 0) {
 				this.meterTravel = Math.pow((Math.pow(this.diffLat, 2) + Math.pow(this.diffLong, 2)), 1/2)
 				this.ListenerStep2(this.previousPosition, this.meterTravel)
 			}
