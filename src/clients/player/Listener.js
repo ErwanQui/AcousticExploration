@@ -3,6 +3,7 @@
 ///////////////////
 
 class Listener {
+
 	constructor (position, parameters) {
 
 	    // User's begin position
