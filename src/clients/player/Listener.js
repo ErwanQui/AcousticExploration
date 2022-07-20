@@ -2,6 +2,8 @@
 /// Listener.js ///
 ///////////////////
 
+// import Map from 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBZ8Od80wqf_OKYL_o623gR40wAgfe-DDE'
+
 class Listener {
 
 	constructor (position, parameters, debugging) {
@@ -29,7 +31,6 @@ class Listener {
 	    // }
 	    this.circleSpacing = parameters.circleDiameter/2;				// Size of sources to set an offset
 	
-
 
 	    // Position
 		// document.addEventListener("deviceready", () => {

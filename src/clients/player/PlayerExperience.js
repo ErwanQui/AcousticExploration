@@ -298,8 +298,25 @@ class PlayerExperience extends AbstractExperience {
             </div>
             
           </div>
+          <script>
+          function myMap() {
+            console.log('caillou')
+            alert('caillou')
+            var mapProp= {
+              center:new google.maps.LatLng(51.508742,-0.120850),
+              zoom:5,
+            };
+            var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+            }
+          </script>
+
+          <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZ8Od80wqf_OKYL_o623gR40wAgfe-DDE&callback=myMap">
+          </script>
         </div>
       `, this.$container);
+
+      // alert('caillou')
+      fetch("https://maps.googleapis.com/maps/api/js?key=AIzaSyBZ8Od80wqf_OKYL_o623gR40wAgfe-DDE").then(results => alert('ok'))
 
       // Do this only at beginning
       if (this.initialising) {
