@@ -40,7 +40,8 @@ class Listener {
 	    }, this.Error, {enableHighAccuracy: true});
 		// }, false);
 		// this.north = geolocationCoordinatesInstance.heading;
-
+		this.posX = this.initPosX
+		this.posY = this.initPosY
 
 		// Orientation
 		this.initiateOrientation = true;
@@ -82,7 +83,9 @@ class Listener {
 			// }
 			// else {
 			this.orientationAbscisse = Math.cos(-Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2
+			this.orientationAbscisse2 = Math.cos(-Math.PI*(event.alpha)/180)*20
 			this.orientationOrdonnate = Math.sin(-Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2
+			this.orientationOrdonnate2 = Math.sin(-Math.PI*(event.alpha)/180)*20
 	      	this.orientationDisplay.style.transform = "translate(" + 
 	      		this.orientationAbscisse + "px, " + 
 	      		this.orientationOrdonnate + "px)";
@@ -199,13 +202,14 @@ class Listener {
     ListenerStep2(previousPosition, distance) {
     	// if (positionX != this.listenerPosition.x || positionY != this.listenerPosition.y) {
 			var nbStep = 50*Math.ceil(distance);
-			var step = [(distance*this.orientationAbscisse)/nbStep, (distance*this.orientationOrdonnate)/nbStep]
+			var step = [(distance*this.orientationAbscisse2)/nbStep, (distance*this.orientationOrdonnate2)/nbStep]
 			var dpct = 0;
 			console.log(nbStep)
+			console.log(step)
 			clearInterval(this.moving)
 			this.moving = setInterval(() => {
 				if (dpct < nbStep) {
-					console.log(step)
+					console.log(dpct)
 					this.listenerPosition.x += step[0];
 					this.listenerPosition.y += step[1];
 					dpct += 1;
@@ -226,14 +230,16 @@ class Listener {
 				this.posInitialising = false;
 				document.dispatchEvent(new Event("Moving"));
 			}
-			this.diffLat = pos.coords.latitude - this.initPosX
-			this.diffLong = pos.coords.longitude - this.initPosY
+			this.diffLat = pos.coords.latitude - this.posX
+			this.diffLong = pos.coords.longitude - this.posY
 			console.log(this.diffLat)
 			if (this.diffLat != 0 || this.diffLong != 0) {
+				this.posX = pos.coords.latitude
+				this.posY = pos.coords.longitude
 				this.meterTravel = Math.pow((Math.pow(this.diffLat, 2) + Math.pow(this.diffLong, 2)), 1/2)
 				this.ListenerStep2(this.previousPosition, this.meterTravel)
 			}
-			console.log(pos.coords)
+			// console.log(pos.coords)
 			// console.log(pos.coords.latitude)
 			// console.log(pos.coords.longitude)
 			// console.log(this.LatLong2Meter(pos.coords.latitude - this.initPosX))
@@ -242,7 +248,7 @@ class Listener {
 			// this.listenerPosition.y = this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY);
 	   		// this.ListenerStep(this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX), this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY))			
 			// console.log(pos)
-			console.log(this.listenerPosition)
+			// console.log(this.listenerPosition)
 			// if (this.store != undefined) {
 			// }
 			if (pos.coords.heading != null) {
