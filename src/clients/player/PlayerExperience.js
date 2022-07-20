@@ -316,7 +316,7 @@ class PlayerExperience extends AbstractExperience {
       `, this.$container);
 
       // alert('caillou')
-      fetch("https://maps.googleapis.com/maps/api/js?key=AIzaSyBZ8Od80wqf_OKYL_o623gR40wAgfe-DDE").then(results => alert('ok'))
+      fetch("https://agile-waters-69878.herokuapp.com/https://maps.googleapis.com/maps/api/js?key=AIzaSyBZ8Od80wqf_OKYL_o623gR40wAgfe-DDE").then(results => alert('ok'))
 
       // Do this only at beginning
       if (this.initialising) {
