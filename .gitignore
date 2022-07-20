@@ -8,7 +8,7 @@
 # ignore all files except asset and debug
 /public/grid_nav_assets/*
 !/public/grid_nav_assets/assets
-!/public/grid_nav_assets/1_binaural_encoded_2nd
+!/public/grid_nav_assets/1_binaural_encoded_music
 !/public/grid_nav_assets/readme.txt
 
 
