@@ -55,6 +55,89 @@ class Listener {
 	      y: this.initListenerPosition.y,
 		}
 
+      this.compass;
+
+const isIOS =
+      navigator.userAgent.match(/(iPod|iPhone|iPad)/) &&
+      navigator.userAgent.match(/AppleWebKit/);
+
+    function init() {
+      // startBtn.addEventListener("click", startCompass);
+      navigator.geolocation.getCurrentPosition(locationHandler);
+
+      if (!isIOS) {
+        window.addEventListener("deviceorientationabsolute", handler, true);
+      }
+    }
+
+    function startCompass() {
+      if (isIOS) {
+        DeviceOrientationEvent.requestPermission()
+          .then((response) => {
+            if (response === "granted") {
+              window.addEventListener("deviceorientation", handler, true);
+            } else {
+              alert("has to be allowed!");
+            }
+          })
+          .catch(() => alert("not supported"));
+      }
+    }
+
+    function handler(e) {
+      this.compass = e.webkitCompassHeading || Math.abs(e.alpha - 360);
+      // compassCircle.style.transform = `translate(-50%, -50%) rotate(${-compass}deg)`;
+      console.log(this.compass)
+      // ±15 degree
+      if (
+        (this.pointDegree < Math.abs(this.compass) &&
+          this.pointDegree + 15 > Math.abs(this.compass)) ||
+        this.pointDegree > Math.abs(this.compass + 15) ||
+        this.pointDegree < Math.abs(this.compass)
+      ) {
+        // myPoint.style.opacity = 0;
+      } else if (this.pointDegree) {
+        // myPoint.style.opacity = 1;
+      }
+    }
+
+    this.pointDegree;
+
+    function locationHandler(position) {
+      const { latitude, longitude } = position.coords;
+      var pointDegree = calcDegreeToPoint(latitude, longitude);
+
+      if (pointDegree < 0) {
+        pointDegree = pointDegree + 360;
+      }
+    }
+
+    function calcDegreeToPoint(latitude, longitude) {
+      // Qibla geolocation
+      const point = {
+        lat: 21.422487,
+        lng: 39.826206
+      };
+
+      const phiK = (point.lat * Math.PI) / 180.0;
+      const lambdaK = (point.lng * Math.PI) / 180.0;
+      const phi = (latitude * Math.PI) / 180.0;
+      const lambda = (longitude * Math.PI) / 180.0;
+      const psi =
+        (180.0 / Math.PI) *
+        Math.atan2(
+          Math.sin(lambdaK - lambda),
+          Math.cos(phi) * Math.tan(phiK) -
+            Math.sin(phi) * Math.cos(lambdaK - lambda)
+        );
+      return Math.round(psi);
+    }
+
+    init()
+
+
+
+
 		this.orientationDisplay = document.createElement("div");
 	    this.orientationDisplay.style.width = 5 + "px";
 	    this.orientationDisplay.style.height = 5 + "px";
@@ -74,7 +157,7 @@ class Listener {
       		(Math.sin(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px)";
 
 		window.addEventListener("deviceorientation", event => {
-			console.log(event.alpha)
+			// console.log(event.alpha)
 
 			// always at 90° when begin
 			// if (this.initiateOrientation && event.alpha != 0) {
@@ -264,11 +347,12 @@ class Listener {
 				this.display.appendChild(debugging)
 
 				var debugging2 = document.createElement('div')
-				debugging2.innerHTML = this.north;
+				debugging2.innerHTML = this.compass;
 				this.display.appendChild(debugging2)
-				// var debugging3 = document.createElement('div')
-				// debugging3.innerHTML = this.count;
-				// this.display.appendChild(debugging3)
+
+				var debugging3 = document.createElement('div')
+				debugging3.innerHTML = this.pointDegree;
+				this.display.appendChild(debugging3)
 				// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 				this.count += 1;
 			}
