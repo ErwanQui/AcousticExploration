@@ -295,6 +295,7 @@ class Listener {
 /*			var nbStep = 1;
 */			var step = [(positionX - this.listenerPosition.x)/nbStep, (positionY - this.listenerPosition.y)/nbStep]
 			var dpct = 0;
+			console.log(nbStep)
 			console.log(step)
 			clearInterval(this.moving)
 			this.moving = setInterval(() => {
