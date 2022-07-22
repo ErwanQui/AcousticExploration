@@ -369,7 +369,7 @@ class Listener {
 	   	
 /*	   		var dpctX = this.initListenerPosition.x + (Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
 	   		var dpctY = this.initListenerPosition.y + (Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
-*/this.compass = 180
+*/
 			this.updateTargetX = (Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
 	   		this.updateTargetY = (Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
 
