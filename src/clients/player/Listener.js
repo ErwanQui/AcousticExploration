@@ -286,7 +286,8 @@ class Listener {
 
     ListenerStep(positionX, positionY) {
     	if (positionX != this.listenerPosition.x || positionY != this.listenerPosition.y) {
-			var nbStep = 50*Math.ceil(Math.max(Math.abs(positionX - this.listenerPosition.x), Math.abs(positionY - this.listenerPosition.y)));
+/*			var nbStep = 50*Math.ceil(Math.max(Math.abs(positionX - this.listenerPosition.x), Math.abs(positionY - this.listenerPosition.y)));
+*/			var nbStep = 1;
 			var step = [(positionX - this.listenerPosition.x)/nbStep, (positionY - this.listenerPosition.y)/nbStep]
 			var dpct = 0;
 			clearInterval(this.moving)
@@ -369,11 +370,11 @@ class Listener {
 				// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 				var debugging = document.createElement('div')
 				// debugging.innerHTML = pos.coords.latitude + " / " + pos.coords.longitude;
-				debugging.innerHTML = this.pos.coords.latitude;
+				debugging.innerHTML = pos.coords.latitude;
 				this.display.appendChild(debugging)
 
 				var debugging2 = document.createElement('div')
-				debugging2.innerHTML = this.pos.coords.longitude;
+				debugging2.innerHTML = pos.coords.longitude;
 				this.display.appendChild(debugging2)
 
 				var debugging3 = document.createElement('div')
