@@ -278,6 +278,8 @@ class Listener {
       	this.initListenerPosition.y = offset.y + (position.clientY - this.circleSpacing)/scale;
       	this.listenerPosition.x = offset.x + (position.clientX - window.innerWidth/2)/scale;
       	this.listenerPosition.y = offset.y + (position.clientY - this.circleSpacing)/scale;
+      	this.targetPosX = this.initListenerPosition.x
+      	this.targetPosY = this.initListenerPosition.y
 
 	    navigator.geolocation.getCurrentPosition((pos) => {
 	    	this.posX = pos.coords.latitude;
