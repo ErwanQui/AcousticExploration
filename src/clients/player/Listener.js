@@ -365,15 +365,15 @@ class Listener {
 					this.north = pos.coords.heading
 				}
 			if (this.debugging) {
-				this.display.innerHTML = this.store
+				this.display.innerHTML = this.direction
 				// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 				var debugging = document.createElement('div')
 				// debugging.innerHTML = pos.coords.latitude + " / " + pos.coords.longitude;
-				debugging.innerHTML = this.initStore;
+				debugging.innerHTML = this.pos.coords.latitude;
 				this.display.appendChild(debugging)
 
 				var debugging2 = document.createElement('div')
-				debugging2.innerHTML = this.compass;
+				debugging2.innerHTML = this.pos.coords.longitude;
 				this.display.appendChild(debugging2)
 
 				var debugging3 = document.createElement('div')
