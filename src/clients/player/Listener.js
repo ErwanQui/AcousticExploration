@@ -56,6 +56,8 @@ class Listener {
 		}
 
       this.compass;
+      	    this.first = true;
+
 	    this.pointDegree;
 
 		const isIOS =
@@ -82,6 +84,10 @@ class Listener {
 		      this.compass = e.webkitCompassHeading || Math.abs(e.alpha - 360);
 		      // compassCircle.style.transform = `translate(-50%, -50%) rotate(${-compass}deg)`;
 		      console.log(this.compass)
+		      if (this.first && this.compass != undefined) {
+		      	this.direction = this.compass;
+		      	this.first = false;
+		      }
 	  		}, true);
 	      }
 	    // }
@@ -128,7 +134,6 @@ class Listener {
 	    // }
 
 	    // init()
-
 
 
 
@@ -331,7 +336,7 @@ class Listener {
 				this.posInitialising = false;
 				document.dispatchEvent(new Event("Moving"));
 			}
-			this.diffLat = pos.coords.latitude - this.posX
+/*			this.diffLat = pos.coords.latitude - this.posX
 			this.diffLong = pos.coords.longitude - this.posY
 			console.log(this.diffLat)
 			if (this.diffLat != 0 || this.diffLong != 0) {
@@ -339,7 +344,7 @@ class Listener {
 				this.posY = pos.coords.longitude
 				this.meterTravel = Math.pow((Math.pow(this.diffLat, 2) + Math.pow(this.diffLong, 2)), 1/2)
 				this.ListenerStep2(this.previousPosition, this.meterTravel)
-			}
+			}*/
 			// console.log(pos.coords)
 			// console.log(pos.coords.latitude)
 			// console.log(pos.coords.longitude)
@@ -347,8 +352,12 @@ class Listener {
 			// console.log(this.LatLong2Meter(pos.coords.longitude - this.initPosY))
 			// this.listenerPosition.x = this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX);
 			// this.listenerPosition.y = this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY);
-	   		// this.ListenerStep(this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX), this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY))			
-			// console.log(pos)
+	   	
+	   		var dpctX = this.initListenerPosition.x + Math.cos(this.direction)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.sin(this.direction)*this.LatLong2Meter(pos.coords.longitude - this.initPosY)
+	   		var dpctY = this.initListenerPosition.y + Math.sin(this.direction)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.cos(this.direction)*this.LatLong2Meter(pos.coords.longitude - this.initPosY)		
+			   		
+	   		this.ListenerStep(dpctX, dpctY)
+	   		// console.log(pos)
 			// console.log(this.listenerPosition)
 			// if (this.store != undefined) {
 			// }
