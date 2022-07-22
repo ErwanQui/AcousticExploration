@@ -376,6 +376,8 @@ class Listener {
 
 	   		console.log(this.targetPosX, this.targetPosY)
 	   		console.log(this.updateTargetX)
+	   		console.log(this.compass)
+	   		console.log(this.posX)
 
 	    	this.posX = pos.coords.latitude;
 	    	this.posY = pos.coords.longitude;
