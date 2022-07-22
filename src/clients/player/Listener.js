@@ -291,9 +291,9 @@ class Listener {
 
     ListenerStep(positionX, positionY) {
     	if (positionX != this.listenerPosition.x || positionY != this.listenerPosition.y) {
-/*			var nbStep = 50*Math.ceil(Math.max(Math.abs(positionX - this.listenerPosition.x), Math.abs(positionY - this.listenerPosition.y)));
-*/			var nbStep = 1;
-			var step = [(positionX - this.listenerPosition.x)/nbStep, (positionY - this.listenerPosition.y)/nbStep]
+			var nbStep = 50*Math.ceil(Math.max(Math.abs(positionX - this.listenerPosition.x), Math.abs(positionY - this.listenerPosition.y)));
+/*			var nbStep = 1;
+*/			var step = [(positionX - this.listenerPosition.x)/nbStep, (positionY - this.listenerPosition.y)/nbStep]
 			var dpct = 0;
 			clearInterval(this.moving)
 			this.moving = setInterval(() => {
