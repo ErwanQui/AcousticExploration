@@ -38,11 +38,11 @@ class Listener {
 	    	this.initPosX = pos.coords.latitude;
 	    	this.initPosY = pos.coords.longitude;
 	    	this.north = pos.coords.heading;
+		this.posX = this.initPosX
+		this.posY = this.initPosY
 	    }, this.Error, {enableHighAccuracy: true});
 		// }, false);
 		// this.north = geolocationCoordinatesInstance.heading;
-		this.posX = this.initPosX
-		this.posY = this.initPosY
 
 		// Orientation
 		this.initiateOrientation = true;
