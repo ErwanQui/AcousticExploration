@@ -277,8 +277,8 @@ class Listener {
       	this.listenerPosition.y = offset.y + (position.clientY - this.circleSpacing)/scale;
 
 	    navigator.geolocation.getCurrentPosition((pos) => {
-	    	this.initPosX = pos.coords.latitude;
-	    	this.initPosY = pos.coords.longitude;
+	    	this.posX = pos.coords.latitude;
+	    	this.posY = pos.coords.longitude;
 	    }, this.Error);
 
       	this.UpdateListenerDisplay(offset, scale);    	
@@ -354,9 +354,12 @@ class Listener {
 			// this.listenerPosition.x = this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX);
 			// this.listenerPosition.y = this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY);
 	   	
-	   		var dpctX = this.initListenerPosition.x + (Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
-	   		var dpctY = this.initListenerPosition.y + (Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
-			   		
+	   		var dpctX = this.initListenerPosition.x + (Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
+	   		var dpctY = this.initListenerPosition.y + (Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
+		
+	    	this.posX = pos.coords.latitude;
+	    	this.posY = pos.coords.longitude;
+
 	   		this.ListenerStep(dpctX, dpctY)
 	   		// console.log(pos)
 			// console.log(this.listenerPosition)
