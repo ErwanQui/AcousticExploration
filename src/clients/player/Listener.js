@@ -290,6 +290,10 @@ class Listener {
     }
 
     ListenerStep(positionX, positionY) {
+    	console.log(positionX, positionY)
+    	console.log(this.listenerPosition)
+    	console.log(Math.max(Math.abs(positionX - this.listenerPosition.x), Math.abs(positionY - this.listenerPosition.y)))
+    	console.log(Math.ceil(Math.max(Math.abs(positionX - this.listenerPosition.x), Math.abs(positionY - this.listenerPosition.y))))
     	if (positionX != this.listenerPosition.x || positionY != this.listenerPosition.y) {
 			var nbStep = 50*Math.ceil(Math.max(Math.abs(positionX - this.listenerPosition.x), Math.abs(positionY - this.listenerPosition.y)));
 /*			var nbStep = 1;
