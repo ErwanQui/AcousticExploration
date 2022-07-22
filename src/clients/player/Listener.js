@@ -354,8 +354,8 @@ class Listener {
 			// this.listenerPosition.x = this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX);
 			// this.listenerPosition.y = this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY);
 	   	
-	   		var dpctX = this.initListenerPosition.x + Math.cos(this.direction)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.sin(this.direction)*this.LatLong2Meter(pos.coords.longitude - this.initPosY)
-	   		var dpctY = this.initListenerPosition.y + Math.sin(this.direction)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.cos(this.direction)*this.LatLong2Meter(pos.coords.longitude - this.initPosY)		
+	   		var dpctX = this.initListenerPosition.x + (Math.cos(this.direction)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.sin(this.direction)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
+	   		var dpctY = this.initListenerPosition.y + (Math.sin(this.direction)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.cos(this.direction)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
 			   		
 	   		this.ListenerStep(dpctX, dpctY)
 	   		// console.log(pos)
