@@ -306,7 +306,7 @@ class Listener {
 		}
 	}
 
-    ListenerStep2(previousPosition, distance) {
+/*    ListenerStep2(previousPosition, distance) {
     	// if (positionX != this.listenerPosition.x || positionY != this.listenerPosition.y) {
 			var nbStep = 50*Math.ceil(distance);
 			var step = [(distance*this.orientationAbscisse2)/nbStep, (distance*this.orientationOrdonnate2)/nbStep]
@@ -328,7 +328,7 @@ class Listener {
 				}
 			}, 10)
 		// }
-	} 
+	} */
 
     UpdatePos() {
     	// console.log("pos")
@@ -354,8 +354,8 @@ class Listener {
 			// this.listenerPosition.x = this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX);
 			// this.listenerPosition.y = this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY);
 	   	
-	   		var dpctX = this.initListenerPosition.x + (Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
-	   		var dpctY = this.initListenerPosition.y + (Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
+	   		var dpctX = this.initListenerPosition.x + (Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
+	   		var dpctY = this.initListenerPosition.y + (Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
 		
 	    	this.posX = pos.coords.latitude;
 	    	this.posY = pos.coords.longitude;
