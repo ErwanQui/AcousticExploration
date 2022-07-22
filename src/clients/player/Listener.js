@@ -383,7 +383,7 @@ class Listener {
 /*	   		this.ListenerStep(dpctX, dpctY)
 */	   		
 
-			if (this.updateTargetX != undefined || this.updateTargetY != undefined) {
+			if (this.updateTargetX != NaN || this.updateTargetY != NaN) {
 		   		this.targetPosX += this.updateTargetX;
 		   		this.targetPosY += this.updateTargetY;
 				if(this.updateTargetX != 0 || this.updateTargetY != 0) {
