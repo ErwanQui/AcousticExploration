@@ -354,8 +354,8 @@ class Listener {
 			// this.listenerPosition.x = this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX);
 			// this.listenerPosition.y = this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY);
 	   	
-	   		var dpctX = this.initListenerPosition.x + (Math.cos(this.direction)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.sin(this.direction)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
-	   		var dpctY = this.initListenerPosition.y + (Math.sin(this.direction)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.cos(this.direction)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
+	   		var dpctX = this.initListenerPosition.x + (Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
+	   		var dpctY = this.initListenerPosition.y + (Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
 			   		
 	   		this.ListenerStep(dpctX, dpctY)
 	   		// console.log(pos)
@@ -366,7 +366,7 @@ class Listener {
 					this.north = pos.coords.heading
 				}
 			if (this.debugging) {
-				this.display.innerHTML = this.direction
+				this.display.innerHTML = this.compass
 				// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 				var debugging = document.createElement('div')
 				// debugging.innerHTML = pos.coords.latitude + " / " + pos.coords.longitude;
