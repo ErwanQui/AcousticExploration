@@ -377,18 +377,20 @@ class Listener {
 	   		console.log(this.targetPosX, this.targetPosY)
 	   		console.log(this.updateTargetX)
 
-	   		this.targetPosX += this.updateTargetX;
-	   		this.targetPosY += this.updateTargetY;
-
 	    	this.posX = pos.coords.latitude;
 	    	this.posY = pos.coords.longitude;
 
 /*	   		this.ListenerStep(dpctX, dpctY)
 */	   		
-			if(this.updateTargetX != 0 && this.updateTargetY != 0) {
-				console.log("change !")
-				this.ListenerStep(this.targetPosX, this.targetPosY)
-			}
+
+			if (this.updateTargetX != undefined || this.updateTargetY != undefined) {
+		   		this.targetPosX += this.updateTargetX;
+		   		this.targetPosY += this.updateTargetY;
+				if(this.updateTargetX != 0 || this.updateTargetY != 0) {
+					console.log("change !")
+					this.ListenerStep(this.targetPosX, this.targetPosY)
+				}
+			}	
 	   		// console.log(pos)
 			// console.log(this.listenerPosition)
 			// if (this.store != undefined) {
