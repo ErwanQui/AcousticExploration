@@ -295,6 +295,7 @@ class Listener {
 /*			var nbStep = 1;
 */			var step = [(positionX - this.listenerPosition.x)/nbStep, (positionY - this.listenerPosition.y)/nbStep]
 			var dpct = 0;
+			console.log(step)
 			clearInterval(this.moving)
 			this.moving = setInterval(() => {
 				if (dpct < nbStep) {
@@ -377,6 +378,7 @@ class Listener {
 /*	   		this.ListenerStep(dpctX, dpctY)
 */	   		
 			if(this.updateTargetX != 0 && this.updateTargetY != 0) {
+				console.log("change !")
 				this.ListenerStep(this.targetPosX, this.targetPosY)
 			}
 	   		// console.log(pos)
