@@ -369,7 +369,7 @@ class Listener {
 /*	   		this.ListenerStep(dpctX, dpctY)
 */	   		
 			if(this.updateTargetX != 0 && this.updateTargetY != 0) {
-				this.ListenerStep(dpctX, dpctY)
+				this.ListenerStep(this.targetPosX, this.targetPosY)
 			}
 	   		// console.log(pos)
 			// console.log(this.listenerPosition)
