@@ -366,7 +366,7 @@ class Listener {
 	   		this.updateTargetY = (Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
 
 
-	   		console.log(updateTargetX)
+	   		console.log(this.updateTargetX)
 
 	   		this.targetPosX += this.updateTargetX;
 	   		this.targetPosY += this.updateTargetY;
