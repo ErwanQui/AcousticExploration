@@ -55,6 +55,9 @@ class Listener {
 	      y: this.initListenerPosition.y,
 		}
 
+		this.targetPosX = this.initListenerPosition.x
+		this.targetPosY = this.initListenerPosition.y
+
       this.compass;
       	    this.first = true;
 
@@ -359,6 +362,9 @@ class Listener {
 */
 			this.updateTargetX = (Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
 	   		this.updateTargetY = (Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
+
+
+	   		console.log(updateTargetX)
 
 	   		this.targetPosX += this.updateTargetX;
 	   		this.targetPosY += this.updateTargetY;
