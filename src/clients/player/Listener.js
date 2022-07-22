@@ -336,8 +336,8 @@ class Listener {
 			if (this.posInitialising && pos.coords.latitude != undefined) {
 				this.posInitialising = false;
 				document.dispatchEvent(new Event("Moving"));
-			}
-/*			this.diffLat = pos.coords.latitude - this.posX
+			}/*
+			this.diffLat = pos.coords.latitude - this.posX|
 			this.diffLong = pos.coords.longitude - this.posY
 			console.log(this.diffLat)
 			if (this.diffLat != 0 || this.diffLong != 0) {
@@ -354,13 +354,23 @@ class Listener {
 			// this.listenerPosition.x = this.initListenerPosition.x + this.LatLong2Meter(pos.coords.latitude - this.initPosX);
 			// this.listenerPosition.y = this.initListenerPosition.y + this.LatLong2Meter(pos.coords.longitude - this.initPosY);
 	   	
-	   		var dpctX = this.initListenerPosition.x + (Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
+/*	   		var dpctX = this.initListenerPosition.x + (Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
 	   		var dpctY = this.initListenerPosition.y + (Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
-		
+*/
+			this.updateTargetX = (Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
+	   		this.updateTargetY = (Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
+
+	   		this.targetPosX += this.updateTargetX;
+	   		this.targetPosY += this.updateTargetY;
+
 	    	this.posX = pos.coords.latitude;
 	    	this.posY = pos.coords.longitude;
 
-	   		this.ListenerStep(dpctX, dpctY)
+/*	   		this.ListenerStep(dpctX, dpctY)
+*/	   		
+			if(this.updateTargetX != 0 && this.updateTargetY != 0) {
+				this.ListenerStep(dpctX, dpctY)
+			}
 	   		// console.log(pos)
 			// console.log(this.listenerPosition)
 			// if (this.store != undefined) {
