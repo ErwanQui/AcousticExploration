@@ -109,28 +109,6 @@ class PlayerExperience extends AbstractExperience {
 
       console.log("json files: " + this.parameters.dataFileName + " has been read");
 
-      // Load sources' sound depending on mode (some modes need RIRs in addition of sounds)
-      // switch (this.parameters.mode) {
-      //   case 'debug':
-      //   case 'streaming':
-      //   case 'ambisonic':
-      //     this.Sources.LoadSoundbank();
-      //     break;
-
-      //   case 'convolving':
-      //   case 'ambiConvolving':
-      //     this.Sources.LoadRirs();
-      //     break;
-
-      //   default:
-      //     alert("No valid mode");
-      // }
-
-      // Wait until audioBuffer has been loaded ("dataLoaded" event is create 'this.Sources.LoadSoundBank()')
-      // document.addEventListener("audioLoaded", () => {
-
-        // console.log("Audio buffers have been loaded from source: " + this.parameters.audioData);
-
         // Instantiate the attribute 'this.range' to get datas' parameters
         console.log(this.Sources.sourcesData.sources_xy)
         this.Range(this.Sources.sourcesData.receivers.xyz, this.Sources.sourcesData.sources_xy);
@@ -155,12 +133,6 @@ class PlayerExperience extends AbstractExperience {
         console.log("ici")
         // Start the sources display and audio depending on listener's initial position
         this.Sources.start(this.Listener.listenerPosition);
-
-        // document.addEventListener('ListenerMove', () => {
-        //   this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
-        //   this.UpdateContainer()
-        //   this.render();
-        // })
 
         document.addEventListener('Moving', () => {
           this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
@@ -188,7 +160,6 @@ class PlayerExperience extends AbstractExperience {
   }
 
   Range(audioSourcesPositions, sourcesPositions) { // Store the array properties in 'this.range'
-    // console.log(sourcesPositions)
 
     this.range = {
       minX: audioSourcesPositions[0].x,
@@ -227,8 +198,6 @@ class PlayerExperience extends AbstractExperience {
     this.positionRange.rangeX = this.range.maxX - this.range.minX;
     this.positionRange.rangeY = this.range.maxY - this.range.minY;
 
-    // var D = {tempRange: this.range};
-    // this.positionRange = D.tempRange;
 
     for (let i = 0; i < sourcesPositions.length; i++) {
       console.log(this.range.minX)
@@ -252,8 +221,6 @@ class PlayerExperience extends AbstractExperience {
     this.range.rangeX = this.range.maxX - this.range.minX;
     this.range.rangeY = this.range.maxY - this.range.minY;
 
-    // console.log(this.range.minX)
-    // console.log(this.positionRange.minX)
   }
 
   Scaling(rangeValues) { // Store the greatest scale that displays all the elements in 'this.scale'
@@ -315,95 +282,6 @@ class PlayerExperience extends AbstractExperience {
         </div>
       `, this.$container);
 
-      // // alert('caillou')
-      // fetch("https://agile-waters-69878.herokuapp.com/https://maps.googleapis.com/maps/api/js?key=AIzaSyBZ8Od80wqf_OKYL_o623gR40wAgfe-DDE")
-      // .then(results => {
-      //   // alert('ok')
-      //   console.log(results)
-
-      //   // this.ok = require(results.url)
-      //   this.map = new results.google.maps.Map();
-      //   console.log(this.map)
-      // })
-
-    //   const isIOS =
-    //   navigator.userAgent.match(/(iPod|iPhone|iPad)/) &&
-    //   navigator.userAgent.match(/AppleWebKit/);
-
-    // function init() {
-    //   var compass;
-    //   // startBtn.addEventListener("click", startCompass);
-    //   navigator.geolocation.getCurrentPosition(locationHandler);
-
-    //   if (!isIOS) {
-    //     window.addEventListener("deviceorientationabsolute", handler, true);
-    //   }
-    // }
-
-    // function startCompass() {
-    //   if (isIOS) {
-    //     DeviceOrientationEvent.requestPermission()
-    //       .then((response) => {
-    //         if (response === "granted") {
-    //           window.addEventListener("deviceorientation", handler, true);
-    //         } else {
-    //           alert("has to be allowed!");
-    //         }
-    //       })
-    //       .catch(() => alert("not supported"));
-    //   }
-    // }
-
-    // function handler(e) {
-    //   var compass = e.webkitCompassHeading || Math.abs(e.alpha - 360);
-    //   // compassCircle.style.transform = `translate(-50%, -50%) rotate(${-compass}deg)`;
-    //   // console.log(compass)
-    //   // ±15 degree
-    //   if (
-    //     (pointDegree < Math.abs(compass) &&
-    //       pointDegree + 15 > Math.abs(compass)) ||
-    //     pointDegree > Math.abs(compass + 15) ||
-    //     pointDegree < Math.abs(compass)
-    //   ) {
-    //     // myPoint.style.opacity = 0;
-    //   } else if (pointDegree) {
-    //     // myPoint.style.opacity = 1;
-    //   }
-    // }
-
-    // let pointDegree;
-
-    // function locationHandler(position) {
-    //   const { latitude, longitude } = position.coords;
-    //   pointDegree = calcDegreeToPoint(latitude, longitude);
-
-    //   if (pointDegree < 0) {
-    //     pointDegree = pointDegree + 360;
-    //   }
-    // }
-
-    // function calcDegreeToPoint(latitude, longitude) {
-    //   // Qibla geolocation
-    //   const point = {
-    //     lat: 21.422487,
-    //     lng: 39.826206
-    //   };
-
-    //   const phiK = (point.lat * Math.PI) / 180.0;
-    //   const lambdaK = (point.lng * Math.PI) / 180.0;
-    //   const phi = (latitude * Math.PI) / 180.0;
-    //   const lambda = (longitude * Math.PI) / 180.0;
-    //   const psi =
-    //     (180.0 / Math.PI) *
-    //     Math.atan2(
-    //       Math.sin(lambdaK - lambda),
-    //       Math.cos(phi) * Math.tan(phiK) -
-    //         Math.sin(phi) * Math.cos(lambdaK - lambda)
-    //     );
-    //   return Math.round(psi);
-    // }
-
-    // init()
 
       // Do this only at beginning
       if (this.initialising) {
@@ -532,7 +410,6 @@ class PlayerExperience extends AbstractExperience {
       console.log("Updating")
 
       // Update objects and their display
-      // this.Listener.UpdateListener(mouse, this.offset, this.scale);                   // Update the listener's position
       this.Listener.Reset(mouse, this.offset, this.scale);
       this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
       this.render();                                                                  // Update the display
