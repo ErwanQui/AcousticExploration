@@ -126,7 +126,6 @@ class Listener {
 
 		// @note: we can't do it in 'start()' because the container wasn't created
 		container.appendChild(this.display);
-<<<<<<< HEAD
 	}
 
 	ListenerStep(positionX, positionY, offset, scale) {
@@ -146,7 +145,6 @@ class Listener {
 				clearInterval(this.moving)
 			}
 		}, 10)
-=======
 
 	    // navigator.geolocation.getCurrentPosition((pos) => {
 	    // 	this.initPosX = pos.coords.latitude;
@@ -162,7 +160,6 @@ class Listener {
 		// navigator.geolocation.watchPosition((pos) => {
 		// 	this.UpdatePos(pos);
 		// }, this.Error);
->>>>>>> main
 	} 
 
 	Success(pos) {
@@ -266,15 +263,12 @@ class Listener {
 	UpdateListener(position, offset, scale) { // Update listener
 
 	    // Update Listener's dipslay depending on offset and scale
-<<<<<<< HEAD
 	    this.ListenerStep(offset.x + (position.clientX - window.innerWidth/2 - this.circleSpacing)/scale, offset.y + (position.clientY - this.circleSpacing)/scale, offset, scale)
       	// this.listenerPosition.x = offset.x + (position.clientX - window.innerWidth/2 - this.circleSpacing)/scale;
       	// this.listenerPosition.y = offset.y + (position.clientY - this.circleSpacing)/scale;
 	    console.log(this.listenerPosition)
-=======
       	this.listenerPosition.x = offset.x + (position.clientX - window.innerWidth/2)/scale;
       	this.listenerPosition.y = offset.y + (position.clientY - this.circleSpacing)/scale;
->>>>>>> main
 
       	// this.UpdateListenerDisplay(offset, scale);
     }
