@@ -46,7 +46,7 @@ class Listener {
 
 		// Orientation
 		this.initiateOrientation = true;
-		this.initOrientation = -135;
+		this.initOrientation = -45;
 		this.initOrientation2 = -90;
 		this.initStore = 10000;
 		this.store = 10000;
@@ -382,8 +382,8 @@ class Listener {
 	   		var dpctY = this.initListenerPosition.y + (Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
 */
 
-			this.updateTargetX = (Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) - Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
-	   		this.updateTargetY = (Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
+			this.updateTargetX = -(Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) - Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
+	   		this.updateTargetY = -(Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
 
 
 	   		// console.log(this.targetPosX, this.targetPosY)
