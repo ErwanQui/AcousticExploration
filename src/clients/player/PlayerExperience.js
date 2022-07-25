@@ -161,6 +161,19 @@ class PlayerExperience extends AbstractExperience {
         console.log("ici")
         // Start the sources display and audio depending on listener's initial position
         this.Sources.start(this.Listener.listenerPosition);
+
+        // document.addEventListener('ListenerMove', () => {
+        //   this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
+        //   this.UpdateContainer()
+        //   this.render();
+        // })
+
+        document.addEventListener('Moving', () => {
+          this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
+          this.UpdateContainer()
+          this.render();
+        })
+        
         // Add event listener for resize window event to resize the display
         console.log("bah oui")
 
@@ -271,7 +284,8 @@ class PlayerExperience extends AbstractExperience {
             <h1 style="margin: 20px 0">${this.client.type} [id: ${this.client.id}]</h1>
           </div>
           <div>
-            <input type="button" id="beginButton" value="Begin Game"/>
+            <input type="button" id="beginButton" value="Begin Game"/>Lay the phone flat and facing the app usage space
+            <input type="checkbox" id="debugging" value="debug"/> Debug
           </div>
         </div>
         <div id="game" style="visibility: hidden;">
@@ -301,6 +315,13 @@ class PlayerExperience extends AbstractExperience {
 
         // Assign callbacks once
         var beginButton = document.getElementById("beginButton");
+
+        var debugging = document.getElementById('debugging');
+
+        debugging.addEventListener("change", (box) => {
+          console.log(box.target.checked)
+          this.Listener.ChangeDebug(box.target.checked);
+        })
 
         beginButton.addEventListener("click", () => {
 
@@ -431,9 +452,16 @@ class PlayerExperience extends AbstractExperience {
       console.log("Updating")
 
       // Update objects and their display
+<<<<<<< HEAD
       this.Listener.UpdateListener(mouse, this.offset, this.scale);                   // Update the listener's position
       // this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
       // this.render();                                                                  // Update the display
+=======
+      // this.Listener.UpdateListener(mouse, this.offset, this.scale);                   // Update the listener's position
+      this.Listener.Reset(mouse, this.offset, this.scale);
+      this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
+      this.render();                                                                  // Update the display
+>>>>>>> main
     }
 
     else {

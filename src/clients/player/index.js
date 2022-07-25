@@ -17,6 +17,7 @@ const config = window.soundworksConfig;
 // store experiences of emulated clients
 const experiences = new Set();
 // import path from 'path';
+const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioContext = new AudioContext();
 // import fs from 'fs';
 
