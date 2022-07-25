@@ -27,7 +27,7 @@ class PlayerExperience extends AbstractExperience {
       audioContext: audioContext,               // Global audioContext
       order: 2,                                 // Order of ambisonics
       nbClosestSources: 3,                       // Number of closest points searched
-      nbClosestPoints: 3,                       // Number of closest points searched
+      nbClosestPoints: 5,                       // Number of closest points searched
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
       // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
       mode: "streaming",
@@ -38,6 +38,12 @@ class PlayerExperience extends AbstractExperience {
       listenerSize: 16,                         // Size of listener's display
       dataFileName: "",                         // All sources' position and audioDatas' filenames (instantiated in 'start()')
       audioData: ""                             // All audioDatas (instantiated in 'start()')
+    }
+
+    this.playerAutoMove = {
+      on: false,
+      speed: 1,                                  // Speed in meter/second
+      interval: 100
     }
 
     // Initialisation variables
@@ -170,6 +176,8 @@ class PlayerExperience extends AbstractExperience {
         
         // Add event listener for resize window event to resize the display
         console.log("bah oui")
+
+
         window.addEventListener('resize', () => {
 
           this.scale = this.Scaling(this.range);      // Change the scale
@@ -328,35 +336,38 @@ class PlayerExperience extends AbstractExperience {
           // Assign mouse and touch callbacks to change the user Position
           this.onBeginButtonClicked()
 
-          // Add mouseEvents to do actions when the user does actions on the screen
-          this.container.addEventListener("mousedown", (mouse) => {
-            this.mouseDown = true;
-            this.userAction(mouse);
-          }, false);
-          this.container.addEventListener("mousemove", (mouse) => {
-            if (this.mouseDown) {
+          // if (!this.playerAutoMove) {
+
+            // Add mouseEvents to do actions when the user does actions on the screen
+            this.container.addEventListener("mousedown", (mouse) => {
+              this.mouseDown = true;
               this.userAction(mouse);
-            }
-          }, false);
-          this.container.addEventListener("mouseup", (mouse) => {
-            this.mouseDown = false;
-          }, false);
+            }, false);
+            this.container.addEventListener("mousemove", (mouse) => {
+              if (this.mouseDown) {
+                this.userAction(mouse);
+              }
+            }, false);
+            this.container.addEventListener("mouseup", (mouse) => {
+              this.mouseDown = false;
+            }, false);
 
-          // Add touchEvents to do actions when the user does actions on the screen
-          this.container.addEventListener("touchstart", (evt) => {
-            this.touched = true;
-            this.userAction(evt.changedTouches[0]);
-          }, false);
-          this.container.addEventListener("touchmove", (evt) => {
-            if (this.touched) {
+            // Add touchEvents to do actions when the user does actions on the screen
+            this.container.addEventListener("touchstart", (evt) => {
+              this.touched = true;
               this.userAction(evt.changedTouches[0]);
-            }
-          }, false);
-          this.container.addEventListener("touchend", (evt) => {
-            this.touched = false;
-          }, false);            
+            }, false);
+            this.container.addEventListener("touchmove", (evt) => {
+              if (this.touched) {
+                this.userAction(evt.changedTouches[0]);
+              }
+            }, false);
+            this.container.addEventListener("touchend", (evt) => {
+              this.touched = false;
+            }, false);            
 
-          this.beginPressed = true;         // Update begin State 
+            this.beginPressed = true;         // Update begin State 
+          // }
 
         });
       }
@@ -371,6 +382,19 @@ class PlayerExperience extends AbstractExperience {
     this.Listener.Display(this.container);                                      // Add the listener's display to the container
     this.render();                                                              // Update the display
     document.dispatchEvent(new Event("rendered"));                              // Create an event when the simulation appeared
+    if (this.playerAutoMove.on) {
+      setInterval(() => {
+        console.log("Updating")
+        this.Listener.AutoMove(this.playerAutoMove.speed, this.playerAutoMove.interval, [this.positionRange.minX, this.positionRange.minY], [this.positionRange.maxX, this.positionRange.maxY]);
+        this.Listener.UpdateListenerDisplay(this.offset, this.scale);     // Update listener's display
+        this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
+        this.render();         
+      }, this.playerAutoMove.interval)
+    }
+    document.addEventListener("Moving", () => {
+      this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
+      this.render();      
+    });
   }
 
   CreateInstruments() {
@@ -428,6 +452,9 @@ class PlayerExperience extends AbstractExperience {
       console.log("Updating")
 
       // Update objects and their display
+      this.Listener.UpdateListener(mouse, this.offset, this.scale);                   // Update the listener's position
+      // this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
+      // this.render();                                                                  // Update the display
       // this.Listener.UpdateListener(mouse, this.offset, this.scale);                   // Update the listener's position
       this.Listener.Reset(mouse, this.offset, this.scale);
       this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
