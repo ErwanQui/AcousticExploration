@@ -159,6 +159,10 @@ class Listener {
        	this.orientationDisplay2.style.lineHeight =  8 + "px";
        	this.orientationDisplay2.style.background =  "green";
 
+       	this.latLongDisplay = document.createElement("input");
+       	this.latLongDisplay.type = "button";
+	    this.latLongDisplay.style.transform = "translate(-100px, -100px) rotate(-45deg)";
+
       	this.orientationDisplay2.style.transform = "translate(" + 
       		(Math.cos(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px, " + 
       		(Math.sin(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px)";
@@ -205,6 +209,7 @@ class Listener {
 
 		this.display.appendChild(this.orientationDisplay)
 		this.display.appendChild(this.orientationDisplay2)
+		this.display.appendChild(this.latLongDisplay)
 	}
 
 
@@ -352,16 +357,19 @@ class Listener {
 			if (this.posInitialising && pos.coords.latitude != undefined) {
 				this.posInitialising = false;
 				document.dispatchEvent(new Event("Moving"));
-			}/*
-			this.diffLat = pos.coords.latitude - this.posX|
-			this.diffLong = pos.coords.longitude - this.posY
-			console.log(this.diffLat)
-			if (this.diffLat != 0 || this.diffLong != 0) {
-				this.posX = pos.coords.latitude
-				this.posY = pos.coords.longitude
-				this.meterTravel = Math.pow((Math.pow(this.diffLat, 2) + Math.pow(this.diffLong, 2)), 1/2)
-				this.ListenerStep2(this.previousPosition, this.meterTravel)
-			}*/
+			}
+
+			this.latLongDisplay.value = (Math.round(pos.coords.latitude*100000)/100000) + " / " + (Math.round(pos.coords.longitude*100000)/100000);
+
+			// this.diffLat = pos.coords.latitude - this.posX|
+			// this.diffLong = pos.coords.longitude - this.posY
+			// console.log(this.diffLat)
+			// if (this.diffLat != 0 || this.diffLong != 0) {
+			// 	this.posX = pos.coords.latitude
+			// 	this.posY = pos.coords.longitude
+			// 	this.meterTravel = Math.pow((Math.pow(this.diffLat, 2) + Math.pow(this.diffLong, 2)), 1/2)
+			// 	this.ListenerStep2(this.previousPosition, this.meterTravel)
+			// }
 			// console.log(pos.coords)
 			// console.log(pos.coords.latitude)
 			// console.log(pos.coords.longitude)
