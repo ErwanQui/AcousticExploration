@@ -47,6 +47,7 @@ class Listener {
 		// Orientation
 		this.initiateOrientation = true;
 		this.initOrientation = -135;
+		this.initOrientation2 = -90;
 		this.initStore = 10000;
 		this.store = 10000;
 
@@ -88,9 +89,11 @@ class Listener {
 
 		      this.compass = e.webkitCompassHeading || Math.abs(e.alpha - 360);
 		      // compassCircle.style.transform = `translate(-50%, -50%) rotate(${-compass}deg)`;
-		      console.log(this.compass)
+		      // console.log(this.compass)
 		      if (this.first && this.compass != undefined) {
 		      	this.direction = this.compass;
+		      	// this.direction = 315;
+		      	console.log(this.direction)
 		      	this.first = false;
 		      }
 	  		}, true);
@@ -371,13 +374,13 @@ class Listener {
 	   		var dpctY = this.initListenerPosition.y + (Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
 */
 
-			this.updateTargetX = (Math.cos((this.direction - this.initOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.sin((this.direction - this.initOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
-	   		this.updateTargetY = (Math.sin((this.direction - this.initOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos((this.direction - this.initOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
+			this.updateTargetX = (Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) - Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
+	   		this.updateTargetY = (Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
 
 
-/*	   		console.log(this.targetPosX, this.targetPosY)
-*/	   		console.log(this.updateTargetX)
-	   		console.log(this.compass)
+	   		// console.log(this.targetPosX, this.targetPosY)
+	   		// console.log(this.updateTargetX)
+	   		// console.log(this.compass)
 /*	   		console.log(this.posX)
 */
 	    	this.posX = pos.coords.latitude;
@@ -414,7 +417,7 @@ class Listener {
 				this.display.appendChild(debugging2)
 
 				var debugging3 = document.createElement('div')
-				debugging3.innerHTML = this.pointDegree;
+				debugging3.innerHTML = this.north;
 				this.display.appendChild(debugging3)
 				// this.display.innerHTML = this.listenerPosition.x + " / " + this.listenerPosition.y
 				this.count += 1;
