@@ -126,6 +126,25 @@ class Listener {
 
 		// @note: we can't do it in 'start()' because the container wasn't created
 		container.appendChild(this.display);
+	}
+
+	ListenerStep(positionX, positionY, offset, scale) {
+		var nbStep = 50*Math.ceil(Math.max(Math.abs(positionX - this.listenerPosition.x), Math.abs(positionY - this.listenerPosition.y)));
+		var step = [(positionX - this.listenerPosition.x)/nbStep, (positionY - this.listenerPosition.y)/nbStep]
+		var dpct = 0;
+		clearInterval(this.moving)
+		this.moving = setInterval(() => {
+			if (dpct < nbStep) {
+				this.listenerPosition.x += step[0];
+				this.listenerPosition.y += step[1];
+				dpct += 1;
+				this.UpdateListenerDisplay(offset, scale);
+				document.dispatchEvent(new Event("Moving"));                              // Create an event when the simulation appeared
+			}
+			else {
+				clearInterval(this.moving)
+			}
+		}, 10)
 
 	    // navigator.geolocation.getCurrentPosition((pos) => {
 	    // 	this.initPosX = pos.coords.latitude;
@@ -244,10 +263,14 @@ class Listener {
 	UpdateListener(position, offset, scale) { // Update listener
 
 	    // Update Listener's dipslay depending on offset and scale
+	    this.ListenerStep(offset.x + (position.clientX - window.innerWidth/2 - this.circleSpacing)/scale, offset.y + (position.clientY - this.circleSpacing)/scale, offset, scale)
+      	// this.listenerPosition.x = offset.x + (position.clientX - window.innerWidth/2 - this.circleSpacing)/scale;
+      	// this.listenerPosition.y = offset.y + (position.clientY - this.circleSpacing)/scale;
+	    console.log(this.listenerPosition)
       	this.listenerPosition.x = offset.x + (position.clientX - window.innerWidth/2)/scale;
       	this.listenerPosition.y = offset.y + (position.clientY - this.circleSpacing)/scale;
 
-      	this.UpdateListenerDisplay(offset, scale);
+      	// this.UpdateListenerDisplay(offset, scale);
     }
 
     UpdateListenerDisplay(offset, scale) { // Update listener's display
@@ -255,6 +278,21 @@ class Listener {
 	    this.display.style.transform = "translate(" + 
 	    	((this.listenerPosition.x - offset.x)*scale - this.circleSpacing) + "px, " + 
 	    	((this.listenerPosition.y - offset.y)*scale) + "px) rotate(45deg)";
+    }
+
+    AutoMove(speed, interval, min, max) {
+    	console.log(min, max)
+    	var updatePos = [(2*Math.random() - 1)*speed*interval/1000, (2*Math.random() - 1)*speed*interval/1000];
+    	var pos = [this.listenerPosition.x, this.listenerPosition.y]
+    	for (let i = 0; i < 2; i++) {
+	    	while (pos[i] + updatePos[i] < min[i] || pos[i] + updatePos[i] > max[i]) {
+	    		updatePos[i] = (2*Math.random() - 1)*speed*interval/1000;
+	    		console.log(i, updatePos[i])
+	    	}
+	    }
+    	this.listenerPosition.x += updatePos[0];
+    	this.listenerPosition.y += updatePos[1];
+    	console.log(this.listenerPosition)
     }
 }
 
