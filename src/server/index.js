@@ -1,6 +1,3 @@
-console.log("chocolatine")
-
-
 // import 'source-map-support/register';
 
 console.log("bah")
