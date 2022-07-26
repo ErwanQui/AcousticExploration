@@ -47,7 +47,7 @@ class Listener {
 		// Orientation
 		this.initiateOrientation = true;
 		this.initOrientation = -45;
-		this.initOrientation2 = -315;
+		this.initOrientation2 = -180;
 		this.initStore = 10000;
 		this.store = 10000;
 
@@ -161,7 +161,15 @@ class Listener {
 
        	this.latLongDisplay = document.createElement("input");
        	this.latLongDisplay.type = "button";
-	    this.latLongDisplay.style.transform = "translate(-100px, -100px) rotate(-45deg)";
+	    this.latLongDisplay.style.transform = "translate(-130px, -130px) rotate(-45deg)";
+
+       	this.northDisplay = document.createElement("input");
+       	this.northDisplay.type = "button";
+	    this.northDisplay.style.transform = "translate(-115px, -115px) rotate(-45deg)";
+	    
+       	this.meterDisplay = document.createElement("input");
+       	this.meterDisplay.type = "button";
+	    this.meterDisplay.style.transform = "translate(-100px, -100px) rotate(-45deg)";
 
       	this.orientationDisplay2.style.transform = "translate(" + 
       		(Math.cos(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px, " + 
@@ -192,6 +200,9 @@ class Listener {
 		this.count = 0;
 		this.posInitialising = true;
 
+
+
+		this.debugCoef = 10;
 	}
 
 	async start () {
@@ -210,6 +221,8 @@ class Listener {
 		this.display.appendChild(this.orientationDisplay)
 		this.display.appendChild(this.orientationDisplay2)
 		this.display.appendChild(this.latLongDisplay)
+		this.display.appendChild(this.northDisplay)
+		this.display.appendChild(this.meterDisplay)
 	}
 
 
@@ -264,9 +277,10 @@ class Listener {
 	    // this.cacahuete = document.createElement('div')
 	    // conatiner.appendChildthis
 
-		setInterval(() => {
-			this.UpdatePos();
-		}, 100);
+		// setInterval(() => {
+		// 	this.UpdatePos();
+		// }, 100);
+		navigator.geolocation.watchPosition((position) => this.UpdatePos(position), this.Error, {enableHighAccuracy: true});
 		// navigator.geolocation.watchPosition((pos) => {
 		// 	this.UpdatePos(pos);
 		// }, this.Error);
@@ -295,6 +309,14 @@ class Listener {
 	    	this.posX = pos.coords.latitude;
 	    	this.posY = pos.coords.longitude;
 	    }, this.Error);
+
+	    this.initPosX = this.posX;
+	    this.initPosY = this.posY;
+
+	    this.direction = this.compass;
+	    if (this.direction == undefined) {
+	    	this.first = true;
+	    }
 
       	this.UpdateListenerDisplay(offset, scale);    	
     }
@@ -351,15 +373,21 @@ class Listener {
 		// }
 	} */
 
-    UpdatePos() {
+    UpdatePos(pos) {
     	// console.log("pos")
-		navigator.geolocation.getCurrentPosition((pos) => {
+		// navigator.geolocation.getCurrentPosition((pos) => {
 			if (this.posInitialising && pos.coords.latitude != undefined) {
 				this.posInitialising = false;
 				document.dispatchEvent(new Event("Moving"));
 			}
 
-			this.latLongDisplay.value = (Math.round(pos.coords.latitude*100000)/100000) + " / " + (Math.round(pos.coords.longitude*100000)/100000);
+			this.latLongDisplay.value = "Lat: " + (Math.round(pos.coords.latitude*100000)/100000) + " / Long: " + (Math.round(pos.coords.longitude*100000)/100000);
+			this.northDisplay.value = this.direction;
+			this.meterDisplay.value = 
+				(Math.round(-(Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) - Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/this.debugCoef*1000)/1000)
+				 + "m en X / "
+				 + (Math.round(-(Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/this.debugCoef*1000)/1000)
+				 + "m en Y";
 
 			// this.diffLat = pos.coords.latitude - this.posX|
 			// this.diffLong = pos.coords.longitude - this.posY
@@ -382,8 +410,8 @@ class Listener {
 	   		var dpctY = this.initListenerPosition.y + (Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
 */
 
-			this.updateTargetX = -(Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) - Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
-	   		this.updateTargetY = -(Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/10
+			this.updateTargetX = -(Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) - Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
+	   		this.updateTargetY = -(Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
 
 
 	   		// console.log(this.targetPosX, this.targetPosY)
@@ -436,7 +464,7 @@ class Listener {
 	      		(Math.sin(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px)";
 
 			// document.dispatchEvent(new Event("ListenerMove"));
-		}, this.Error, {enableHighAccuracy: true});
+		
     }
 
 	Error(err) {
