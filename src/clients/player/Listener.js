@@ -46,7 +46,7 @@ class Listener {
 
 		// Orientation
 		this.initiateOrientation = true;
-		this.initOrientation = -45;
+		this.initOrientation = -135;
 		this.initOrientation2 = -180;
 		this.initStore = 10000;
 		this.store = 10000;
@@ -185,6 +185,7 @@ class Listener {
 			if (this.firstangle) {
 				this.firstangle = false;
 				this.angledebut = event.alpha
+				this.initOrientation += event.alpha
 			}
 			// if (this.initiateOrientation && event.alpha != 0) {
 			// 	this.initiateOrientation = false;
