@@ -161,19 +161,19 @@ class Listener {
 
        	this.latLongDisplay = document.createElement("input");
        	this.latLongDisplay.type = "button";
-	    this.latLongDisplay.style.transform = "translate(-130px, -130px) rotate(-45deg)";
+	    this.latLongDisplay.style.transform = "translate(-40px, -40px) rotate(-45deg)";
 
        	this.northDisplay = document.createElement("input");
        	this.northDisplay.type = "button";
-	    this.northDisplay.style.transform = "translate(-115px, -115px) rotate(-45deg)";
+	    this.northDisplay.style.transform = "translate(-80px, -80px) rotate(-45deg)";
 	    
        	this.meterDisplay = document.createElement("input");
        	this.meterDisplay.type = "button";
-	    this.meterDisplay.style.transform = "translate(-100px, -100px) rotate(-45deg)";
+	    this.meterDisplay.style.transform = "translate(-120px, -120px) rotate(-45deg)";
 	    
        	this.meterDisplay = document.createElement("input");
        	this.meterDisplay.type = "button";
-	    this.meterDisplay.style.transform = "translate(-150px, -150px) rotate(-45deg)";
+	    this.meterDisplay.style.transform = "translate(-160px, -160px) rotate(-45deg)";
 
       	// this.orientationDisplay2.style.transform = "translate(" + 
       	// 	(Math.cos(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px, " + 
