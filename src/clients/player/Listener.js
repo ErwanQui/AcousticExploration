@@ -46,7 +46,7 @@ class Listener {
 
 		// Orientation
 		this.initiateOrientation = true;
-		this.initOrientation = -45;
+		this.initOrientation = -135;
 		this.initOrientation2 = -180;
 		this.initStore = 10000;
 		this.store = 10000;
@@ -384,9 +384,9 @@ class Listener {
 			this.latLongDisplay.value = "Lat: " + (Math.round(pos.coords.latitude*100000)/100000) + " / Long: " + (Math.round(pos.coords.longitude*100000)/100000);
 			this.northDisplay.value = this.direction;
 			this.meterDisplay.value = 
-				(Math.round(-(Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) - Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/this.debugCoef*1000)/1000)
+				(Math.round(-(Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/this.debugCoef*1000)/1000)
 				 + "m en X / "
-				 + (Math.round(-(Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/this.debugCoef*1000)/1000)
+				 + (Math.round(-(Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) - Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/this.debugCoef*1000)/1000)
 				 + "m en Y";
 
 			// this.diffLat = pos.coords.latitude - this.posX|
@@ -410,8 +410,8 @@ class Listener {
 	   		var dpctY = this.initListenerPosition.y + (Math.sin(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.cos(this.compass - this.initOrientation)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/10
 */
 
-			this.updateTargetX = -(Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) - Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
-	   		this.updateTargetY = -(Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
+			this.updateTargetX = -(Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
+	   		this.updateTargetY = -(Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) - Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
 
 
 	   		// console.log(this.targetPosX, this.targetPosY)
