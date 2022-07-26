@@ -202,7 +202,7 @@ class Listener {
 
 
 
-		this.debugCoef = 10;
+		this.debugCoef = 1;
 	}
 
 	async start () {
