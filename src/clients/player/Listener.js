@@ -170,10 +170,14 @@ class Listener {
        	this.meterDisplay = document.createElement("input");
        	this.meterDisplay.type = "button";
 	    this.meterDisplay.style.transform = "translate(-100px, -100px) rotate(-45deg)";
+	    
+       	this.meterDisplay = document.createElement("input");
+       	this.meterDisplay.type = "button";
+	    this.meterDisplay.style.transform = "translate(-150px, -150px) rotate(-45deg)";
 
-      	this.orientationDisplay2.style.transform = "translate(" + 
-      		(Math.cos(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px, " + 
-      		(Math.sin(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px)";
+      	// this.orientationDisplay2.style.transform = "translate(" + 
+      	// 	(Math.cos(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px, " + 
+      	// 	(Math.sin(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px)";
 
       	this.firstangle = true;
       	this.angledebut;
@@ -194,9 +198,9 @@ class Listener {
 			// }
 			// else {
 			this.orientationAbscisse = Math.cos(-Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2
-			this.orientationAbscisse2 = Math.cos(-Math.PI*(event.alpha)/180)*20
+			// this.orientationAbscisse2 = Math.cos(-Math.PI*(event.alpha)/180)*20
 			this.orientationOrdonnate = Math.sin(-Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2
-			this.orientationOrdonnate2 = Math.sin(-Math.PI*(event.alpha)/180)*20
+			// this.orientationOrdonnate2 = Math.sin(-Math.PI*(event.alpha)/180)*20
 	      	this.orientationDisplay.style.transform = "translate(" + 
 	      		this.orientationAbscisse + "px, " + 
 	      		this.orientationOrdonnate + "px)";
@@ -227,10 +231,11 @@ class Listener {
 		this.display.style.transform = "rotate(45deg)";
 
 		this.display.appendChild(this.orientationDisplay)
-		this.display.appendChild(this.orientationDisplay2)
+		// this.display.appendChild(this.orientationDisplay2)
 		this.display.appendChild(this.latLongDisplay)
 		this.display.appendChild(this.northDisplay)
 		this.display.appendChild(this.meterDisplay)
+		this.display.appendChild(this.angleDisplay)
 	}
 
 
@@ -391,6 +396,7 @@ class Listener {
 
 			this.latLongDisplay.value = "Lat: " + (Math.round(pos.coords.latitude*100000)/100000) + " / Long: " + (Math.round(pos.coords.longitude*100000)/100000);
 			this.northDisplay.value = this.direction + " et " + this.angledebut;
+			this.northDisplay.value = this.orientationAbscisse;
 			this.meterDisplay.value = 
 				(Math.round(-(Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/this.debugCoef*1000)/1000)
 				 + "m en X / "
@@ -467,9 +473,9 @@ class Listener {
 				this.count += 1;
 			}
 
-			this.orientationDisplay2.style.transform = "translate(" + 
-	      		(Math.cos(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px, " + 
-	      		(Math.sin(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px)";
+			// this.orientationDisplay2.style.transform = "translate(" + 
+	  //     		(Math.cos(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px, " + 
+	  //     		(Math.sin(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px)";
 
 			// document.dispatchEvent(new Event("ListenerMove"));
 		
