@@ -175,10 +175,17 @@ class Listener {
       		(Math.cos(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px, " + 
       		(Math.sin(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px)";
 
+      	this.firstangle = true;
+      	this.angledebut;
+
 		window.addEventListener("deviceorientation", event => {
 			// console.log(event.alpha)
 
 			// always at 90° when begin
+			if (this.firstangle) {
+				this.firstangle = false;
+				this.angledebut = event.alpha
+			}
 			// if (this.initiateOrientation && event.alpha != 0) {
 			// 	this.initiateOrientation = false;
 			// 	this.initOrientation = event.alpha;
@@ -382,7 +389,7 @@ class Listener {
 			}
 
 			this.latLongDisplay.value = "Lat: " + (Math.round(pos.coords.latitude*100000)/100000) + " / Long: " + (Math.round(pos.coords.longitude*100000)/100000);
-			this.northDisplay.value = this.direction;
+			this.northDisplay.value = this.direction + " et " + this.angledebut;
 			this.meterDisplay.value = 
 				(Math.round(-(Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.initPosY))/this.debugCoef*1000)/1000)
 				 + "m en X / "
