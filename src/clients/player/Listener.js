@@ -313,10 +313,10 @@ class Listener {
 	    this.initPosX = this.posX;
 	    this.initPosY = this.posY;
 
-	    this.direction = this.compass;
-	    if (this.direction == undefined) {
-	    	this.first = true;
-	    }
+	    // this.direction = this.compass;
+	    // if (this.direction == undefined) {
+	    // 	this.first = true;
+	    // }
 
       	this.UpdateListenerDisplay(offset, scale);    	
     }
