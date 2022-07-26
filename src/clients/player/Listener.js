@@ -47,7 +47,7 @@ class Listener {
 		// Orientation
 		this.initiateOrientation = true;
 		this.initOrientation = -45;
-		this.initOrientation2 = -90;
+		this.initOrientation2 = -315;
 		this.initStore = 10000;
 		this.store = 10000;
 
