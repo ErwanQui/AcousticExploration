@@ -171,9 +171,9 @@ class Listener {
        	this.meterDisplay.type = "button";
 	    this.meterDisplay.style.transform = "translate(-120px, -120px) rotate(-45deg)";
 	    
-       	this.meterDisplay = document.createElement("input");
-       	this.meterDisplay.type = "button";
-	    this.meterDisplay.style.transform = "translate(-160px, -160px) rotate(-45deg)";
+       	this.angleDisplay = document.createElement("input");
+       	this.angleDisplay.type = "button";
+	    this.angleDisplay.style.transform = "translate(-160px, -160px) rotate(-45deg)";
 
       	// this.orientationDisplay2.style.transform = "translate(" + 
       	// 	(Math.cos(-Math.PI*(this.north)/180)*20 + this.displaySize/2-2) + "px, " + 
