@@ -30,8 +30,8 @@ class PlayerExperience extends AbstractExperience {
       nbClosestPoints: 3,                       // Number of closest points searched
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
       // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
-      mode: "streaming",
-      // mode: "ambisonic",
+      // mode: "streaming",
+      mode: "ambisonic",
       // mode: "convolving",
       // mode: "ambiConvolving",
       circleDiameter: 20,                       // Diameter of sources' display
@@ -81,8 +81,9 @@ class PlayerExperience extends AbstractExperience {
         break;
 
       case 'ambisonic':
-        this.parameters.audioData = 'AudioFiles2';
+        // this.parameters.audioData = 'AudioFiles2';
         // this.parameters.audioData = 'AudioFilesSpeech1';
+        this.parameters.audioData = 'AudioFilesMusic1';
         this.parameters.dataFileName = 'scene2.json';
         break;
 
