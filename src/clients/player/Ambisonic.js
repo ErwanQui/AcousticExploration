@@ -2,64 +2,78 @@
 /// Ambisonic.js ///
 ////////////////////
 
-class Ambisonic {
+class Streaming {
 
-	constructor (audioContext, order) {
-		
+	constructor (audioContext, duration, sourceIndex, audioStream, playingState, order) {
+		// console.log(audioStream)
 	    // Creating AudioContext
-	    this.audioContext = audioContext;						// Get audioContext
-	    this.order = order;										// get ambisonic's order
-	   	this.playingSounds = [];								// Instantiate the container for the bufferSources
-	    this.nbFiles = Math.ceil(Math.pow(order + 1, 2)/8);		// Get the number of 8 channels' files
+	    this.audioContext = audioContext;		// Get audioContext
+	    this.playingSound;                    	// BufferSource's object
+	    this.audioStream = audioStream
+	    this.gain;                            	// Gain's object
+		this.syncAudio
+		this.duration = duration;
+		// this.filesPath = "AudioFiles0/";
+		// this.filesPath = "AudioFiles1/";
+		this.filesPath = "AudioFiles2/";
+		// this.filesPath = "AudioFilesMusic1/";
+		// this.filesPath = "AudioFilesPiano/";
+		this.sourceIndex = sourceIndex;
+		// this.connect = false;
+		this.playingState = playingState
+		this.audio;
+		this.initiate = true;
+
+		this.order = order;
+		this.nbFiles = Math.ceil(Math.pow(order + 1, 2)/8);		// Get the number of 8 channels' files
 
 	    // Get ambisonic's objects
 	    this.ambisonic = require("ambisonics");
-
+	    console.log("dfs")
 	    // Create the audioNodes
-	   	this.mirror = new this.ambisonic.sceneRotator(this.audioContext, this.order);
+	   	this.mirror = new this.ambisonic.sceneMirror(this.audioContext, this.order);
 		this.rotator = new this.ambisonic.sceneRotator(this.audioContext, this.order);
 		this.decoder = new this.ambisonic.binDecoder(this.audioContext, this.order);
 	    this.gain = this.audioContext.createGain();
+	    console.log("dfg")
 
-	    this.syncAudio
-		this.duration = duration
 	}
 
-	async start (data, file, index, value, norm) {
+	async start (url, value, norm) {
+		// console.log(this.playingState)
 
-		// Set the object for the multiple 8 channels' sources
-		for (let i = 0; i < this.nbFiles; i++) {
-	    	if (i != this.nbFiles - 1) {
-	    		this.playingSounds.push({
-	    			bufferSource: undefined,
-	    			channels: [this.addLeadingZeros(8*i + 1, 2), this.addLeadingZeros(8*(i + 1), 2)]  
-	    		});
-	    	}
-	    	else {
-	    		this.playingSounds.push({
-	    			bufferSource: undefined,
-	    			channels: [this.addLeadingZeros(8*i + 1, 2), this.addLeadingZeros(Math.pow(this.order + 1, 2), 2)]
-				});
-	    	}
-	    }
+		console.info("Starting source: " + this.sourceIndex)
 
-		// Change the path to get audios of 8 channels
-		var files = this.SlicePath(file[index]);
+	    // Create the gain
+	    this.gain = this.audioContext.createGain();
 
-	    // Connect the audioNodes
-    	this.mirror.out.connect(this.rotator.in);
-    	this.rotator.out.connect(this.decoder.in);
-    	this.decoder.out.connect(this.gain);
+	    // Initiate with current gain's value
+    	
+    	if (this.playingState) {
+    		this.gain.gain.setValueAtTime(value/norm, 0);
+    	}
+    	else {
+    		this.gain.gain.setValueAtTime(0, 0);
+    	}
+
+    	// Connect the audioNodes
     	this.gain.connect(this.audioContext.destination);
 
-	    // init with current content
-    	this.gain.gain.setValueAtTime(value/norm, 0)
+    	// Play the sound
+    	this.loadSample(url);
+	}
 
-    	// Load the sound from the buffers and play them
-    	for (let i = 0; i < this.nbFiles; i++) {
-	    	this.playingSounds[i].bufferSource = this.LoadNewSound(data[files[i]]);
-	    	this.playingSounds[i].bufferSource.start();
-	    }
+	ChangePlayingState(state) {
+		if (this.playingState != state) {
+			if (state) {
+			    console.log("AudioSources " + this.sourceIndex + " is now playing")
+			}
+			else {
+				console.log("AudioSources " + this.sourceIndex + " is no more playing")
+			}
+			this.playingState = state;
+		}
+		// console.log(this.sourceIndex, this.playingState)
 	}
 
 	addLeadingZeros(num, totalLength) { // Add zeros to a number
@@ -80,27 +94,76 @@ class Ambisonic {
 		return (files);
 	}
 
-	LoadNewSound(buffer) { // Create and link the sound to the AudioContext
-
-	    var sound = this.audioContext.createBufferSource();			// Create the sound
-	    sound.loop = true;                                    		// Set the sound to loop
-	    sound.buffer = buffer;                                		// Set the sound buffer
-	    sound.connect(this.mirror.in);								// Connect the sound to the other nodes
-	    return (sound);
+	StopAudio() {
+		this.audio.stop();
 	}
 
-	UpdateAudioSource(data, file) { // Stop the current playing to play an other source's audioBuffer
 
-		// Change the path to get audio of 8 channels
-		var files = this.SlicePath(file);
+	UpdateAudioSource(url) { // Stop the current playing to play an other source's audioBuffer
 
-		// Change the buffer and play the new audio file
+		this.changing = true;
+		var tempPlayingSound;
+		console.log('cacahuètes enfet')
+
+   		this.syncAudio = {
+
+		    advanceTime: (currentTime, audioTime, dt) => {
+
+		    	if (this.changing) {
+
+		    		var tempAudio = this.audioStream.createStreamSource();
+					// console.log(url)
+			      	tempAudio.streamId = url;
+			      	this.audioDuration = tempAudio.duration
+
+			        console.log(this.audio)
+			        if (!this.initiate) {
+			        	this.audio.stop()
+			        }
+			        else {
+			        	this.initiate = false
+			        }
+
+			        this.audio = tempAudio;
+
+				    this.audio.start(audioTime, audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1));
+
+		      		this.audio.connect(this.gain);
+		      		console.log("AudioSources " + this.sourceIndex + " is now connected")
+				    
+				    this.audio.stop(this.audioDuration*Math.ceil(audioTime/this.audioDuration));
+					// }
+
+
+			        this.changing = false;
+			        return currentTime + this.audioDuration*Math.ceil(audioTime/this.audioDuration) - audioTime;
+			    }
+			    else {
+			    	this.audio = this.audioStream.createStreamSource();
+			      	this.audio.streamId = url;
+			      	
+			      	this.audio.connect(this.gain);
+
+				    this.audio.start(audioTime);
+				    this.audio.stop(audioTime + this.audioDuration);
+
+			        return currentTime + this.audioDuration;
+			    }
+	    	}
+    	}
+
+    	// console.log(this.syncAudio, this.sourceIndex)
+   		document.dispatchEvent(new Event("audioLoaded" + this.sourceIndex));
+
+	}
+
+	// function to load samples
+	loadSample(url) {
+      	console.log("File played: " + url)
+
 		for (let i = 0; i < this.nbFiles; i++) {
-			this.playingSounds[i].bufferSource.stop();									// Stop the audio
-			this.playingSounds[i].bufferSource.disconnect(this.mirror.in);				// Disconnect it from the tree
-			this.playingSounds[i].bufferSource = this.LoadNewSound(data[files[i]]);		// Load the new audioBuffer and link the new node
-			this.playingSounds[i].bufferSource.start();									// Play the new audio	
-		}
+      		this.UpdateAudioSource(url);
+      	}
 	}
 
 	UpdateGain(value, norm) { // Update gain
@@ -108,6 +171,10 @@ class Ambisonic {
 	    // Update the gain of the source
 	    this.gain.gain.setValueAtTime(value/norm, 0);
   	}
+
+  	GetSyncBuffer() {
+  		return(this.syncAudio)
+  	}
 }
 
-export default Ambisonic;
+export default Streaming;
