@@ -100,7 +100,7 @@ class Sources {
 					break;
 
 				case 'ambisonic':
-					this.audioSources.push(new Ambisonic(this.audioContext, this.ambiOrder));
+					this.audioSources.push(new Ambisonic(this.audioContext, this.duration, i, this.audioStream, (i < this.nbActiveSources), this.ambiOrder));
 					break;
 
 				case 'convolving':
@@ -181,8 +181,22 @@ class Sources {
 					break;
 
 		    	case 'ambisonic':
-        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
-		    		this.UpdateEngines(i, true)
+
+		    		document.addEventListener("audioLoaded" + i, () => {
+			    		console.log("audioDispatched")
+			    		if (this.syncBuffers[i] != undefined) {
+			    			this.UpdateEnginesAmbi(i, false);
+			    		}
+			    		// console.log(this.audioSources[i].GetSyncBuffer())
+			    		this.syncBuffers[i] = this.audioSources[i].GetSyncBuffer()
+		    			this.UpdateEnginesAmbi(i, true);
+
+		    		});
+
+
+        			this.audioSources[i].start(this.sourcesData.receivers.files[this.closestSourcesId[i]], this.gainsData.Value[i], this.gainsData.Norm);    	
+		    		this.syncBuffers.push(undefined)
+
 		    		break;
 
 		    	case 'convolving':
@@ -327,9 +341,9 @@ class Sources {
 		    		break;
 
 		    	case "ambisonic":
-		    		this.UpdateEngines(audioSourceId, false)
-		    		this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data, this.sourcesData.receivers.files[sources2Attribuate[i][0]])
-		    		this.UpdateEngines(audioSourceId, true)
+		    		// this.UpdateEngines(audioSourceId, false)
+		    		this.audioSources[audioSourceId].loadSample(this.sourcesData.receivers.files[sources2Attribuate[i][0]])
+		    		// this.UpdateEngines(audioSourceId, true)
 		    		break;
 
 		    	case "convolving":
@@ -452,7 +466,7 @@ class Sources {
   		if (adding) {
 			const nextTime = Math.ceil(this.sync.getSyncTime());
 			console.error("ok")
-			// console.log(this.syncBuffers[sourceIndex], sourceIndex)
+			console.log(this.syncBuffers[sourceIndex], sourceIndex)
 			this.scheduler.add(this.syncBuffers[sourceIndex], nextTime);
 			// console.log(this.syncBuffers[sourceIndex], sourceIndex)
 		}
@@ -462,6 +476,30 @@ class Sources {
 			if (this.scheduler.has(this.syncBuffers[sourceIndex])) {
 				// console.log("oui")
 				this.scheduler.remove(this.syncBuffers[sourceIndex]);
+			}
+		}
+  	}
+
+  	UpdateEnginesAmbi(sourceIndex, adding) {
+  		// console.log("hello")
+  		// console.log(this.audioSources)
+  		if (adding) {
+			const nextTime = Math.ceil(this.sync.getSyncTime());
+			console.error("ok")
+			console.log(this.syncBuffers[sourceIndex], sourceIndex)
+			for (let i = 0; i < this.audioSources[sourceIndex].nbFiles; i++) {
+				this.scheduler.add(this.syncBuffers[sourceIndex][i], nextTime);
+			}
+			// console.log(this.syncBuffers[sourceIndex], sourceIndex)
+		}
+		else {
+			// console.log(this.syncBuffers[sourceIndex], sourceIndex)
+			// console.log(this.scheduler.has(this.syncBuffers[sourceIndex]))
+			for (let i = 0; i < this.audioSources[sourceIndex].nbFiles; i++) {
+				if (this.scheduler.has(this.syncBuffers[sourceIndex][i])) {
+					// console.log("oui")
+					this.scheduler.remove(this.syncBuffers[sourceIndex][i]);
+				}
 			}
 		}
   	}

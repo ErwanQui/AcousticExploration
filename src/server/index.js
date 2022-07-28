@@ -118,6 +118,7 @@ server.pluginManager.register('audio-streams', pluginAudioStreamsFactory, {
 // {
   directory: 'public/grid_nav_assets/2_ambisonic_encoded_2nd',
   cache: true,
+  compress: false
 }, []);
 
 server.pluginManager.register('audio-buffer-loader', pluginAudioBufferLoaderFactory, {}, []);
