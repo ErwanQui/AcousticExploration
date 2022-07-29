@@ -28,8 +28,6 @@ class Sources {
 
 	   	this.audioStream = audioStream
 
-
-
 	    this.platform = platform;
 	    this.sync = sync;
 	    this.syncBuffers = [];
@@ -40,8 +38,8 @@ class Sources {
 	    this.nbSources;											// Create the number of sources object
 	    this.mode = parameters.mode;							// Get the used mode
 	    this.circleDiameter = parameters.circleDiameter;		// Get the circles' diameter
-	    this.nbActiveSources = parameters.nbClosestSources;		// Get the number of activ sources
-	    this.nbDetectSources = parameters.nbClosestPoints;		// Get the number of activ sources
+	    this.nbActiveSources = parameters.nbClosestActivSources;		// Get the number of active sources
+	    this.nbDetectSources = parameters.nbClosestDetectSources;		// Get the number of detect sources
 	    this.ambiOrder = parameters.order;						// Get the ambisonic's order
 	    this.fileData = {										// Create the fileDatas' storer
 	    	File: parameters.dataFileName,

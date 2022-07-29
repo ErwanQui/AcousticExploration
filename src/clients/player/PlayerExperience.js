@@ -26,8 +26,8 @@ class PlayerExperience extends AbstractExperience {
     this.parameters = {
       audioContext: audioContext,               // Global audioContext
       order: 2,                                 // Order of ambisonics
-      nbClosestSources: 3,                      // Number of closest points searched
-      nbClosestPoints: 3,                       // Number of closest points searched
+      nbClosestActivSources: 3,                      // Number of closest points searched
+      nbClosestDetectSources: 3,                       // Number of closest points searched
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
       // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
       // mode: "streaming",
