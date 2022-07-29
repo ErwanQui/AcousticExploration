@@ -36,11 +36,11 @@ class Sources {
 
 	    // Global parameters
 	    this.nbSources;											// Create the number of sources object
-	    this.mode = parameters.mode;							// Get the used mode
+	    // this.mode = parameters.mode;							// Get the used mode
 	    this.circleDiameter = parameters.circleDiameter;		// Get the circles' diameter
 	    this.nbActiveSources = parameters.nbClosestActivSources;		// Get the number of active sources
 	    this.nbDetectSources = parameters.nbClosestDetectSources;		// Get the number of detect sources
-	    this.ambiOrder = parameters.order;						// Get the ambisonic's order
+	    // this.ambiOrder = parameters.order;						// Get the ambisonic's order
 	    this.fileData = {										// Create the fileDatas' storer
 	    	File: parameters.dataFileName,
 	    	Audio: parameters.audioData
@@ -80,36 +80,30 @@ class Sources {
 	      currentTimeToAudioTimeFunction
 	    });
 
-	    // console.log(currentTimeToAudioTimeFunction())
-	    // console.log(this.scheduler)
-	    // console.log(this.sync.getLocalTime(this.sync.getSyncTime()))
-
 		// Add the audioSources depending on the mode chosen
 		for (let i = 0; i < this.nbDetectSources; i++) {
-		// for (let i = 0; i < 1; i++) {
 			this.audio2Source.push(i);
-			switch (this.mode) {
+			switch (this.sourcesData.mode) {
 
 				case 'debug':
 				case 'streaming':
-				console.log(this.nbActiveSources)
 					this.audioSources.push(new Streaming(this.audioContext, i, this.audioStream, (i < this.nbActiveSources)));
 					break;
 
 				case 'ambisonic':
-					this.audioSources.push(new Ambisonic(this.audioContext, i, this.audioStream, (i < this.nbActiveSources), this.ambiOrder));
+					this.audioSources.push(new Ambisonic(this.audioContext, i, this.audioStream, (i < this.nbActiveSources), this.sourcesData.order));
 					break;
 
 				case 'convolving':
-					this.audioSources.push(new Convolving(this.audioContext, this.ambiOrder));
+					this.audioSources.push(new Convolving(this.audioContext, this.sourcesData.order));
 					break;
 
 				case 'ambiConvolving':
-					this.audioSources.push(new AmbiConvolving(this.audioContext, this.ambiOrder));
+					this.audioSources.push(new AmbiConvolving(this.audioContext, this.sourcesData.order));
 					break;
 
 				default:
-					console.log("No valid mode");
+					alert("No valid mode");
 			}
 		}
 
@@ -153,7 +147,7 @@ class Sources {
 			}
 
 			// Start sources
-			switch (this.mode) {
+			switch (this.sourcesData.mode) {
 		    	case 'debug':
 		    	case 'streaming':
 
@@ -196,15 +190,15 @@ class Sources {
 
 		    		break;
 
-		    	case 'convolving':
-        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
-		    		this.UpdateEngines(i, true)
-		    		break;
+		    	// case 'convolving':
+       //  			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
+		    	// 	this.UpdateEngines(i, true)
+		    	// 	break;
 
-		    	case 'ambiConvolving':
-        			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
-		    		this.UpdateEngines(i, true)
-		    		break;
+		    	// case 'ambiConvolving':
+       //  			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
+		    	// 	this.UpdateEngines(i, true)
+		    	// 	break;
 
 				default:
 					console.log("no valid mode");
@@ -244,6 +238,9 @@ class Sources {
 		        	// Update sourcesData object
 		        	this.sourcesData.receivers.xyz = tempSourcesPosition;
 		        	this.sourcesData.sources_xy = tempInstrumentsPositions;
+
+		        	console.log("json files: " + this.fileData.file + " has been read");
+    				console.log("You are using " + this.sourcesData.mode + " mode.");
 
 		        	// Create an event to inform that the file's data can be used
 		          	document.dispatchEvent(new Event("dataLoaded"));
@@ -326,7 +323,7 @@ class Sources {
 		    
 		    console.warn("changing")
 
-		    switch (this.mode) {
+		    switch (this.sourcesData.mode) {
 		    	case "debug":
 		    	case "streaming":
 			    	this.audioSources[audioSourceId].loadSample(this.sourcesData.receivers.files[sources2Attribuate[i][0]])
@@ -451,8 +448,6 @@ class Sources {
   	UpdateEngines(sourceIndex, adding) {
   		if (adding) {
 			const nextTime = Math.ceil(this.sync.getSyncTime());
-			console.error("ok")
-			console.log(this.syncBuffers[sourceIndex], sourceIndex)
 			this.scheduler.add(this.syncBuffers[sourceIndex], nextTime);
 		}
 		else {
