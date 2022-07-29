@@ -32,14 +32,13 @@ class Sources {
 
 	    this.platform = platform;
 	    this.sync = sync;
-	    this.duration = 0
-	    this.syncBuffers = []
+	    this.syncBuffers = [];
 
 
 
 	    // Global parameters
 	    this.nbSources;											// Create the number of sources object
-	    this.mode = parameters.mode								// Get the used mode
+	    this.mode = parameters.mode;							// Get the used mode
 	    this.circleDiameter = parameters.circleDiameter;		// Get the circles' diameter
 	    this.nbActiveSources = parameters.nbClosestSources;		// Get the number of activ sources
 	    this.nbDetectSources = parameters.nbClosestPoints;		// Get the number of activ sources
@@ -96,11 +95,11 @@ class Sources {
 				case 'debug':
 				case 'streaming':
 				console.log(this.nbActiveSources)
-					this.audioSources.push(new Streaming(this.audioContext, this.duration, i, this.audioStream, (i < this.nbActiveSources)));
+					this.audioSources.push(new Streaming(this.audioContext, i, this.audioStream, (i < this.nbActiveSources)));
 					break;
 
 				case 'ambisonic':
-					this.audioSources.push(new Ambisonic(this.audioContext, this.duration, i, this.audioStream, (i < this.nbActiveSources), this.ambiOrder));
+					this.audioSources.push(new Ambisonic(this.audioContext, i, this.audioStream, (i < this.nbActiveSources), this.ambiOrder));
 					break;
 
 				case 'convolving':
@@ -278,9 +277,6 @@ class Sources {
 		    if (previousClosestSourcesId[i] != this.closestSourcesId[i]) {
 
 
-		    	// console.warn(i, previousClosestSourcesId)
-		    	// console.warn(this.closestSourcesId)
-
 		        // Update the display for sources that are not active  (//Check if the point is the fourth point)
 		        if (this.Index(previousClosestSourcesId[i], this.closestSourcesId)[0] || this.Index(previousClosestSourcesId[i], this.closestSourcesId)[1] >= this.nbActiveSources) {
 		          	this.sources[previousClosestSourcesId[i]].style.background = "grey";	// Change the color of inactiv sources to grey
@@ -329,21 +325,17 @@ class Sources {
 
 	    	// Add a new association between 'this.closestSourceId' and the corresponding Source
 	    	this.audio2Source[sources2Attribuate[i][1]] = audioSourceId;
+		    
+		    console.warn("changing")
 
 		    switch (this.mode) {
 		    	case "debug":
 		    	case "streaming":
-		    	console.warn("changing")
-		    		// this.UpdateEngines(audioSourceId, false)
-			    	// this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[sources2Attribuate[i][0]]])
 			    	this.audioSources[audioSourceId].loadSample(this.sourcesData.receivers.files[sources2Attribuate[i][0]])
-			    	// this.UpdateEngines(audioSourceId, true)
 		    		break;
 
 		    	case "ambisonic":
-		    		// this.UpdateEngines(audioSourceId, false)
 		    		this.audioSources[audioSourceId].loadSample(this.sourcesData.receivers.files[sources2Attribuate[i][0]])
-		    		// this.UpdateEngines(audioSourceId, true)
 		    		break;
 
 		    	case "convolving":
@@ -436,8 +428,6 @@ class Sources {
 	    // Set a using value to the source
 	    var sourceValue = this.gainsData.Value[index]/this.gainsData.Norm;
 
-	    // Update source's display
-	    // console.log("Source " + (this.closestSourcesId[index] + 1) + " is now colored with the init gainValue: " + sourceValue)
 	    this.sources[this.closestSourcesId[index]].style.background = "rgb(0, " + 255*(4*Math.pow(sourceValue, 2)) + ", 0)";
   	}
 

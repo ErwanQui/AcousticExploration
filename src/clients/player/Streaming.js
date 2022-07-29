@@ -4,15 +4,14 @@
 
 class Streaming {
 
-	constructor (audioContext, duration, sourceIndex, audioStream, playingState) {
+	constructor (audioContext, sourceIndex, audioStream, playingState) {
 		// console.log(audioStream)
 	    // Creating AudioContext
 	    this.audioContext = audioContext;		// Get audioContext
 	    this.playingSound;                    	// BufferSource's object
 	    this.audioStream = audioStream
 	    this.gain;                            	// Gain's object
-		this.syncAudio
-		this.duration = duration;
+		this.syncAudio;
 		// this.filesPath = "AudioFiles0/";
 		// this.filesPath = "AudioFiles1/";
 		this.filesPath = "AudioFilesMusic1/";

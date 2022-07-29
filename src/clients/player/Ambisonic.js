@@ -4,12 +4,10 @@
 
 class Streaming {
 
-	constructor (audioContext, duration, sourceIndex, audioStream, playingState, order) {
+	constructor (audioContext, sourceIndex, audioStream, playingState, order) {
 	    // Creating AudioContext
 	    this.audioContext = audioContext;						// Get audioContext
 	    this.audioStream = audioStream;							// Get streaming plugin
-	    
-		this.duration = duration;								// Set duration of extracts
 		
 		this.sourceIndex = sourceIndex;							// Set the index of the audioSource
 		this.playingState = playingState;						// Set the state of the audioSource (active or not)
