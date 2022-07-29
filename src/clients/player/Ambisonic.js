@@ -2,7 +2,7 @@
 /// Ambisonic.js ///
 ////////////////////
 
-class Streaming {
+class Ambisonic {
 
 	constructor (audioContext, sourceIndex, audioStream, playingState, order) {
 
@@ -219,4 +219,4 @@ class Streaming {
   	}
 }
 
-export default Streaming;
+export default Ambisonic;

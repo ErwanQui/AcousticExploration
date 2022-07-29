@@ -42,8 +42,8 @@ class Sources {
 	    this.nbDetectSources = parameters.nbClosestDetectSources;		// Get the number of detect sources
 	    // this.ambiOrder = parameters.order;						// Get the ambisonic's order
 	    this.fileData = {										// Create the fileDatas' storer
-	    	File: parameters.dataFileName,
-	    	Audio: parameters.audioData
+	    	file: parameters.dataFileName,
+	    	// audio: parameters.audioData
 	    }
 	    this.audioSources = []									// Store the audioSources (I will then associate a source to each audioSource)
 	    this.sources = [];										// Create the array of sources' display's elements
@@ -56,9 +56,9 @@ class Sources {
 
 	    // Set gain's datas
 	    this.gainsData = {
-	    	Value: [],
-	    	Norm: 0,
-	    	Exposant: parameters.gainExposant
+	    	value: [],
+	    	norm: 0,
+	    	exposant: parameters.gainExposant
 	    }
 	}
 
@@ -164,8 +164,8 @@ class Sources {
 		    		// console.log("hey")
 		    		// console.log(this.sourcesData.receivers.files)
 		    		// console.log(this.closestSourcesId)
-	        		// this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.Value[i], this.gainsData.Norm);  	
-	        		this.audioSources[i].start(this.sourcesData.receivers.files[this.closestSourcesId[i]], this.gainsData.Value[i], this.gainsData.Norm);  	
+	        		// this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.value[i], this.gainsData.norm);  	
+	        		this.audioSources[i].start(this.sourcesData.receivers.files[this.closestSourcesId[i]], this.gainsData.value[i], this.gainsData.norm);  	
 			    	this.syncBuffers.push(undefined)
 			    	// console.log("rehey")
 
@@ -185,18 +185,18 @@ class Sources {
 		    		});
 
 
-        			this.audioSources[i].start(this.sourcesData.receivers.files[this.closestSourcesId[i]], this.gainsData.Value[i], this.gainsData.Norm);    	
+        			this.audioSources[i].start(this.sourcesData.receivers.files[this.closestSourcesId[i]], this.gainsData.value[i], this.gainsData.norm);    	
 		    		this.syncBuffers.push(undefined)
 
 		    		break;
 
 		    	// case 'convolving':
-       //  			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
+       //  			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.value[i], this.gainsData.norm);    	
 		    	// 	this.UpdateEngines(i, true)
 		    	// 	break;
 
 		    	// case 'ambiConvolving':
-       //  			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.Value[i], this.gainsData.Norm);    	
+       //  			this.audioSources[i].start(this.audioBufferLoader.data, this.sourcesData.receivers.files, this.closestSourcesId[i], this.gainsData.value[i], this.gainsData.norm);    	
 		    	// 	this.UpdateEngines(i, true)
 		    	// 	break;
 
@@ -213,7 +213,7 @@ class Sources {
 	    const data = this.filesystem.get('Assets');
 
 	    data.children.forEach(leaf => {
-	      	if (leaf.name === this.fileData.File) {
+	      	if (leaf.name === this.fileData.file) {
 
 	      		// Wait that the json file has been getting before using it
 			    fetch(leaf.url).then(results => results.json()).then(jsonObj => {
@@ -278,7 +278,7 @@ class Sources {
 			    	this.audioSources[this.audio2Source[i]].ChangePlayingState(false, this.sync.getLocalTime(this.sync.getSyncTime()));
 		          	console.log("Source " + i + " is now inactive")
 		          	this.audioSources[this.audio2Source[i]].UpdateGain(0, 1);
-		          	// console.warn(this.gainsData.Value)
+		          	// console.warn(this.gainsData.value)
 
 
 		          	if (this.Index(previousClosestSourcesId[i], this.closestSourcesId)[0]) {
@@ -357,10 +357,10 @@ class Sources {
 	    console.log("Current corresponding between AudioSources and Sources in closestSourcesId is :")
 	    console.log(this.audio2Source)
 	    for (let i = 0; i < this.nbActiveSources; i++) {
-		    console.log("AudioSource " + this.audio2Source[i] + " is active with the value " + (this.gainsData.Value[i]/this.gainsData.Norm) + " and the Source" + (this.closestSourcesId[i] + 1) + " is now colored")
+		    console.log("AudioSource " + this.audio2Source[i] + " is active with the value " + (this.gainsData.value[i]/this.gainsData.norm) + " and the Source " + (this.closestSourcesId[i] + 1) + " is now colored")
 		    this.UpdateClosestSourcesColor(i);
 		    this.audioSources[this.audio2Source[i]].ChangePlayingState(true);
-		    this.audioSources[this.audio2Source[i]].UpdateGain(this.gainsData.Value[i], this.gainsData.Norm);
+		    this.audioSources[this.audio2Source[i]].UpdateGain(this.gainsData.value[i], this.gainsData.norm);
 		}
 	}
 
@@ -372,7 +372,7 @@ class Sources {
 
 	    // Reset the count
 	    this.distanceSum = 0;
-	    this.gainsData.Norm = 0;
+	    this.gainsData.norm = 0;
 
 	    // Get the 'nbClosest' closest ids
 	    for (let j = 0; j < this.nbDetectSources; j++) {
@@ -403,8 +403,8 @@ class Sources {
 
 	    // Set the gains and the gains' norm
 	    for (let i = 0; i < this.nbActiveSources; i++) {
-	      this.gainsData.Value[i] = Math.pow((1 - this.distanceValue[i]/this.distanceSum), this.gainsData.Exposant);
-	      this.gainsData.Norm += this.gainsData.Value[i];
+	      this.gainsData.value[i] = Math.pow((1 - this.distanceValue[i]/this.distanceSum), this.gainsData.exposant);
+	      this.gainsData.norm += this.gainsData.value[i];
 	    }
 	    return (closestIds);
   	}
@@ -421,7 +421,7 @@ class Sources {
   	UpdateClosestSourcesColor(index) { // Update source's display depending on listener's position
 
 	    // Set a using value to the source
-	    var sourceValue = this.gainsData.Value[index]/this.gainsData.Norm;
+	    var sourceValue = this.gainsData.value[index]/this.gainsData.norm;
 
 	    this.sources[this.closestSourcesId[index]].style.background = "rgb(0, " + 255*(4*Math.pow(sourceValue, 2)) + ", 0)";
   	}
@@ -467,7 +467,6 @@ class Sources {
 		else {
 			for (let i = 0; i < this.audioSources[sourceIndex].nbFiles; i++) {
 				if (this.scheduler.has(this.syncBuffers[sourceIndex][i])) {
-					// console.log("oui")
 					this.scheduler.remove(this.syncBuffers[sourceIndex][i]);
 				}
 			}

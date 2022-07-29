@@ -4,7 +4,6 @@ import renderInitializationScreens from '@soundworks/template-helpers/client/ren
 
 import Listener from './Listener.js'
 import Sources from './Sources.js'
-// import { Scheduler } from 'waves-masters';
 
 class PlayerExperience extends AbstractExperience {
   constructor(client, config = {}, $container, audioContext) {
@@ -16,6 +15,7 @@ class PlayerExperience extends AbstractExperience {
     this.rafId = null;
 
     // Require plugins
+    // @note: could be a good idea to create a plugin object
     this.audioBufferLoader = this.require('audio-buffer-loader');     // To load audioBuffers
     this.filesystem = this.require('filesystem');                     // To get files
     this.sync = this.require('sync');                                 // To sync audio sources
@@ -25,7 +25,7 @@ class PlayerExperience extends AbstractExperience {
     // Variable parameters
     this.parameters = {
       audioContext: audioContext,               // Global audioContext
-      order: 2,                                 // Order of ambisonics
+      // order: 2,                                 // Order of ambisonics
       nbClosestDetectSources: 3,                // Number of closest points detected
       nbClosestActivSources: 3,                 // Number of closest points used as active audioSources
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
@@ -41,10 +41,10 @@ class PlayerExperience extends AbstractExperience {
     }
 
     // Initialisation variables
-    this.initialising = true;
-    this.beginPressed = false;
-    this.mouseDown = false;
-    this.touched = false;
+    this.initialising = true;                   // Attribute to know if the event listener havn't been initiated
+    this.beginPressed = false;                  // Attribute to know if the beginButton has already been pressed
+    this.mouseDown = false;                     // Attribute to know if the mouse is pressed (computer)
+    this.touched = false;                       // Attribute to know if the screen is touched (device)
 
     // Instanciate classes' storer
     this.Listener;                              // Store the 'Listener' class
@@ -61,13 +61,12 @@ class PlayerExperience extends AbstractExperience {
 
   async start() {
 
+    super.start();
+
+    // Check
     if (this.parameters.nbClosestDetectSources < this.parameters.nbClosestActivSources) {
       console.error("The number of detected sources must be higher than the number of used sources")
     }
-
-    super.start();
-
-    console.log("You are using " + this.parameters.mode + " mode.");
 
     // Switch files' names and audios, depending on the mode chosen
     switch (this.parameters.mode) {
@@ -112,8 +111,6 @@ class PlayerExperience extends AbstractExperience {
     // Wait until data have been loaded from json files ("dataLoaded" event is create 'this.Sources.LoadData()')
     document.addEventListener("dataLoaded", () => {
 
-      console.log("json files: " + this.parameters.dataFileName + " has been read");
-
       // Instantiate the attribute 'this.range' to get datas' parameters
       this.Range(this.Sources.sourcesData.receivers.xyz, this.Sources.sourcesData.sources_xy);
 
@@ -131,7 +128,7 @@ class PlayerExperience extends AbstractExperience {
         y: this.positionRange.minY
       };
 
-      // Create, start and store the listener class
+      // Create, start and store the listener class object
       this.Listener = new Listener(listenerInitPos, this.parameters);
       this.Listener.start(this.scale, this.offset);
       // Start the sources display and audio depending on listener's initial position
@@ -269,7 +266,7 @@ class PlayerExperience extends AbstractExperience {
 
       // Do this only at beginning
       if (this.initialising) {
-        this.initialising = false;          // Update initialising State
+        this.initialising = false;          // Update initialising state
 
         // Assign callbacks once
         var beginButton = document.getElementById("beginButton");
@@ -315,7 +312,7 @@ class PlayerExperience extends AbstractExperience {
             this.touched = false;
           }, false);            
 
-          this.beginPressed = true;         // Update begin State 
+          this.beginPressed = true;         // Update begin state 
 
         });
       }
@@ -325,11 +322,10 @@ class PlayerExperience extends AbstractExperience {
   onBeginButtonClicked() { // Begin audioContext and add the sources display to the display
 
     // Create and display objects
-    this.CreateInstruments();
+    this.CreateInstruments();                                                   // Create the instruments and display them
     this.Sources.CreateSources(this.container, this.scale, this.offset);        // Create the sources and display them
     this.Listener.Display(this.container);                                      // Add the listener's display to the container
     this.render();                                                              // Update the display
-    document.dispatchEvent(new Event("rendered"));                              // Create an event when the simulation appeared
   }
 
   CreateInstruments() { // Create the instruments and add them to the scene display
@@ -337,6 +333,7 @@ class PlayerExperience extends AbstractExperience {
     var container = document.getElementById('instrumentContainer')
     var circleDiameter = this.parameters.circleDiameter;
     this.instruments = []
+
     for (let i = 0; i < this.Sources.sourcesData.sources_xy.length; i++) {
 
       this.instruments.push(document.createElement('div'));       // Create a new element
