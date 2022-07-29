@@ -26,7 +26,7 @@ class PlayerExperience extends AbstractExperience {
     this.parameters = {
       audioContext: audioContext,               // Global audioContext
       order: 2,                                 // Order of ambisonics
-      nbClosestSources: 3,                       // Number of closest points searched
+      nbClosestSources: 3,                      // Number of closest points searched
       nbClosestPoints: 3,                       // Number of closest points searched
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
       // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
@@ -136,15 +136,8 @@ class PlayerExperience extends AbstractExperience {
         // Create, start and store the listener class
         this.Listener = new Listener(listenerInitPos, this.parameters);
         this.Listener.start(this.scale, this.offset);
-        console.log("ici")
         // Start the sources display and audio depending on listener's initial position
         this.Sources.start(this.Listener.listenerPosition);
-
-        // document.addEventListener('ListenerMove', () => {
-        //   this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
-        //   this.UpdateContainer()
-        //   this.render();
-        // })
 
         document.addEventListener('Moving', () => {
           this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
@@ -153,7 +146,6 @@ class PlayerExperience extends AbstractExperience {
         })
         
         // Add event listener for resize window event to resize the display
-        console.log("bah oui")
         window.addEventListener('resize', () => {
 
           this.scale = this.Scaling(this.range);      // Change the scale
@@ -215,7 +207,6 @@ class PlayerExperience extends AbstractExperience {
     // this.positionRange = D.tempRange;
 
     for (let i = 0; i < sourcesPositions.length; i++) {
-      console.log(this.range.minX)
 
       if (sourcesPositions[i].x < this.range.minX) {
         this.range.minX = sourcesPositions[i].x;
@@ -375,13 +366,8 @@ class PlayerExperience extends AbstractExperience {
         ((this.Sources.sourcesData.sources_xy[i].x - this.offset.x)*this.scale) + "px, " + 
         ((this.Sources.sourcesData.sources_xy[i].y - this.offset.y)*this.scale) + "px)";
 
-      console.log((this.Sources.sourcesData))
-      console.log((this.Sources.sourcesData.sources_xy[i].x - this.offset.x)*this.scale)
-      console.log((this.Sources.sourcesData.sources_xy[i].y - this.offset.y)*this.scale)
-
       // Add the circle's display to the global container
       container.appendChild(this.instruments[i]);
-      console.log("zblo")
     }
   }
 

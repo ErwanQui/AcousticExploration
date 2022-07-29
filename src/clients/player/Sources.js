@@ -333,7 +333,7 @@ class Sources {
 		    switch (this.mode) {
 		    	case "debug":
 		    	case "streaming":
-		    	console.warn("change")
+		    	console.warn("changing")
 		    		// this.UpdateEngines(audioSourceId, false)
 			    	// this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files[sources2Attribuate[i][0]]])
 			    	this.audioSources[audioSourceId].loadSample(this.sourcesData.receivers.files[sources2Attribuate[i][0]])
@@ -370,7 +370,7 @@ class Sources {
 	    console.log("Current corresponding between AudioSources and Sources in closestSourcesId is :")
 	    console.log(this.audio2Source)
 	    for (let i = 0; i < this.nbActiveSources; i++) {
-		    console.log("AudioSource " + this.audio2Source[i] + " is active with the value " + (this.gainsData.Value[i]/this.gainsData.Norm))
+		    console.log("AudioSource " + this.audio2Source[i] + " is active with the value " + (this.gainsData.Value[i]/this.gainsData.Norm) + " and the Source" + (this.closestSourcesId[i] + 1) + " is now colored")
 		    this.UpdateClosestSourcesColor(i);
 		    this.audioSources[this.audio2Source[i]].ChangePlayingState(true);
 		    this.audioSources[this.audio2Source[i]].UpdateGain(this.gainsData.Value[i], this.gainsData.Norm);
@@ -437,7 +437,7 @@ class Sources {
 	    var sourceValue = this.gainsData.Value[index]/this.gainsData.Norm;
 
 	    // Update source's display
-	    console.log("Source " + this.closestSourcesId[index] + " is now colored with the init gainValue: " + sourceValue)
+	    // console.log("Source " + (this.closestSourcesId[index] + 1) + " is now colored with the init gainValue: " + sourceValue)
 	    this.sources[this.closestSourcesId[index]].style.background = "rgb(0, " + 255*(4*Math.pow(sourceValue, 2)) + ", 0)";
   	}
 
@@ -461,40 +461,27 @@ class Sources {
   	}
 
   	UpdateEngines(sourceIndex, adding) {
-  		// console.log("hello")
-  		// console.log(this.audioSources)
   		if (adding) {
 			const nextTime = Math.ceil(this.sync.getSyncTime());
 			console.error("ok")
 			console.log(this.syncBuffers[sourceIndex], sourceIndex)
 			this.scheduler.add(this.syncBuffers[sourceIndex], nextTime);
-			// console.log(this.syncBuffers[sourceIndex], sourceIndex)
 		}
 		else {
-			// console.log(this.syncBuffers[sourceIndex], sourceIndex)
-			// console.log(this.scheduler.has(this.syncBuffers[sourceIndex]))
 			if (this.scheduler.has(this.syncBuffers[sourceIndex])) {
-				// console.log("oui")
 				this.scheduler.remove(this.syncBuffers[sourceIndex]);
 			}
 		}
   	}
 
   	UpdateEnginesAmbi(sourceIndex, adding) {
-  		// console.log("hello")
-  		// console.log(this.audioSources)
   		if (adding) {
 			const nextTime = Math.ceil(this.sync.getSyncTime());
-			console.error("ok")
-			console.log(this.syncBuffers[sourceIndex], sourceIndex)
 			for (let i = 0; i < this.audioSources[sourceIndex].nbFiles; i++) {
 				this.scheduler.add(this.syncBuffers[sourceIndex][i], nextTime);
 			}
-			// console.log(this.syncBuffers[sourceIndex], sourceIndex)
 		}
 		else {
-			// console.log(this.syncBuffers[sourceIndex], sourceIndex)
-			// console.log(this.scheduler.has(this.syncBuffers[sourceIndex]))
 			for (let i = 0; i < this.audioSources[sourceIndex].nbFiles; i++) {
 				if (this.scheduler.has(this.syncBuffers[sourceIndex][i])) {
 					// console.log("oui")

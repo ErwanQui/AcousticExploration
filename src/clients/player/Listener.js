@@ -19,7 +19,6 @@ class Listener {
 	    // Parameter's for the display of user's position
 	    this.display;													// Html element for the display (build in 'start()')
 	    
-
 	    this.displaySize = parameters.listenerSize;							// Size of the listener's display
 	    this.circleSpacing = parameters.circleDiameter/2;				// Size of sources to set an offset
 	
@@ -29,8 +28,8 @@ class Listener {
 	    	this.initPosX = pos.coords.latitude;
 	    	this.initPosY = pos.coords.longitude;
 	    	this.north = pos.coords.heading;
-		this.posX = this.initPosX
-		this.posY = this.initPosY
+			this.posX = this.initPosX
+			this.posY = this.initPosY
 	    }, this.Error, {enableHighAccuracy: true});
 
 		// Orientation
@@ -40,8 +39,8 @@ class Listener {
 		this.store = 10000;
 
 		this.previousPosition = {
-	      x: this.initListenerPosition.x,
-	      y: this.initListenerPosition.y,
+	      	x: this.initListenerPosition.x,
+	      	y: this.initListenerPosition.y,
 		}
 
 		this.targetPosX = this.initListenerPosition.x
@@ -55,31 +54,29 @@ class Listener {
 	    this.pointDegree;
 
 		const isIOS =
-	      navigator.userAgent.match(/(iPod|iPhone|iPad)/) &&
-	      navigator.userAgent.match(/AppleWebKit/);
+	      	navigator.userAgent.match(/(iPod|iPhone|iPad)/) &&
+	      	navigator.userAgent.match(/AppleWebKit/);
 
-	     console.log(isIOS)
+	    navigator.geolocation.getCurrentPosition((position) => {
 
-	      navigator.geolocation.getCurrentPosition((position) => {
+	      	const { latitude, longitude } = position.coords;
+	      	var pointDegree = this.calcDegreeToPoint(latitude, longitude);
 
-	      const { latitude, longitude } = position.coords;
-	      var pointDegree = this.calcDegreeToPoint(latitude, longitude);
+	    	if (pointDegree < 0) {
+	        	pointDegree = pointDegree + 360;
+	    	}
+	    });
 
-	      if (pointDegree < 0) {
-	        pointDegree = pointDegree + 360;
-	    }
-	      });
-
-	      if (!isIOS) {
+	    if (!isIOS) {
 	        window.addEventListener("deviceorientationabsolute", (e) => {
 
-		      this.compass = e.webkitCompassHeading || Math.abs(e.alpha - 360);
-		      if (this.first && this.compass != undefined) {
-		      	this.direction = this.compass;
-		      	this.first = false;
-		      }
+		      	this.compass = e.webkitCompassHeading || Math.abs(e.alpha - 360);
+		      	if (this.first && this.compass != undefined) {
+		      		this.direction = this.compass;
+		      		this.first = false;
+		      	}
 	  		}, true);
-	      }
+	    }
 
 	    function startCompass() {
 	      if (isIOS) {
