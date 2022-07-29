@@ -177,17 +177,7 @@ class Listener {
 
 		navigator.geolocation.watchPosition((position) => this.UpdatePos(position), this.Error, {enableHighAccuracy: true});
 
-	} 
-
-	Success(pos) {
-        var crd = pos.coords;
-
-        console.log('Votre position actuelle est :');
-        console.log(`Latitude : ${crd.latitude}`);
-        console.log(`Longitude : ${crd.longitude}`);
-        console.log(`La précision est de ${crd.accuracy} mètres.`);
-
-    }
+	}
 
     Reset(position, offset, scale) {
 	    // Update Listener's dipslay depending on offset and scale
@@ -239,20 +229,21 @@ class Listener {
     UpdatePos(pos) {
     	// console.log("pos")
 		// navigator.geolocation.getCurrentPosition((pos) => {
+
+		// Initiate the first position of the listener when the GPS is received
 		if (this.posInitialising && pos.coords.latitude != undefined) {
 			this.posInitialising = false;
+
+			// Dispatch an event listened in "Sources.js" to tell that the user has moved
 			document.dispatchEvent(new Event("Moving"));
 		}
-
 
 		this.updateTargetX = -(Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
    		this.updateTargetY = -(Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) - Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
 
-
     	this.posX = pos.coords.latitude;
     	this.posY = pos.coords.longitude;
 		
-
 		if (this.updateTargetX != NaN || this.updateTargetY != NaN) {
 	   		this.targetPosX += this.updateTargetX;
 	   		this.targetPosY += this.updateTargetY;
