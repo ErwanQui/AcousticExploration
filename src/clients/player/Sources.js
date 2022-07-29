@@ -160,25 +160,18 @@ class Sources {
 			    		this.syncBuffers[i] = this.audioSources[i].GetSyncBuffer()
 		    			this.UpdateEngines(i, true);
 		    		});
-		    	
-		    		// console.log("hey")
-		    		// console.log(this.sourcesData.receivers.files)
-		    		// console.log(this.closestSourcesId)
-	        		// this.audioSources[i].start(this.audioBufferLoader.data[this.sourcesData.receivers.files[this.closestSourcesId[i]]], this.gainsData.value[i], this.gainsData.norm);  	
-	        		this.audioSources[i].start(this.sourcesData.receivers.files[this.closestSourcesId[i]], this.gainsData.value[i], this.gainsData.norm);  	
-			    	this.syncBuffers.push(undefined)
-			    	// console.log("rehey")
+		    		
+		    		this.audioSources[i].start(this.sourcesData.receivers.files[this.closestSourcesId[i]], this.gainsData.value[i], this.gainsData.norm);  	
+			    	this.syncBuffers.push(undefined);
 
 					break;
 
 		    	case 'ambisonic':
 
 		    		document.addEventListener("audioLoaded" + i, () => {
-			    		console.log("audioDispatched")
 			    		if (this.syncBuffers[i] != undefined) {
 			    			this.UpdateEnginesAmbi(i, false);
 			    		}
-			    		// console.log(this.audioSources[i].GetSyncBuffer())
 			    		this.syncBuffers[i] = this.audioSources[i].GetSyncBuffer()
 		    			this.UpdateEnginesAmbi(i, true);
 
