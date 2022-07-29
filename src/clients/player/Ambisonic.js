@@ -5,24 +5,16 @@
 class Streaming {
 
 	constructor (audioContext, duration, sourceIndex, audioStream, playingState, order) {
-		// console.log(audioStream)
 	    // Creating AudioContext
 	    this.audioContext = audioContext;		// Get audioContext
 	    this.playingSound;                    	// BufferSource's object
 	    this.audioStream = audioStream
 	    this.gain;                            	// Gain's object
-		// this.syncAudio
 		this.duration = duration;
-		// this.filesPath = "AudioFiles0/";
-		// this.filesPath = "AudioFiles1/";
 		this.filesPath = "AudioFiles2/";
-		// this.filesPath = "AudioFilesMusic1/";
-		// this.filesPath = "AudioFilesPiano/";
 		this.sourceIndex = sourceIndex;
-		// this.connect = false;
 		this.playingState = playingState
 		this.audio;
-		// this.initiate = true;
 
 		this.order = order;
 		this.nbFiles = Math.ceil(Math.pow(order + 1, 2)/8);		// Get the number of 8 channels' files
@@ -40,7 +32,6 @@ class Streaming {
 	}
 
 	async start (url, value, norm) {
-		// console.log(this.playingState)
 
 		console.info("Starting source: " + this.sourceIndex)
 
@@ -139,7 +130,6 @@ class Streaming {
 
 		partFile.changing = true;
 		var tempPlayingSound;
-		console.log('cacahuètes enfet')
 
    		partFile.syncAudio = {
 
@@ -152,7 +142,6 @@ class Streaming {
 			      	tempAudio.streamId = url;
 			      	this.audioDuration = tempAudio.duration
 
-			        console.log(partFile.audio)
 			        if (!partFile.initiate) {
 			        	partFile.audio.stop()
 			        }
@@ -165,7 +154,6 @@ class Streaming {
 				    partFile.audio.start(audioTime, audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1));
 
 		      		partFile.audio.connect(this.gain);
-		      		console.log("AudioSources " + this.sourceIndex + " is now connected")
 				    
 				    partFile.audio.stop(this.audioDuration*Math.ceil(audioTime/this.audioDuration));
 					// }
@@ -188,10 +176,9 @@ class Streaming {
 	    	}
     	}
 
-    	// console.log(this.syncAudio, this.sourceIndex)
-    	// if (partFile.channels[1] <= this.nbFiles*8) {
     	partFile.ready = true
     	if (this.fileObjects.every((file) => file.ready)) {
+		    console.log("AudioSources " + this.sourceIndex + " is now connected")
    			document.dispatchEvent(new Event("audioLoaded" + this.sourceIndex));
     	}
 	}
@@ -224,7 +211,7 @@ class Streaming {
   		for (let i = 0; i < this.nbFiles; i++) {
   			syncAudios.push(this.fileObjects[i].syncAudio);
   		}
-  		console.log(syncAudios)
+  		// console.log(syncAudios)
   		return(syncAudios)
   	}
 }

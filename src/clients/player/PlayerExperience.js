@@ -110,23 +110,6 @@ class PlayerExperience extends AbstractExperience {
 
       console.log("json files: " + this.parameters.dataFileName + " has been read");
 
-      // Load sources' sound depending on mode (some modes need RIRs in addition of sounds)
-      // switch (this.parameters.mode) {
-      //   case 'debug':
-      //   case 'streaming':
-      //   case 'ambisonic':
-      //     this.Sources.LoadSoundbank();
-      //     break;
-
-      //   case 'convolving':
-      //   case 'ambiConvolving':
-      //     this.Sources.LoadRirs();
-      //     break;
-
-      //   default:
-      //     alert("No valid mode");
-      // }
-
       // Wait until audioBuffer has been loaded ("dataLoaded" event is create 'this.Sources.LoadSoundBank()')
       // document.addEventListener("audioLoaded", () => {
 
@@ -277,8 +260,7 @@ class PlayerExperience extends AbstractExperience {
             <h1 style="margin: 20px 0">${this.client.type} [id: ${this.client.id}]</h1>
           </div>
           <div>
-            <input type="button" id="beginButton" value="Begin Game"/>Lay the phone flat and facing the app usage space
-            <input type="checkbox" id="debugging" value="debug"/> Debug
+            <input type="button" id="beginButton" value="Begin Game"/>
           </div>
         </div>
         <div id="game" style="visibility: hidden;">
@@ -299,112 +281,8 @@ class PlayerExperience extends AbstractExperience {
             </div>
             
           </div>
-          <script>
-          function myMap() {
-            console.log('caillou')
-            alert('caillou')
-            var mapProp= {
-              center:new google.maps.LatLng(51.508742,-0.120850),
-              zoom:5,
-            };
-            var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
-            }
-          </script>
-
-          <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZ8Od80wqf_OKYL_o623gR40wAgfe-DDE&callback=myMap">
-          </script>
         </div>
       `, this.$container);
-
-      // // alert('caillou')
-      // fetch("https://agile-waters-69878.herokuapp.com/https://maps.googleapis.com/maps/api/js?key=AIzaSyBZ8Od80wqf_OKYL_o623gR40wAgfe-DDE")
-      // .then(results => {
-      //   // alert('ok')
-      //   console.log(results)
-
-      //   // this.ok = require(results.url)
-      //   this.map = new results.google.maps.Map();
-      //   console.log(this.map)
-      // })
-
-    //   const isIOS =
-    //   navigator.userAgent.match(/(iPod|iPhone|iPad)/) &&
-    //   navigator.userAgent.match(/AppleWebKit/);
-
-    // function init() {
-    //   var compass;
-    //   // startBtn.addEventListener("click", startCompass);
-    //   navigator.geolocation.getCurrentPosition(locationHandler);
-
-    //   if (!isIOS) {
-    //     window.addEventListener("deviceorientationabsolute", handler, true);
-    //   }
-    // }
-
-    // function startCompass() {
-    //   if (isIOS) {
-    //     DeviceOrientationEvent.requestPermission()
-    //       .then((response) => {
-    //         if (response === "granted") {
-    //           window.addEventListener("deviceorientation", handler, true);
-    //         } else {
-    //           alert("has to be allowed!");
-    //         }
-    //       })
-    //       .catch(() => alert("not supported"));
-    //   }
-    // }
-
-    // function handler(e) {
-    //   var compass = e.webkitCompassHeading || Math.abs(e.alpha - 360);
-    //   // compassCircle.style.transform = `translate(-50%, -50%) rotate(${-compass}deg)`;
-    //   // console.log(compass)
-    //   // ±15 degree
-    //   if (
-    //     (pointDegree < Math.abs(compass) &&
-    //       pointDegree + 15 > Math.abs(compass)) ||
-    //     pointDegree > Math.abs(compass + 15) ||
-    //     pointDegree < Math.abs(compass)
-    //   ) {
-    //     // myPoint.style.opacity = 0;
-    //   } else if (pointDegree) {
-    //     // myPoint.style.opacity = 1;
-    //   }
-    // }
-
-    // let pointDegree;
-
-    // function locationHandler(position) {
-    //   const { latitude, longitude } = position.coords;
-    //   pointDegree = calcDegreeToPoint(latitude, longitude);
-
-    //   if (pointDegree < 0) {
-    //     pointDegree = pointDegree + 360;
-    //   }
-    // }
-
-    // function calcDegreeToPoint(latitude, longitude) {
-    //   // Qibla geolocation
-    //   const point = {
-    //     lat: 21.422487,
-    //     lng: 39.826206
-    //   };
-
-    //   const phiK = (point.lat * Math.PI) / 180.0;
-    //   const lambdaK = (point.lng * Math.PI) / 180.0;
-    //   const phi = (latitude * Math.PI) / 180.0;
-    //   const lambda = (longitude * Math.PI) / 180.0;
-    //   const psi =
-    //     (180.0 / Math.PI) *
-    //     Math.atan2(
-    //       Math.sin(lambdaK - lambda),
-    //       Math.cos(phi) * Math.tan(phiK) -
-    //         Math.sin(phi) * Math.cos(lambdaK - lambda)
-    //     );
-    //   return Math.round(psi);
-    // }
-
-    // init()
 
       // Do this only at beginning
       if (this.initialising) {
@@ -413,13 +291,6 @@ class PlayerExperience extends AbstractExperience {
         // Assign callbacks once
         var beginButton = document.getElementById("beginButton");
 
-        var debugging = document.getElementById('debugging');
-
-        debugging.addEventListener("change", (box) => {
-          console.log(box.target.checked)
-          this.Listener.ChangeDebug(box.target.checked);
-        })
-
         beginButton.addEventListener("click", () => {
 
           // Change the display to begin the simulation
@@ -427,7 +298,7 @@ class PlayerExperience extends AbstractExperience {
           document.getElementById("begin").style.position = "absolute";
           document.getElementById("game").style.visibility = "visible";
 
-          // Assign gloabl containers
+          // Assign global containers
           this.container = document.getElementById('circleContainer');
           
           // Assign mouse and touch callbacks to change the user Position
