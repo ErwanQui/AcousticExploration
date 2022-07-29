@@ -22,7 +22,6 @@ class Listener {
 	    this.displaySize = parameters.listenerSize;							// Size of the listener's display
 	    this.circleSpacing = parameters.circleDiameter/2;				// Size of sources to set an offset
 	
-
 	    // Position
 	    navigator.geolocation.getCurrentPosition((pos) => {
 	    	this.initPosX = pos.coords.latitude;
@@ -45,8 +44,6 @@ class Listener {
 
 		this.targetPosX = this.initListenerPosition.x
 		this.targetPosY = this.initListenerPosition.y
-
-		console.log(this.targetPosX, this.targetPosY)
 
       	this.compass;
       	this.first = true;
@@ -92,6 +89,7 @@ class Listener {
 	      }
 	    }
 
+	    // Create the point to display to orientate the listener
 		this.orientationDisplay = document.createElement("div");
 	    this.orientationDisplay.style.width = 5 + "px";
 	    this.orientationDisplay.style.height = 5 + "px";
@@ -227,8 +225,6 @@ class Listener {
 
 
     UpdatePos(pos) {
-    	// console.log("pos")
-		// navigator.geolocation.getCurrentPosition((pos) => {
 
 		// Initiate the first position of the listener when the GPS is received
 		if (this.posInitialising && pos.coords.latitude != undefined) {
