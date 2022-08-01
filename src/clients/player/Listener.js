@@ -116,6 +116,12 @@ class Listener {
        	this.p = document.createElement("div");
 	    this.p.style.transform = "translate(-150px, 170px) rotate(-45deg)";
 
+	    this.q = document.createElement("div");
+	    this.q.style.transform = "translate(-150px, 180px) rotate(-45deg)";
+
+	    this.s = document.createElement("div");
+	    this.s.style.transform = "translate(-150px, 190px) rotate(-45deg)";
+
       	this.firstangle = true;
       	this.angledebut;
 
@@ -141,7 +147,7 @@ class Listener {
 		this.count = 0;
 		this.posInitialising = true;
 
-		this.debugCoef = 100000;
+		this.debugCoef = 1;
 	}
 
 	async start () {
@@ -160,6 +166,8 @@ class Listener {
 		this.display.appendChild(this.orientationDisplay)
 		this.display.appendChild(this.o)
 		this.display.appendChild(this.p)
+		this.display.appendChild(this.q)
+		this.display.appendChild(this.s)
 	}
 
 
@@ -260,6 +268,9 @@ class Listener {
 
     	this.posX = pos.coords.latitude;
     	this.posY = pos.coords.longitude;
+
+       	this.q.innerHTML = this.LatLong2Meter(this.initPosX - this.posX);
+       	this.s.innerHTML = this.LatLong2Meter(this.initPosY - this.posY);
 		
 		if (this.updateTargetX != NaN || this.updateTargetY != NaN) {
 	   		this.targetPosX += this.updateTargetX;
