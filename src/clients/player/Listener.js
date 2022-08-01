@@ -72,6 +72,8 @@ class Listener {
 		      		this.direction = this.compass;
 		      		this.direction = 270;
 		      		this.first = false;
+	    			this.o.value = this.direction;
+       				this.p.innerHTML = this.direction;
 		      	}
 	  		}, true);
 	    }
@@ -108,7 +110,11 @@ class Listener {
        	this.o.addEventListener("input", () => {
        		console.log(this.o.value);
        		this.direction = this.o.value;
+       		this.p.innerHTML = this.direction;
        	})
+
+       	this.p = document.createElement("div");
+	    this.p.style.transform = "translate(-150px, 170px) rotate(-45deg)";
 
       	this.firstangle = true;
       	this.angledebut;
@@ -135,7 +141,7 @@ class Listener {
 		this.count = 0;
 		this.posInitialising = true;
 
-		this.debugCoef = 1;
+		this.debugCoef = 100000;
 	}
 
 	async start () {
@@ -153,6 +159,7 @@ class Listener {
 
 		this.display.appendChild(this.orientationDisplay)
 		this.display.appendChild(this.o)
+		this.display.appendChild(this.p)
 	}
 
 
