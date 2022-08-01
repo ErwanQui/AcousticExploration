@@ -70,6 +70,7 @@ class Listener {
 		      	this.compass = e.webkitCompassHeading || Math.abs(e.alpha - 360);
 		      	if (this.first && this.compass != undefined) {
 		      		this.direction = this.compass;
+		      		this.direction = 270;
 		      		this.first = false;
 		      	}
 	  		}, true);
