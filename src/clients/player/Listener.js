@@ -98,6 +98,18 @@ class Listener {
        	this.orientationDisplay.style.lineHeight =  5 + "px";
        	this.orientationDisplay.style.background =  "red";
 
+		this.o = document.createElement("input");
+	    this.o.type = "range";
+	    this.o.style.position = "absolute";
+	    this.o.style.transform = "translate(-150px, 150px) rotate(-45deg)";
+	    this.o.min = 0;
+       	this.o.max = 360;
+       	this.o.step =  1;
+       	this.o.addEventListener("input", () => {
+       		console.log(this.o.value);
+       		this.direction = this.o.value;
+       	})
+
       	this.firstangle = true;
       	this.angledebut;
 
@@ -140,6 +152,7 @@ class Listener {
 		this.display.style.transform = "rotate(45deg)";
 
 		this.display.appendChild(this.orientationDisplay)
+		this.display.appendChild(this.o)
 	}
 
 
