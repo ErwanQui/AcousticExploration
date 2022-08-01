@@ -2,6 +2,11 @@
 /// Listener.js ///
 ///////////////////
 
+
+// /!\ Cleaning in progress
+
+// Class to manage the listener on the screen (position, orientation...)
+
 class Listener {
 
 	constructor (position, parameters) {
@@ -26,7 +31,6 @@ class Listener {
 	    navigator.geolocation.getCurrentPosition((pos) => {
 	    	this.initPosX = pos.coords.latitude;
 	    	this.initPosY = pos.coords.longitude;
-	    	this.north = pos.coords.heading;
 			this.posX = this.initPosX
 			this.posY = this.initPosY
 	    }, this.Error, {enableHighAccuracy: true});
@@ -35,7 +39,6 @@ class Listener {
 		this.initiateOrientation = true;
 		this.initOrientation = -135;
 		this.initOrientation2 = -180;
-		this.store = 10000;
 
 		this.previousPosition = {
 	      	x: this.initListenerPosition.x,
@@ -48,45 +51,21 @@ class Listener {
       	this.compass;
       	this.first = true;
 
-	    this.pointDegree;
+	    // this.pointDegree;
 
+	    // Check if operator is IOS ?
 		const isIOS =
 	      	navigator.userAgent.match(/(iPod|iPhone|iPad)/) &&
 	      	navigator.userAgent.match(/AppleWebKit/);
 
-	    navigator.geolocation.getCurrentPosition((position) => {
 
-	      	const { latitude, longitude } = position.coords;
-	      	var pointDegree = this.calcDegreeToPoint(latitude, longitude);
-
-	    	if (pointDegree < 0) {
-	        	pointDegree = pointDegree + 360;
-	    	}
-	    });
-
-	    if (!isIOS) {
-	        window.addEventListener("deviceorientationabsolute", (e) => {
-
-		      	this.compass = e.webkitCompassHeading || Math.abs(e.alpha - 360);
-		      	if (this.first && this.compass != undefined) {
-		      		this.direction = this.compass;
-		      		this.first = false;
-		      	}
-	  		}, true);
-	    }
-
-	    function startCompass() {
-	      if (isIOS) {
-	        DeviceOrientationEvent.requestPermission()
-	          .then((response) => {
-	            if (response === "granted") {
-	              window.addEventListener("deviceorientation", handler, true);
-	            } else {
-	              alert("has to be allowed!");
-	            }
-	          })
-	          .catch(() => alert("not supported"));
-	      }
+		if (isIOS) {
+			console.log("IOS");
+		    window.addEventListener("deviceorientation", (event) => this.Handler(event), true);
+		} 
+		else {
+			console.log("not IOS")
+	        window.addEventListener("deviceorientationabsolute", (event) => this.Handler(event), true);
 	    }
 
 	    // Create the point to display to orientate the listener
@@ -97,15 +76,16 @@ class Listener {
        	this.orientationDisplay.style.lineHeight =  5 + "px";
        	this.orientationDisplay.style.background =  "red";
 
-      	this.firstangle = true;
-      	this.angledebut;
+      	this.firstAngle = true;				// Attribute to tell if the first angle has been stored
+      	// this.initAngle;
 
 		window.addEventListener("deviceorientation", event => {
 
-			// always at 90° when begin
-			if (this.firstangle) {
-				this.firstangle = false;
-				this.angledebut = event.alpha
+			// always at 90° when begin ?
+			//
+			if (this.firstAngle) {
+				this.firstAngle = false;
+				// this.initAngle = event.alpha
 				this.initOrientation += event.alpha
 			}
 
@@ -114,15 +94,22 @@ class Listener {
 	      	this.orientationDisplay.style.transform = "translate(" + 
 	      		this.orientationAbscisse + "px, " + 
 	      		this.orientationOrdonnate + "px)";
-			this.store = event.alpha;
-			// }
 		}, true);
 
+		this.posInitialising = true;					// Attribute to tell if the position has to been initialized
 
-		this.count = 0;
-		this.posInitialising = true;
+		this.debugCoef = 1;			// used to debug
+	}
 
-		this.debugCoef = 1;
+	Handler(e) {
+		console.log("wep")
+      	this.compass = e.webkitCompassHeading || Math.abs(e.alpha - 360);
+      	if (this.first && this.compass != undefined) {
+      		this.direction = this.compass;
+      		this.first = false;
+      		console.log(this.direction)
+      		window.removeEventListener("deviceorientationabsolute", this.Handler(e), true)
+      	}
 	}
 
 	async start () {
@@ -138,33 +125,11 @@ class Listener {
 		this.display.style.zIndex = 1;
 		this.display.style.transform = "rotate(45deg)";
 
+		// Add the orientation displayer to the listener display
 		this.display.appendChild(this.orientationDisplay)
 	}
 
-
-	calcDegreeToPoint(latitude, longitude) {
-	      // Qibla geolocation
-	      const point = {
-	        lat: 21.422487,
-	        lng: 39.826206
-	      };
-
-	      const phiK = (point.lat * Math.PI) / 180.0;
-	      const lambdaK = (point.lng * Math.PI) / 180.0;
-	      const phi = (latitude * Math.PI) / 180.0;
-	      const lambda = (longitude * Math.PI) / 180.0;
-	      const psi =
-	        (180.0 / Math.PI) *
-	        Math.atan2(
-	          Math.sin(lambdaK - lambda),
-	          Math.cos(phi) * Math.tan(phiK) -
-	            Math.sin(phi) * Math.cos(lambdaK - lambda)
-	        );
-	      return Math.round(psi);
-	    }
-
-
-	LatLong2Meter(value) {
+	LatLong2Meter(value) { // Convert a latitude or longitude change into meter
 		return (value * (Math.PI*6371000/180))
 	}
 
@@ -173,11 +138,12 @@ class Listener {
 		// @note: we can't do it in 'start()' because the container wasn't created
 		container.appendChild(this.display);
 
+		// Watch the evolution of the gps datas and called 'this.UpdatePos' when updated
 		navigator.geolocation.watchPosition((position) => this.UpdatePos(position), this.Error, {enableHighAccuracy: true});
-
 	}
 
-    Reset(position, offset, scale) {
+    Reset(position, offset, scale) { // Reset the initial listener position
+
 	    // Update Listener's dipslay depending on offset and scale
       	this.initListenerPosition.x = offset.x + (position.clientX - window.innerWidth/2)/scale;
       	this.initListenerPosition.y = offset.y + (position.clientY - this.circleSpacing)/scale;
@@ -194,37 +160,55 @@ class Listener {
 	    this.initPosX = this.posX;
 	    this.initPosY = this.posY;
 
+	    // Display with the reset datas
       	this.UpdateListenerDisplay(offset, scale);    	
     }
 
-    ListenerStep(positionX, positionY) {
-    	console.log(positionX, positionY)
-    	console.log(this.listenerPosition)
-    	console.log(Math.max(Math.abs(positionX - this.listenerPosition.x), Math.abs(positionY - this.listenerPosition.y)))
-    	console.log(Math.ceil(Math.max(Math.abs(positionX - this.listenerPosition.x), Math.abs(positionY - this.listenerPosition.y))))
+    ListenerStep(positionX, positionY) { // Move the user to a position (x, y) but with a walking speed
+    	
+    	// If the user is not already at the targetted position
     	if (positionX != this.listenerPosition.x || positionY != this.listenerPosition.y) {
+
+    		// Initate variables
+
+    		// Number of step that the virtual user will do
 			var nbStep = 50*Math.ceil(Math.max(Math.abs(positionX - this.listenerPosition.x), Math.abs(positionY - this.listenerPosition.y)));
+			
+			// Direction and size of the steps
 			var step = [(positionX - this.listenerPosition.x)/nbStep, (positionY - this.listenerPosition.y)/nbStep]
+			
+			// Counter
 			var dpct = 0;
-			console.log(nbStep)
-			console.log(step)
+
+			// Clear the previous walking state if there was one
 			clearInterval(this.moving)
+
+			// Set an interval between each step
 			this.moving = setInterval(() => {
 				if (dpct < nbStep) {
+
+					console.log("User is moving")
+
+					// Update the listener position
 					this.listenerPosition.x += step[0];
 					this.listenerPosition.y += step[1];
+
+					// Increase counter
 					dpct += 1;
-					document.dispatchEvent(new Event("Moving"));                              // Create an event when the simulation appeared
+
+					// Dispatch an event listened in "Sources.js" to tell that the user has moved
+					document.dispatchEvent(new Event("Moving"));
 				}
 				else {
+
+					// Stop the move
 					clearInterval(this.moving)
 				}
 			}, 10)
 		}
 	}
 
-
-    UpdatePos(pos) {
+    UpdatePos(pos) { // Update the position of the user when he moves
 
 		// Initiate the first position of the listener when the GPS is received
 		if (this.posInitialising && pos.coords.latitude != undefined) {
@@ -234,36 +218,43 @@ class Listener {
 			document.dispatchEvent(new Event("Moving"));
 		}
 
+		// Get the changes between previous and current position
 		this.updateTargetX = -(Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
    		this.updateTargetY = -(Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) - Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
 
+    	// Store new latitude and longitude of the user
     	this.posX = pos.coords.latitude;
     	this.posY = pos.coords.longitude;
 		
-		if (this.updateTargetX != NaN || this.updateTargetY != NaN) {
+		// Check if "this.direction is not NaN"
+		if (!this.first) {
+
+			// Update the new targetting position of the listener
 	   		this.targetPosX += this.updateTargetX;
 	   		this.targetPosY += this.updateTargetY;
+
+	   		// If there are some changes
 			if(this.updateTargetX != 0 || this.updateTargetY != 0) {
-				console.log("change !")
+				
+				console.log("Updating targetted position")
+
+				// Update the listener position by walking
 				this.ListenerStep(this.targetPosX, this.targetPosY)
 			}
 		}
-
-		if (pos.coords.heading != null) {
-			this.north = pos.coords.heading
-		}
     }
 
-	Error(err) {
-        console.warn(`ERREUR (${err.code}): ${err.message}`);
-    }
+	Error(err) { // Send a error message
+		console.eroor(`ERREUR (${err.code}): ${err.message}`);    
+	}
 
 	UpdateListener(position, offset, scale) { // Update listener
 
-	    // Update Listener's dipslay depending on offset and scale
+	    // Update listener's display data depending on offset and scale
       	this.listenerPosition.x = offset.x + (position.clientX - window.innerWidth/2)/scale;
       	this.listenerPosition.y = offset.y + (position.clientY - this.circleSpacing)/scale;
 
+      	// Update display
       	this.UpdateListenerDisplay(offset, scale);
     }
 

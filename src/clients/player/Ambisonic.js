@@ -2,6 +2,8 @@
 /// Ambisonic.js ///
 ////////////////////
 
+// Class to create ambisonic audioSources
+
 class Ambisonic {
 
 	constructor (audioContext, sourceIndex, audioStream, playingState, order) {
@@ -73,11 +75,12 @@ class Ambisonic {
     	this.loadSample(url);
 	}
 
+	// @note: this function and the corresponding attribute are only useful when you detect more sources than you will played
 	ChangePlayingState(state) { // Change the playing state of the audioSource (active or not)
 
 		if (this.playingState != state) {
 			if (state) {
-			    console.log("AudioSources " + this.sourceIndex + " is now playing");
+			    // console.log("AudioSources " + this.sourceIndex + " is now playing");
 			}
 			else {
 				console.log("AudioSources " + this.sourceIndex + " is no more playing");
@@ -114,7 +117,7 @@ class Ambisonic {
 		// Get the 8-channels sliced files
 		var urls = this.SlicePath(url);
 
-      	console.log("File played: " + url);
+      	// console.log("File played: " + url);
 
       	// Change the "ready" attribute to be played of the audio files to "false"
       	for (let i = 0; i < this.nbFiles; i++) {
