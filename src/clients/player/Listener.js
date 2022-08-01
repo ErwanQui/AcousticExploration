@@ -73,7 +73,7 @@ class Listener {
 		      		this.direction = 270;
 		      		this.first = false;
 	    			this.o.value = this.direction;
-       				this.p.innerHTML = this.direction;
+       				this.p.innerHTML = "Direction: " + this.direction;
 		      	}
 	  		}, true);
 	    }
@@ -114,13 +114,19 @@ class Listener {
        	})
 
        	this.p = document.createElement("div");
-	    this.p.style.transform = "translate(-150px, 170px) rotate(-45deg)";
+	    this.p.style.transform = "translate(-200px, 90px) rotate(-45deg)";
 
 	    this.q = document.createElement("div");
-	    this.q.style.transform = "translate(-150px, 180px) rotate(-45deg)";
+	    this.q.style.transform = "translate(-180px, 80px) rotate(-45deg)";
 
 	    this.s = document.createElement("div");
-	    this.s.style.transform = "translate(-150px, 190px) rotate(-45deg)";
+	    this.s.style.transform = "translate(-160px, 70px) rotate(-45deg)";
+
+	    this.d = document.createElement("div");
+	    this.d.style.transform = "translate(-140px, 60px) rotate(-45deg)";
+
+	    this.f = document.createElement("div");
+	    this.f.style.transform = "translate(-120px, 50px) rotate(-45deg)";
 
       	this.firstangle = true;
       	this.angledebut;
@@ -147,7 +153,7 @@ class Listener {
 		this.count = 0;
 		this.posInitialising = true;
 
-		this.debugCoef = 1;
+		this.debugCoef = 100000;
 	}
 
 	async start () {
@@ -168,6 +174,8 @@ class Listener {
 		this.display.appendChild(this.p)
 		this.display.appendChild(this.q)
 		this.display.appendChild(this.s)
+		this.display.appendChild(this.d)
+		this.display.appendChild(this.f)
 	}
 
 
@@ -269,8 +277,10 @@ class Listener {
     	this.posX = pos.coords.latitude;
     	this.posY = pos.coords.longitude;
 
-       	this.q.innerHTML = this.LatLong2Meter(this.initPosX - this.posX);
-       	this.s.innerHTML = this.LatLong2Meter(this.initPosY - this.posY);
+       	this.q.innerHTML = "X: " + (-(Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) + Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.initPosY)));
+       	this.s.innerHTML = "Y: " + (-(Math.sin((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.initPosX) - Math.cos((this.direction - this.initOrientation2)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.initPosY)));
+       	this.d.innerHTML = "Lat: " + ((this.initPosX - this.posX)*100000);
+       	this.f.innerHTML = "Long: " + ((this.initPosY - this.posY)*100000);
 		
 		if (this.updateTargetX != NaN || this.updateTargetY != NaN) {
 	   		this.targetPosX += this.updateTargetX;
