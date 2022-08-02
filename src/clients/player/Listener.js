@@ -153,7 +153,7 @@ class Listener {
 		this.count = 0;
 		this.posInitialising = true;
 
-		this.debugCoef = 1;
+		this.debugCoef = 100000;
 	}
 
 	async start () {
