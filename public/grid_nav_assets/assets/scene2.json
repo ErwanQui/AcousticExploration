@@ -4,6 +4,15 @@
   "mode": "ambisonic",
   "order": 2,
 
+  "image":
+  {
+    "name": "scene.jpg",
+    "width": 688,
+    "height": 1202,
+    "min": [28, 22.5],
+    "max": [38.8, 43.0]
+  },
+
   "receivers": 
   {
     "xyz":[   
@@ -52,7 +61,6 @@
 
   "sources_xy": 
   [
-    [27.5, 12.1],
     [33.0, 30.5],
     [28.0, 42.3]
   ]

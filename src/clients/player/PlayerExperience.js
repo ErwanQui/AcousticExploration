@@ -111,16 +111,20 @@ class PlayerExperience extends AbstractExperience {
     // Wait until data have been loaded from json files ("dataLoaded" event is create 'this.Sources.LoadData()')
     document.addEventListener("dataLoaded", () => {
 
+      // Get background html code
+      this.scene = this.Sources.image;
+
       // Instantiate the attribute 'this.range' to get datas' parameters
-      this.Range(this.Sources.sourcesData.receivers.xyz, this.Sources.sourcesData.sources_xy);
+      this.Range(this.Sources.sourcesData.receivers.xyz, this.Sources.sourcesData.sources_xy, this.Sources.sourcesData.extremum);
 
       // Instanciate 'this.scale'
-      this.scale = this.Scaling(this.range);
+      // this.scale = this.Scaling(this.range);
+      this.scale = this.Scaling(this.extremum);
 
       // Get offset parameters of the display
       this.offset = {
-        x: this.range.moyX,
-        y: this.range.minY
+        x: this.extremum.moyX,
+        y: this.extremum.minY
       };
 
       var listenerInitPos = {
@@ -144,21 +148,27 @@ class PlayerExperience extends AbstractExperience {
       // Add event listener for resize window event to resize the display
       window.addEventListener('resize', () => {
 
-        this.scale = this.Scaling(this.range);      // Change the scale
+        // this.scale = this.Scaling(this.range);      // Change the scale
+        this.scale = this.Scaling(this.extremum);      // Change the scale
+        console.log(this.scale)
 
-        if (this.beginPressed) {                    // Check the begin State
+        if (this.beginPressed) {                    // Check the begin state
           this.UpdateContainer();                   // Resize the display
         }
 
         // Display
         this.render();
       })
+
+      // Resize background
+      this.UpdateSceneDisplay()
+
       // Display
       this.render();
     });
   }
 
-  Range(audioSourcesPositions, sourcesPositions) { // Store the array properties in 'this.range'
+  Range(audioSourcesPositions, sourcesPositions, imageExtremum) { // Store the array properties in 'this.range'
     // @note: that can be probably be done in a more pretty way
 
     this.range = {
@@ -173,6 +183,17 @@ class PlayerExperience extends AbstractExperience {
       minY: audioSourcesPositions[0].y, 
       maxY: audioSourcesPositions[0].y,
     };
+    console.log(imageExtremum)
+    this.extremum = {
+      minX: imageExtremum[0].x,
+      maxX: imageExtremum[1].x,
+      minY: imageExtremum[0].y, 
+      maxY: imageExtremum[1].y,
+    }
+
+    this.extremum.rangeX = this.extremum.maxX - this.extremum.minX;
+    this.extremum.moyX = (this.extremum.maxX + this.extremum.minX)/2;
+    this.extremum.rangeY = this.extremum.maxY - this.extremum.minY;
 
     for (let i = 1; i < audioSourcesPositions.length; i++) {
       if (audioSourcesPositions[i].x < this.range.minX) {
@@ -222,7 +243,8 @@ class PlayerExperience extends AbstractExperience {
 
   Scaling(rangeValues) { // Store the greatest scale that displays all the elements in 'this.scale'
 
-    var scale = Math.min((window.innerWidth - this.parameters.circleDiameter)/rangeValues.rangeX, (window.innerHeight - this.parameters.circleDiameter)/rangeValues.rangeY);
+    // var scale = Math.min((window.innerWidth - this.parameters.circleDiameter)/rangeValues.rangeX, (window.innerHeight - this.parameters.circleDiameter)/rangeValues.rangeY);
+    var scale = Math.min((window.innerWidth)/rangeValues.rangeX, (window.innerHeight)/rangeValues.rangeY);
     return (scale);
   }
 
@@ -248,18 +270,24 @@ class PlayerExperience extends AbstractExperience {
             <div id="selector" style="position: absolute;
               height: ${this.range.rangeY*this.scale}px;
               width: ${this.range.rangeX*this.scale}px;
-              background: z-index: 0;
-              transform: translate(${(-this.range.rangeX/2)*this.scale}px, ${this.parameters.circleDiameter/2}px);">
+              z-index: 0;
+              transform: translate(${(this.range.minX - this.extremum.minX - this.extremum.rangeX/2)*this.scale}px, ${this.parameters.circleDiameter/2}px);">
             </div>
+          </div>
+          <div id="scene" style="position: absolute;
+              left: 50%;
+              height: ${this.range.rangeY*this.scale}px;
+              width: ${this.range.rangeX*this.scale}px;
+              transform: translate(${(-this.extremum.rangeX/2)*this.scale}px, 0px);">
+            ${this.scene}
           </div>
           <div id="circleContainer" style="text-align: center; position: absolute; left: 50%">
             <div id="selector" style="position: absolute;
               height: ${this.positionRange.rangeY*this.scale}px;
               width: ${this.positionRange.rangeX*this.scale}px;
-              background: yellow; z-index: 0;
-              transform: translate(${((this.positionRange.minX - this.range.minX - this.range.rangeX/2)*this.scale)}px, ${(this.positionRange.minY - this.range.minY)*this.scale + this.parameters.circleDiameter/2}px);">
+              z-index: 0;
+              transform: translate(${((this.positionRange.minX - this.extremum.minX - this.extremum.rangeX/2)*this.scale)}px, ${(this.positionRange.minY - this.extremum.minY)*this.scale + this.parameters.circleDiameter/2}px);">
             </div>
-            
           </div>
         </div>
       `, this.$container);
@@ -361,8 +389,8 @@ class PlayerExperience extends AbstractExperience {
   userAction(mouse) { // Change listener's position when the mouse/touch has been used
 
     // Get the new potential listener's position
-    var tempX = this.range.moyX + (mouse.clientX - window.innerWidth/2)/(this.scale);
-    var tempY = this.range.minY + (mouse.clientY - this.parameters.circleDiameter/2)/(this.scale);
+    var tempX = this.extremum.moyX + (mouse.clientX - window.innerWidth/2)/(this.scale);
+    var tempY = this.extremum.minY + (mouse.clientY - this.parameters.circleDiameter/2)/(this.scale);
 
     // Check if the value is in the values range
     if (tempX >= this.positionRange.minX && tempX <= this.positionRange.maxX && tempY >= this.positionRange.minY && tempY <= this.positionRange.maxY) {
@@ -392,6 +420,7 @@ class PlayerExperience extends AbstractExperience {
     this.Sources.UpdateSourcesPosition(this.scale, this.offset);      // Update sources' display
     this.Listener.UpdateListenerDisplay(this.offset, this.scale);     // Update listener's display
     this.UpdateInstrumentsDisplay();                                  // Update instrument's display
+    this.UpdateSceneDisplay();                                  // Update scene's display
   }
 
   UpdateInstrumentsDisplay() { // Update the position of the instruments
@@ -400,6 +429,10 @@ class PlayerExperience extends AbstractExperience {
         ((this.Sources.sourcesData.sources_xy[i].x - this.offset.x)*this.scale) + "px, " + 
         ((this.Sources.sourcesData.sources_xy[i].y - this.offset.y)*this.scale) + "px)";
     }
+  }
+  UpdateSceneDisplay() { // Update the position of the instruments
+      this.scene.width = this.extremum.rangeX*this.scale
+      this.scene.height = this.extremum.rangeY*this.scale
   }
 }
 

@@ -224,23 +224,42 @@ class Sources {
 			        // Change sources' positions format
 			        var tempSourcesPosition = [];
 			        for (let i = 0; i < this.nbSources; i++) {
-		          		tempSourcesPosition.push({x: this.sourcesData.receivers.xyz[i][0], y:this.sourcesData.receivers.xyz[i][1]});
+		          		tempSourcesPosition.push({x: this.sourcesData.receivers.xyz[i][0], y: -this.sourcesData.receivers.xyz[i][1]});
 		        	}
 
 		        	var tempInstrumentsPositions = [];
 		        	for (let i = 0; i < this.sourcesData.sources_xy.length; i++) {
-		          		tempInstrumentsPositions.push({x: this.sourcesData.sources_xy[i][0], y:this.sourcesData.sources_xy[i][1]});
+		          		tempInstrumentsPositions.push({x: this.sourcesData.sources_xy[i][0], y: -this.sourcesData.sources_xy[i][1]});
 		        	}
+
+		        	var tempImageExtremum = [];
+		          	tempImageExtremum.push({x: this.sourcesData.image.min[0], y: -this.sourcesData.image.max[1]});
+		          	tempImageExtremum.push({x: this.sourcesData.image.max[0], y: -this.sourcesData.image.min[1]});
 
 		        	// Update sourcesData object
 		        	this.sourcesData.receivers.xyz = tempSourcesPosition;
 		        	this.sourcesData.sources_xy = tempInstrumentsPositions;
+		        	this.sourcesData.extremum = tempImageExtremum;
+		        	console.log(data)
+		        	console.log(this)
 
-		        	console.log("json files: " + this.fileData.file + " has been read");
-    				console.log("You are using " + this.sourcesData.mode + " mode.");
+				    data.children.forEach(leaf => {
+				      	if (leaf.name === this.sourcesData.image.name) {
+		        			fetch(leaf.url).then(src => {
+		        				console.log(src)
+		        				this.image = new Image(this.sourcesData.image.width, this.sourcesData.image.height)
+		        				this.image.src = src.url;
+		        				console.log(this.image)
+		        				// document.getElementById("scene").appendChild(image)
 
-		        	// Create an event to inform that the file's data can be used
-		          	document.dispatchEvent(new Event("dataLoaded"));
+					        	console.log("json files: " + this.fileData.file + " has been read");
+			    				console.log("You are using " + this.sourcesData.mode + " mode.");
+
+					        	// Create an event to inform that the file's data can be used
+					          	document.dispatchEvent(new Event("dataLoaded"));
+		          			})
+		        		}
+		        	})
 	        	})
       		}
     	});
