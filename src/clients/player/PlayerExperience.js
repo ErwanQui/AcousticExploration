@@ -119,7 +119,7 @@ class PlayerExperience extends AbstractExperience {
 
       // Instanciate 'this.scale'
       // this.scale = this.Scaling(this.range);
-      this.scale = this.Scaling(this.extremum);
+      this.scale = this.Scaling(this.extremum); 
 
       // Get offset parameters of the display
       this.offset = {
