@@ -61,11 +61,17 @@ class Listener {
 
 		if (isIOS) {
 			console.log("IOS");
-		    window.addEventListener("deviceorientation", (event) => this.Handler(event), true);
+		    window.addEventListener("deviceorientation", (event) => {
+		    	this.Handler(event, true);
+		    	if (!this.first) {
+		    		console.log(this.Handler)
+      				window.removeEventListener("deviceorientation", this.Handler)
+      			}
+		    });
 		} 
 		else {
 			console.log("not IOS")
-	        window.addEventListener("deviceorientationabsolute", (event) => this.Handler(event), true);
+	        window.addEventListener("deviceorientationabsolute", (event) => this.Handler(event, false));
 	    }
 
 	    // Create the point to display to orientate the listener
@@ -101,14 +107,19 @@ class Listener {
 		this.debugCoef = 1;			// used to debug
 	}
 
-	Handler(e) {
+	Handler(event, isIOS) {
 		console.log("wep")
-      	this.compass = e.webkitCompassHeading || Math.abs(e.alpha - 360);
+      	this.compass = event.webkitCompassHeading || Math.abs(event.alpha - 360);
       	if (this.first && this.compass != undefined) {
       		this.direction = this.compass;
       		this.first = false;
       		console.log(this.direction)
-      		window.removeEventListener("deviceorientationabsolute", this.Handler(e), true)
+      		if (isIOS){
+      			window.removeEventListener("deviceorientation", this.Handler)
+      		}
+      		else {
+      			window.removeEventListener("deviceorientationabsolute", (event) => this.Handler(event, false))
+      		}
       	}
 	}
 
