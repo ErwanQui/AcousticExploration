@@ -132,6 +132,9 @@ class PlayerExperience extends AbstractExperience {
         y: this.positionRange.minY
       };
 
+      // Resize background
+      this.UpdateSceneDisplay();
+
       // Create, start and store the listener class object
       this.Listener = new Listener(listenerInitPos, this.parameters);
       this.Listener.start(this.scale, this.offset);
@@ -159,9 +162,6 @@ class PlayerExperience extends AbstractExperience {
         // Display
         this.render();
       })
-
-      // Resize background
-      this.UpdateSceneDisplay()
 
       // Display
       this.render();
