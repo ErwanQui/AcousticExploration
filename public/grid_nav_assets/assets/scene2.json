@@ -7,10 +7,9 @@
   "image":
   {
     "name": "scene.jpg",
-    "width": 688,
-    "height": 1202,
-    "min": [27.3, 22.0],
-    "max": [39.0, 42.5]
+    "offset": [27.3, 22.0],
+    "size": [11.7, 20.5],
+    "scale": 58.7
   },
 
   "receivers": 

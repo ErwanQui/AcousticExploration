@@ -232,25 +232,22 @@ class Sources {
 		          		tempInstrumentsPositions.push({x: this.sourcesData.sources_xy[i][0], y: -this.sourcesData.sources_xy[i][1]});
 		        	}
 
-		        	var tempImageExtremum = [];
-		          	tempImageExtremum.push({x: this.sourcesData.image.min[0], y: -this.sourcesData.image.max[1]});
-		          	tempImageExtremum.push({x: this.sourcesData.image.max[0], y: -this.sourcesData.image.min[1]});
+    				var tempImageExtremum = [];
+		          	tempImageExtremum.push({x: this.sourcesData.image.offset[0], y: -(this.sourcesData.image.offset[1] + this.sourcesData.image.size[1])});
+		          	tempImageExtremum.push({x: this.sourcesData.image.offset[0] + this.sourcesData.image.size[0], y: -this.sourcesData.image.offset[1]});
 
 		        	// Update sourcesData object
 		        	this.sourcesData.receivers.xyz = tempSourcesPosition;
 		        	this.sourcesData.sources_xy = tempInstrumentsPositions;
 		        	this.sourcesData.extremum = tempImageExtremum;
-		        	console.log(data)
-		        	console.log(this)
 
 				    data.children.forEach(leaf => {
 				      	if (leaf.name === this.sourcesData.image.name) {
 		        			fetch(leaf.url).then(src => {
-		        				console.log(src)
-		        				this.image = new Image(this.sourcesData.image.width, this.sourcesData.image.height)
+
+		        				// Create the image to use for the scene
+		        				this.image = new Image(this.sourcesData.image.size[0]*this.sourcesData.image.scale, this.sourcesData.image.size[1]*this.sourcesData.image.scale)
 		        				this.image.src = src.url;
-		        				console.log(this.image)
-		        				// document.getElementById("scene").appendChild(image)
 
 					        	console.log("json files: " + this.fileData.file + " has been read");
 			    				console.log("You are using " + this.sourcesData.mode + " mode.");

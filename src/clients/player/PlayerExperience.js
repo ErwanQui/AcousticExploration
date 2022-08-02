@@ -118,7 +118,6 @@ class PlayerExperience extends AbstractExperience {
       this.Range(this.Sources.sourcesData.receivers.xyz, this.Sources.sourcesData.sources_xy, this.Sources.sourcesData.extremum);
 
       // Instanciate 'this.scale'
-      // this.scale = this.Scaling(this.range);
       this.scale = this.Scaling(this.extremum); 
 
       // Get offset parameters of the display
@@ -138,6 +137,7 @@ class PlayerExperience extends AbstractExperience {
       // Create, start and store the listener class object
       this.Listener = new Listener(listenerInitPos, this.parameters);
       this.Listener.start(this.scale, this.offset);
+
       // Start the sources display and audio depending on listener's initial position
       this.Sources.start(this.Listener.listenerPosition);
 
@@ -151,9 +151,7 @@ class PlayerExperience extends AbstractExperience {
       // Add event listener for resize window event to resize the display
       window.addEventListener('resize', () => {
 
-        // this.scale = this.Scaling(this.range);      // Change the scale
-        this.scale = this.Scaling(this.extremum);      // Change the scale
-        console.log(this.scale)
+        this.scale = this.Scaling(this.extremum);   // Change the scale
 
         if (this.beginPressed) {                    // Check the begin state
           this.UpdateContainer();                   // Resize the display
@@ -183,7 +181,7 @@ class PlayerExperience extends AbstractExperience {
       minY: audioSourcesPositions[0].y, 
       maxY: audioSourcesPositions[0].y,
     };
-    console.log(imageExtremum)
+
     this.extremum = {
       minX: imageExtremum[0].x,
       maxX: imageExtremum[1].x,
@@ -243,7 +241,6 @@ class PlayerExperience extends AbstractExperience {
 
   Scaling(rangeValues) { // Store the greatest scale that displays all the elements in 'this.scale'
 
-    // var scale = Math.min((window.innerWidth - this.parameters.circleDiameter)/rangeValues.rangeX, (window.innerHeight - this.parameters.circleDiameter)/rangeValues.rangeY);
     var scale = Math.min((window.innerWidth)/rangeValues.rangeX, (window.innerHeight)/rangeValues.rangeY);
     return (scale);
   }
@@ -430,7 +427,7 @@ class PlayerExperience extends AbstractExperience {
         ((this.Sources.sourcesData.sources_xy[i].y - this.offset.y)*this.scale) + "px)";
     }
   }
-  UpdateSceneDisplay() { // Update the position of the instruments
+  UpdateSceneDisplay() { // Update the scale of the scene
       this.scene.width = this.extremum.rangeX*this.scale
       this.scene.height = this.extremum.rangeY*this.scale
   }
