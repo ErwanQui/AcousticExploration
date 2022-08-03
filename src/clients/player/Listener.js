@@ -256,7 +256,7 @@ class Listener {
     }
 
 	Error(err) { // Send a error message
-		console.eroor(`ERREUR (${err.code}): ${err.message}`);    
+		console.error(`ERREUR (${err.code}): ${err.message}`);    
 	}
 
 	UpdateListener(position, offset, scale) { // Update listener
