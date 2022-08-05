@@ -219,8 +219,8 @@ class Listener {
 		}
 
 		// Get the changes between previous and current position
-		this.updateTargetX = -(Math.cos((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.sin((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
-   		this.updateTargetY = -(Math.sin((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) - Math.cos((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
+		this.updateTargetX = -(Math.cos((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) - Math.sin((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
+   		this.updateTargetY = -(Math.sin((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
 
     	// Store new latitude and longitude of the user
     	this.posX = pos.coords.latitude;
