@@ -2,7 +2,7 @@
 /// Sources.js ///
 //////////////////
 
-import Streaming from './Streaming.js'
+import Binaural from './Binaural.js'
 import Ambisonic from './Ambisonic.js'
 import Convolving from './Convolving.js'
 import AmbiConvolving from './AmbiConvolving.js'
@@ -80,8 +80,8 @@ class Sources {
 			switch (this.sourcesData.mode) {
 
 				case 'debug':
-				case 'streaming':
-					this.audioSources.push(new Streaming(this.audioContext, i, this.audioStream, (i < this.nbActiveSources)));
+				case 'binaural':
+					this.audioSources.push(new Binaural(this.audioContext, i, this.audioStream, (i < this.nbActiveSources)));
 					break;
 
 				case 'ambisonic':
@@ -142,7 +142,7 @@ class Sources {
 			// Start sources
 			switch (this.sourcesData.mode) {
 		    	case 'debug':
-		    	case 'streaming':
+		    	case 'binaural':
 
 		    		// Add an event listener to detect that a new audio is ready to be played
 			    	document.addEventListener("audioLoaded" + i, () => {
@@ -340,7 +340,7 @@ class Sources {
 	    	// Load and play the new sources in the audioSource objects
 		    switch (this.sourcesData.mode) {
 		    	case "debug":
-		    	case "streaming":
+		    	case "binaural":
 			    	this.audioSources[audioSourceId].loadSample(this.sourcesData.receivers.files[sources2Attribuate[i][0]])
 		    		break;
 

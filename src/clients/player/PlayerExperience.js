@@ -29,8 +29,8 @@ class PlayerExperience extends AbstractExperience {
       nbClosestDetectSources: 3,                // Number of closest points detected
       nbClosestActivSources: 3,                 // Number of closest points used as active audioSources
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
-      // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
-      // mode: "streaming",
+      // mode: "debug",                         // Choose audio mode (possible: "debug", "binaural", "ambisonic", "convolving", "ambiConvolving")
+      // mode: "binaural",
       mode: "ambisonic",
       // mode: "convolving",
       // mode: "ambiConvolving",
@@ -75,7 +75,7 @@ class PlayerExperience extends AbstractExperience {
         this.parameters.dataFileName = 'scene0.json';
         break;
 
-      case 'streaming':
+      case 'binaural':
         // this.parameters.audioData = 'AudioFiles1';
         this.parameters.audioData = 'AudioFilesMusic1';
         this.parameters.dataFileName = 'scene1.json';

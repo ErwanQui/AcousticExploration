@@ -1,8 +1,8 @@
 ////////////////////
-/// Streaming.js ///
+/// Binaural.js ///
 ////////////////////
 
-class Streaming {
+class Binaural {
 
 	constructor (audioContext, sourceIndex, audioStream, playingState) {
 		// console.log(audioStream)
