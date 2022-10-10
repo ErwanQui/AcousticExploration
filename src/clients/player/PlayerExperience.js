@@ -30,8 +30,8 @@ class PlayerExperience extends AbstractExperience {
       nbClosestActivSources: 3,                 // Number of closest points used as active audioSources
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
       // mode: "debug",                         // Choose audio mode (possible: "debug", "streaming", "ambisonic", "convolving", "ambiConvolving")
-      // mode: "streaming",
-      mode: "ambisonic",
+      mode: "streaming",
+      // mode: "ambisonic",
       // mode: "convolving",
       // mode: "ambiConvolving",
       circleDiameter: 20,                       // Diameter of sources' display
