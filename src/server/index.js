@@ -74,11 +74,11 @@ server.pluginManager.register('filesystem', pluginFilesystemFactory, {
   //   path: path.join(process.cwd(), 'public/grid_nav_assets/1_binaural_encoded'),
   //   publicDirectory: 'AudioFiles1',
   // },
-  // {
-  //   name: 'AudioFilesMusic1',
-  //   path: path.join(process.cwd(), 'public/grid_nav_assets/1_binaural_encoded_music'),
-  //   publicDirectory: 'AudioFilesMusic1',
-  // },
+  {
+    name: 'AudioFilesMusic1',
+    path: path.join(process.cwd(), 'public/grid_nav_assets/1_binaural_encoded_music'),
+    publicDirectory: 'AudioFilesMusic1',
+   },
   // {
   //   name: 'AudioFilesMusic2',
   //   path: path.join(process.cwd(), 'public/grid_nav_assets/2_ambisonic_encoded_2nd_music'),
