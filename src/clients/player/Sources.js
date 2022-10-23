@@ -168,7 +168,6 @@ class Sources {
 
 					// Add an event listener to detect that a new audio is ready to be played
 		    		document.addEventListener("audioLoaded" + i, () => {
-		    			// console.log("audioDispatched")
 
 		    			// Remove previous audio from the scheduler
 			    		if (this.syncBuffers[i] != undefined) {
@@ -325,7 +324,7 @@ class Sources {
 	    // Store the association's array in the corresponding class' object
 	    this.audio2Source = tempAudio2Source.slice();
 
-	    // Instantite the variable to store the available audio source's id
+	    // Instantiate the variable to store the available audio source's id
 	    var audioSourceId;
 
 	    // Update the audioSources with new sources ('sources2Attribuate') (=create new couples of source and audioSource)
@@ -365,12 +364,6 @@ class Sources {
 		    		break;
 	    	}
 	    }
-
-	    // Update display and gain of activ sources
-	    // console.warn("Current closestIds are:")
-	    // console.warn(this.closestSourcesId)
-	    // console.log("Current corresponding between AudioSources and Sources in closestSourcesId is :")
-	    // console.log(this.audio2Source)
 
 	    // Update sources and audioSources
 	    for (let i = 0; i < this.nbActiveSources; i++) {
