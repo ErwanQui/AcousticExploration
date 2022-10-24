@@ -5,20 +5,14 @@
 class Binaural {
 
 	constructor (audioContext, sourceIndex, audioStream, playingState) {
-		// console.log(audioStream)
 	    // Creating AudioContext
 	    this.audioContext = audioContext;		// Get audioContext
 	    this.playingSound;                    	// BufferSource's object
 	    this.audioStream = audioStream
 	    this.gain;                            	// Gain's object
 		this.syncAudio;
-		// this.filesPath = "AudioFiles0/";
-		// this.filesPath = "AudioFiles1/";
-		this.filesPath = "AudioFilesMusic1/";
-		// this.filesPath = "AudioFilesPiano/";
 		this.sourceIndex = sourceIndex;
 		this.initialized = false;
-		// this.connect = false;
 		this.previousBuffer = [];
 		this.restBuffer = [];
 		this.count = 0;
@@ -33,7 +27,6 @@ class Binaural {
 	}
 
 	async start (url, value, norm) {
-		// console.log(this.playingState)
 
 		console.info("Starting source: " + this.sourceIndex)
 
@@ -66,7 +59,6 @@ class Binaural {
 			}
 			this.playingState = state;
 		}
-		// console.log(this.sourceIndex, this.playingState)
 	}
 
 	StopAudio() {
@@ -78,29 +70,17 @@ class Binaural {
 
 		this.changing = true;
 		var tempPlayingSound;
-		// console.log('bonjour')
-		// console.log(url)
 
    		this.syncAudio = {
 
 		    advanceTime: (currentTime, audioTime, dt) => {
-		    	// var duration = 6
-		    	// console.log(this.sourceIndex)
-		    	// console.log(audioTime)
 
 		    	if (this.changing) {
 
 		    		var tempAudio = this.audioStream.createStreamSource();
-					// console.log(url)
 			      	tempAudio.streamId = url;
 			      	this.audioDuration = tempAudio.duration
 
-
-			        // if (this.connect) {
-			        // 	this.audio.disconnect(this.gain)
-			        // 	// console.log()
-			        // 	this.connect = false;
-			        // }
 			        console.log(this.audio)
 			        if (!this.initiate) {
 			        	this.audio.stop()
@@ -118,38 +98,24 @@ class Binaural {
 		      		console.log("AudioSources " + this.sourceIndex + " is now connected")
 				    
 				    this.audio.stop(this.audioDuration*Math.ceil(audioTime/this.audioDuration));
-					// }
-
 
 			        this.changing = false;
-			        // console.log(true)
 			        return currentTime + this.audioDuration*Math.ceil(audioTime/this.audioDuration) - audioTime;
 			    }
 			    else {
 			    	this.audio = this.audioStream.createStreamSource();
-					// console.log(url)
 			      	this.audio.streamId = url;
-			      	// var duration = this.audio.duration
 
-			      	// if (this.playingState) {
-			      		this.audio.connect(this.gain);
-			      	// }
+		      		this.audio.connect(this.gain);
 
-			        // console.log(false, this.audio)
-			        // console.log(audioTime, this.audioDuration*Math.ceil(audioTime/this.audioDuration))
-			        // console.log(audioTime, this.audioDuration)
-
-			        // if (this.playingState) {
-				        this.audio.start(audioTime);
-				        this.audio.stop(audioTime + this.audioDuration);
-				    // }
+			        this.audio.start(audioTime);
+			        this.audio.stop(audioTime + this.audioDuration);
 
 			        return currentTime + this.audioDuration;
 			    }
 	    	}
     	}
 
-    	// console.log(this.syncAudio, this.sourceIndex)
    		document.dispatchEvent(new Event("audioLoaded" + this.sourceIndex));
 
 	}

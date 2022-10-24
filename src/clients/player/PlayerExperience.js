@@ -25,7 +25,6 @@ class PlayerExperience extends AbstractExperience {
     // Variable parameters
     this.parameters = {
       audioContext: audioContext,               // Global audioContext
-      // order: 2,                                 // Order of ambisonics
       nbClosestDetectSources: 3,                // Number of closest points detected
       nbClosestActivSources: 3,                 // Number of closest points used as active audioSources
       gainExposant: 3,                          // Exposant of the gains (to increase contraste)
@@ -37,7 +36,6 @@ class PlayerExperience extends AbstractExperience {
       circleDiameter: 20,                       // Diameter of sources' display
       listenerSize: 16,                         // Size of listener's display
       dataFileName: "scene.json",               // All sources' position and audioDatas' filenames (instantiated in 'start()')
-      // audioData: ""                             // All audioDatas (instantiated in 'start()')
     }
 
     // Initialisation variables

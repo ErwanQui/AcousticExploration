@@ -30,14 +30,11 @@ class Sources {
 
 	    // Global parameters
 	    this.nbSources;												// Create the number of sources object
-	    // this.mode = parameters.mode;								// Get the used mode
 	    this.circleDiameter = parameters.circleDiameter;			// Get the circles' diameter
 	    this.nbActiveSources = parameters.nbClosestActivSources;	// Get the number of active sources
 	    this.nbDetectSources = parameters.nbClosestDetectSources;	// Get the number of detect sources
-	    // this.ambiOrder = parameters.order;						// Get the ambisonic's order
 	    this.fileData = {											// Create the fileDatas' storer
 	    	file: parameters.dataFileName,
-	    	// audio: parameters.audioData
 	    }
 	    this.audioSources = []										// Store the audioSources (I will then associate a source to each audioSource)
 	    this.sources = [];											// Create the array of sources' display's elements
@@ -146,7 +143,6 @@ class Sources {
 
 		    		// Add an event listener to detect that a new audio is ready to be played
 			    	document.addEventListener("audioLoaded" + i, () => {
-			    		// console.log("audioDispatched")
 
 			    		// Remove previous audio from the scheduler
 			    		if (this.syncBuffers[i] != undefined) {

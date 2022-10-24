@@ -51,8 +51,6 @@ class Listener {
       	this.compass;
       	this.first = true;
 
-	    // this.pointDegree;
-
 	    // Check if operator is IOS ?
 		const isIOS =
 	      	navigator.userAgent.match(/(iPod|iPhone|iPad)/) &&
@@ -77,7 +75,6 @@ class Listener {
        	this.orientationDisplay.style.background =  "red";
 
       	this.firstAngle = true;				// Attribute to tell if the first angle has been stored
-      	// this.initAngle;
 
 		window.addEventListener("deviceorientation", event => {
 
@@ -85,7 +82,6 @@ class Listener {
 			//
 			if (this.firstAngle) {
 				this.firstAngle = false;
-				// this.initAngle = event.alpha
 				this.initOrientation += event.alpha
 			}
 

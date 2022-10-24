@@ -80,7 +80,7 @@ class Ambisonic {
 
 		if (this.playingState != state) {
 			if (state) {
-			    // console.log("AudioSources " + this.sourceIndex + " is now playing");
+			    console.log("AudioSources " + this.sourceIndex + " is now playing");
 			}
 			else {
 				console.log("AudioSources " + this.sourceIndex + " is no more playing");
@@ -117,7 +117,7 @@ class Ambisonic {
 		// Get the 8-channels sliced files
 		var urls = this.SlicePath(url);
 
-      	// console.log("File played: " + url);
+      	console.log("File played: " + url);
 
       	// Change the "ready" attribute to be played of the audio files to "false"
       	for (let i = 0; i < this.nbFiles; i++) {
