@@ -172,4 +172,4 @@ class Binaural {
   	}
 }
 
-export default Streaming;
+export default Binaural;
