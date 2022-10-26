@@ -52,12 +52,12 @@ class Binaural {
 	// @note: this function and the corresponding attribute are only useful when you detect more sources than you will played
 	ChangePlayingState(state) { // Change the playing state of the audioSource (active or not)
 		if (this.playingState != state) {
-			if (state) {
-			    console.log("AudioSources " + this.sourceIndex + " is now playing")
-			}
-			else {
-				console.log("AudioSources " + this.sourceIndex + " is no more playing")
-			}
+			// if (state) {
+			// 	console.log("AudioSources " + this.sourceIndex + " is now playing")
+			// }
+			// else {
+			// 	console.log("AudioSources " + this.sourceIndex + " is no more playing")
+			// }
 			this.playingState = state;
 		}
 	}
@@ -82,7 +82,6 @@ class Binaural {
 			      	tempAudio.streamId = url;
 			      	this.audioDuration = tempAudio.duration
 
-			        console.log(this.audio)
 			        if (!this.initiate) {
 			        	this.audio.stop()
 			        }
@@ -96,7 +95,7 @@ class Binaural {
 				    this.audio.start(audioTime, audioTime - this.audioDuration*(Math.ceil(audioTime/this.audioDuration) - 1));
 
 		      		this.audio.connect(this.gain);
-		      		console.log("AudioSources " + this.sourceIndex + " is now connected")
+		      		// console.log("AudioSources " + this.sourceIndex + " is now connected")
 				    
 				    this.audio.stop(this.audioDuration*Math.ceil(audioTime/this.audioDuration));
 
@@ -123,7 +122,7 @@ class Binaural {
 
 	// function to load samples
 	loadSample(url) {
-      	console.log("File played: " + url)
+      	// console.log("File played: " + url)
       	this.UpdateAudioSource(url);
 
 	}

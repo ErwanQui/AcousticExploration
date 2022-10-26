@@ -343,17 +343,17 @@ class Sources {
 		    		this.audioSources[audioSourceId].loadSample(this.sourcesData.receivers.files[sources2Attribuate[i][0]])
 		    		break;
 
-		    	case "convolving":
-			    	this.UpdateEngines(audioSourceId, false)
-			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[i][1]]]])
-			    	this.UpdateEngines(audioSourceId, true)
-			    	break;
+		    	// case "convolving":
+			    // 	this.UpdateEngines(audioSourceId, false)
+			    // 	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[i][1]]]])
+			    // 	this.UpdateEngines(audioSourceId, true)
+			    // 	break;
 
-		    	case "ambiConvolving":
-			    	this.UpdateEngines(audioSourceId, false)
-			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data, this.sourcesData.receivers.files.Rirs, this.closestSourcesId[sources2Attribuate[i][1]])
-			    	this.UpdateEngines(audioSourceId, true)
-			    	break;
+		    	// case "ambiConvolving":
+			    // 	this.UpdateEngines(audioSourceId, false)
+			    // 	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data, this.sourcesData.receivers.files.Rirs, this.closestSourcesId[sources2Attribuate[i][1]])
+			    // 	this.UpdateEngines(audioSourceId, true)
+			    // 	break;
 
 		    	default:
 		    		console.log("no valid mode");
@@ -364,7 +364,8 @@ class Sources {
 	    // Update sources and audioSources
 	    for (let i = 0; i < this.nbActiveSources; i++) {
 
-		    console.log("AudioSource " + this.audio2Source[i] + " is active with the value " + (this.gainsData.value[i]/this.gainsData.norm) + " and the Source " + (this.closestSourcesId[i] + 1) + " is now playing")
+		    // console.log("AudioSource " + this.audio2Source[i] + " is active with the value " + (this.gainsData.value[i]/this.gainsData.norm));
+		    console.log("The Source " + (this.closestSourcesId[i] + 1) + " is now playing");
 		    
 		    // Update the coloration of sources
 		    this.UpdateClosestSourcesColor(i);
