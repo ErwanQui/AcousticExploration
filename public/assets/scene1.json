@@ -1,7 +1,15 @@
 {
   "name": "Sainte Elisabeth de Hongrie",
   "description": "Sources S3, S4, and S5. All Receivers.",
+  "mode": "binaural",
 
+  "image":
+  {
+    "name": "scene.jpg",
+    "offset": [27.3, 22.0],
+    "size": [11.7, 20.5],
+    "scale": 58.7
+  },
   "receivers": 
   {
     "xyz":[   
