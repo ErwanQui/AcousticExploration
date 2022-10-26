@@ -359,14 +359,16 @@ class Sources {
 		    		console.log("no valid mode");
 		    		break;
 	    	}
+
+	    	console.log("The Source " + (this.closestSourcesId[i] + 1) + " is now playing");
+
 	    }
 
 	    // Update sources and audioSources
 	    for (let i = 0; i < this.nbActiveSources; i++) {
 
 		    // console.log("AudioSource " + this.audio2Source[i] + " is active with the value " + (this.gainsData.value[i]/this.gainsData.norm));
-		    console.log("The Source " + (this.closestSourcesId[i] + 1) + " is now playing");
-		    
+
 		    // Update the coloration of sources
 		    this.UpdateClosestSourcesColor(i);
 

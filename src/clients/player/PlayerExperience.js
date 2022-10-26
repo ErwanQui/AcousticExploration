@@ -348,7 +348,7 @@ class PlayerExperience extends AbstractExperience {
 
     // Check if the value is in the values range
     if (tempX >= this.positionRange.minX && tempX <= this.positionRange.maxX && tempY >= this.positionRange.minY && tempY <= this.positionRange.maxY) {
-      console.log("Updating");
+      // console.log("Updating");
 
       // Update objects and their display              
       this.Listener.Reset(mouse, this.offset, this.scale);                            // Reset the listener at the new position
