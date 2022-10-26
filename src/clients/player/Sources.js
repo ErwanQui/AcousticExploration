@@ -284,7 +284,7 @@ class Sources {
 					// Change the color of inactive sources to grey
 		          	this.sources[previousClosestSourcesId[i]].style.background = "grey";
 
-		          	console.log("Source " + previousClosestSourcesId[i] + " is no more playing")
+		          	console.log("Source " + (previousClosestSourcesId[i] + 1) + " is no more playing")
 
 		          	// Update the playing state of the corresponding audioSource to "inactive"
 			    	this.audioSources[this.audio2Source[i]].ChangePlayingState(false, this.sync.getLocalTime(this.sync.getSyncTime()));
@@ -360,7 +360,7 @@ class Sources {
 		    		break;
 	    	}
 
-	    	console.log("Source " + sources2Attribuate[i][0] + " is now playing");
+	    	console.log("Source " + (sources2Attribuate[i][0] + 1) + " is now playing");
 
 	    }
 
