@@ -53,10 +53,10 @@ class Binaural {
 	ChangePlayingState(state) { // Change the playing state of the audioSource (active or not)
 		if (this.playingState != state) {
 			// if (state) {
-			// 	console.log("AudioSources " + this.sourceIndex + " is now playing")
+			// 	console.log("AudioSource " + this.sourceIndex + " is now active")
 			// }
 			// else {
-			// 	console.log("AudioSources " + this.sourceIndex + " is no more playing")
+			// 	console.log("AudioSource " + this.sourceIndex + " is inactive")
 			// }
 			this.playingState = state;
 		}
