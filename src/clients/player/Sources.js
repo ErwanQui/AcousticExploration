@@ -447,54 +447,6 @@ class Sources {
 	    return (closestIds);
   	}
 
-  	// ClosestSource1(listenerPosition, listOfPoint) { // Get closest sources to the listener
-    
-	  //   // Initialising temporary variables;
-	  //   var closestIds = [];
-	  //   var currentClosestId;
-
-	  //   // Reset variables
-	  //   this.distanceSum = 0;
-	  //   this.gainsData.norm = 0;
-
-	  //   // Get the 'nbClosest' closest ids
-	  //   for (let j = 0; j < this.nbDetectSources; j++) {
-
-		 //    // Set 'undefined' to the currentClosestId to ignore difficulties with initial values
-		 //    currentClosestId = undefined;
-
-		 //    for (let i = 0; i < listOfPoint.length; i++) {
-
-		 //        // Check if the id is not already in the closest ids and then if the source of this id is closest than the previous one
-		 //        if (!this.Index(i, closestIds)[0] && this.Distance(listenerPosition, listOfPoint[i]) < this.Distance(listenerPosition, listOfPoint[currentClosestId])) {
-		          
-		 //        	// Update closest id
-		 //        	currentClosestId = i;
-		 //        }
-		 //    }
-
-		 //    // Check if it's the source is close enough to be playing
-		 //    if (j < this.nbActiveSources) {
-
-		 //        // Get the distance between the listener and the source
-		 //        this.distanceValue[j] = this.Distance(listenerPosition, listOfPoint[currentClosestId]);
-
-		 //        // Increment 'this.distanceSum'
-		 //        this.distanceSum += this.distanceValue[j];
-		 //    }
-
-		 //    // Push the id in the closestId attribute
-		 //    closestIds.push(currentClosestId);
-	  //   }
-
-	  //   // Set the gains and the gains' norm
-	  //   for (let i = 0; i < this.nbActiveSources; i++) {
-		 //    this.gainsData.value[i] = Math.pow((1 - this.distanceValue[i]/this.distanceSum), this.gainsData.exposant);
-		 //    this.gainsData.norm += this.gainsData.value[i];
-	  //   }
-	  //   return (closestIds);
-  	// }
-
   	UpdateSourcesPosition(scale, offset) { // Update the positions of sources circles when the window is resized
 
 	    for (let i = 0; i < this.nbSources; i++) {

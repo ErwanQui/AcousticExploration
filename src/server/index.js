@@ -26,18 +26,10 @@ server.router.use(serveStatic('public'));
 server.router.use('build', serveStatic(path.join('.build', 'public')));
 server.router.use('vendors', serveStatic(path.join('.vendors', 'public')));
 server.router.use('images', serveStatic(path.join('public', 'images')));
-// server.router.use('AudioFiles2', serveStatic(path.join('public', 'grid_nav_assets/2_ambisonic_encoded_2nd')));
-// server.router.use('audioFiles', serveStatic(path.join('public', 'audio_files')));
-// server.router.use('AudioFiles4', serveStatic(path.join('public', 'grid_nav_assets/4_ambisonic_rirs_2nd')));
-// server.router.use('AudioFilesPiano', serveStatic(path.join('public', 'piano')));
 server.router.use('assets', serveStatic(path.join('public', 'assets')));
-// server.router.use('/public/piano', serveStatic(path.join('public', 'piano')));
-// server.router.use('/public/grid_nav_assets/1_binaural_encoded_music', serveStatic(path.join('public', 'grid_nav_assets/1_binaural_encoded_music')));
 
 
-import fs from 'fs';
-// import JSON5 from 'json5';
-// import path from 'path';
+// import fs from 'fs';
 
 console.log(`
 --------------------------------------------------------
@@ -45,10 +37,6 @@ console.log(`
 - [pid: ${process.pid}]
 --------------------------------------------------------
 `);
-
-// const envConfigPath = path.join('public', 'grid_nav_assets', 'assets', `scene.json`)
-// var envConfig = JSON5.parse(fs.readFileSync(envConfigPath, 'utf-8'));
-// console.log(envConfig)
 
 // -------------------------------------------------------------------
 // register plugins
@@ -59,40 +47,11 @@ server.pluginManager.register('filesystem', pluginFilesystemFactory, {
     name: 'assets',
     path: path.join(process.cwd(), 'public/assets'),
     publicDirectory: 'assets',
-  },
-  // {
-  //   name: 'AudioFiles2',
-  //   path: path.join(process.cwd(), 'public/grid_nav_assets/2_ambisonic_encoded_2nd'),
-  //   publicDirectory: 'AudioFiles2',
-  // {
-  //   name: 'audioFiles',
-  //   path: path.join(process.cwd(), 'public/audio_files'),
-  //   publicDirectory: 'audioFiles',
-  // },
-  // {
-  //   name: 'AudioFiles3',
-  //   path: path.join(process.cwd(), 'public/grid_nav_assets/3_binaural_rirs'),
-  //   publicDirectory: 'AudioFiles3',
-  // },
-  // {
-  //   name: 'AudioFiles4',
-  //   path: path.join(process.cwd(), 'public/grid_nav_assets/4_ambisonic_rirs_2nd'),
-  //   publicDirectory: 'AudioFiles4',
-  // },
-  // {
-  //   name: 'AudioFilesPiano',
-  //   path: path.join(process.cwd(), 'public/piano'),
-  //   publicDirectory: 'AudioFilesPiano',
-  // }
-  ]
+  }]
 }, []);
 
 server.pluginManager.register('audio-streams', pluginAudioStreamsFactory, {
-//   directory: 'public/piano',
-//   cache: true,
-// },
-// {
-  directory: 'public/audio_files',
+  directory: 'public/audio_files1',
   cache: true,
   compress: false
 }, []);

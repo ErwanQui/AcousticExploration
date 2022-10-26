@@ -8,30 +8,30 @@ class Binaural {
 	    // Creating AudioContext
 	    this.audioContext = audioContext;		// Get audioContext
 	    this.playingSound;                    	// BufferSource's object
-	    this.audioStream = audioStream
-	    this.gain;                            	// Gain's object
-		this.syncAudio;
-		this.sourceIndex = sourceIndex;
-		this.initialized = false;
-		this.previousBuffer = [];
-		this.restBuffer = [];
-		this.count = 0;
-		this.arrayValue = []
-		this.begin = true
-		this.fileHead = []
-		this.globalBuffer = [];
-		this.playingState = playingState
-		this.audio;
-		this.initiate = true;
+	    this.audioStream = audioStream			// Get streaming plugin
+	    // this.gain;                            	// Gain's object
+		this.syncAudio;							// Store the syncObject for the scheduler (in "Sources.js")
+		this.sourceIndex = sourceIndex;			// Set the index of the audioSource
+		// this.initialized = false;
+		// this.previousBuffer = [];
+		// this.restBuffer = [];
+		// this.count = 0;
+		// this.arrayValue = []
+		// this.begin = true
+		// this.fileHead = []
+		// this.globalBuffer = [];
+		this.playingState = playingState; 		// Set the state of the audioSource (active or not)
+		this.audio;								// Audio buffer of the file played
+		this.initiate = true;					// Attribute to tell if it's the first audio to be played
+
+		// Create the gain
+	    this.gain = this.audioContext.createGain();
 
 	}
 
 	async start (url, value, norm) {
 
 		console.info("Starting source: " + this.sourceIndex)
-
-	    // Create the gain
-	    this.gain = this.audioContext.createGain();
 
 	    // Initiate with current gain's value
     	
@@ -49,7 +49,8 @@ class Binaural {
     	this.loadSample(url);
 	}
 
-	ChangePlayingState(state) {
+	// @note: this function and the corresponding attribute are only useful when you detect more sources than you will played
+	ChangePlayingState(state) { // Change the playing state of the audioSource (active or not)
 		if (this.playingState != state) {
 			if (state) {
 			    console.log("AudioSources " + this.sourceIndex + " is now playing")

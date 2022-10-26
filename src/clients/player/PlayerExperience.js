@@ -27,15 +27,10 @@ class PlayerExperience extends AbstractExperience {
       audioContext: audioContext,               // Global audioContext
       nbClosestDetectSources: 3,                // Number of closest points detected
       nbClosestActivSources: 3,                 // Number of closest points used as active audioSources
-      gainExposant: 3,                          // Exposant of the gains (to increase contraste)
-      // // mode: "debug",                         // Choose audio mode (possible: "debug", "binaural", "ambisonic", "convolving", "ambiConvolving")
-      // // mode: "binaural",
-      // mode: "ambisonic",
-      // // mode: "convolving",
-      // // mode: "ambiConvolving",
+      gainExposant: 3,                          // Exposant of the gains (to increase contrast)
       circleDiameter: 20,                       // Diameter of sources' display
       listenerSize: 16,                         // Size of listener's display
-      dataFileName: "scene.json",               // All sources' position and audioDatas' filenames (instantiated in 'start()')
+      dataFileName: "scene1.json",               // All sources' position and audioDatas' filenames (instantiated in 'start()')
     }
 
     // Initialisation variables
@@ -65,42 +60,6 @@ class PlayerExperience extends AbstractExperience {
     if (this.parameters.nbClosestDetectSources < this.parameters.nbClosestActivSources) {
       console.error("The number of detected sources must be higher than the number of used sources")
     }
-
-    // Switch files' names and audios, depending on the mode chosen
-    // switch (this.parameters.mode) {
-    //   case 'debug':
-    //     this.parameters.audioData = 'AudioFiles0';
-    //     this.parameters.dataFileName = 'scene0.json';
-    //     break;
-
-    //   case 'binaural':
-    //     // this.parameters.audioData = 'AudioFiles1';
-    //     this.parameters.audioData = 'AudioFilesMusic1';
-    //     this.parameters.dataFileName = 'scene1.json';
-    //     // this.parameters.audioData = 'AudioFilesPiano';
-    //     // this.parameters.dataFileName = 'scenePiano.json';
-    //     break;
-
-    //   case 'ambisonic':
-    //     this.parameters.audioData = 'AudioFiles2';
-    //     // this.parameters.audioData = 'AudioFilesSpeech1';
-    //     // this.parameters.audioData = 'AudioFilesMusic1';
-    //     this.parameters.dataFileName = 'scene2.json';
-    //     break;
-
-    //   case 'convolving':
-    //     this.parameters.audioData = 'AudioFiles3';
-    //     this.parameters.dataFileName = 'scene3.json';
-    //     break;
-
-    //   case 'ambiConvolving':
-    //     this.parameters.audioData = 'AudioFiles4';
-    //     this.parameters.dataFileName = 'scene4.json';
-    //     break;
-
-    //   default:
-    //     alert("No valid mode");
-    // }
 
     // Create the objects storer for sources and load their fileDatas
     this.Sources = new Sources(this.filesystem, this.audioBufferLoader, this.parameters, this.platform, this.sync, this.audioStream)

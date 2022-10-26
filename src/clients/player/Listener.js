@@ -2,9 +2,6 @@
 /// Listener.js ///
 ///////////////////
 
-
-// /!\ Cleaning in progress
-
 // Class to manage the listener on the screen (position, orientation...)
 
 class Listener {

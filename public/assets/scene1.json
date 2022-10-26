@@ -1,0 +1,57 @@
+{
+  "name": "Sainte Elisabeth de Hongrie",
+  "description": "Sources S3, S4, and S5. All Receivers.",
+
+  "receivers": 
+  {
+    "xyz":[   
+      [31.0, 41.5],
+      [31.0, 39.0],
+      [31.0, 36.2],
+      [34.5, 36.2],
+      [36.8, 36.2],
+      [36.8, 33.6],
+      [34.5, 33.6],
+      [31.0, 33.6],
+      [31.0, 31.0],
+      [34.5, 31.0],
+      [34.5, 28.0],
+      [31.0, 28.0],
+      [31.0, 25.8],
+      [34.5, 25.8],
+      [36.8, 25.8],
+      [36.8, 23.6],
+      [34.5, 23.6],
+      [31.0, 23.6]
+    ],
+
+  "files":[
+    "steliz_octamic_m01_bin.wav",
+    "steliz_octamic_m02_bin.wav",
+    "steliz_octamic_m03_bin.wav",
+    "steliz_octamic_m04_bin.wav",
+    "steliz_octamic_m05_bin.wav",
+    "steliz_octamic_m06_bin.wav",
+    "steliz_octamic_m07_bin.wav",
+    "steliz_octamic_m08_bin.wav",
+    "steliz_octamic_m09_bin.wav",
+    "steliz_octamic_m10_bin.wav",
+    "steliz_octamic_m11_bin.wav",
+    "steliz_octamic_m12_bin.wav",
+    "steliz_octamic_m13_bin.wav",
+    "steliz_octamic_m14_bin.wav",
+    "steliz_octamic_m15_bin.wav",
+    "steliz_octamic_m16_bin.wav",
+    "steliz_octamic_m17_bin.wav",
+    "steliz_octamic_m18_bin.wav"
+    ]
+  },
+
+  "sources_xy": 
+  [
+    [27.5, 12.1],
+    [33.0, 30.5],
+    [28.0, 42.3]
+  ]
+
+}
