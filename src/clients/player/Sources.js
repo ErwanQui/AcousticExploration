@@ -202,7 +202,7 @@ class Sources {
   	LoadData() { // Load the data from the json file
 
   		// Get all assets' datas
-	    const data = this.filesystem.get('Assets');
+	    const data = this.filesystem.get('assets');
 
 	    data.children.forEach(leaf => {
 	      	if (leaf.name === this.fileData.file) {
