@@ -417,7 +417,6 @@ class Sources {
 
 	    	// Change the closest ids ranking
 	    	for (let j = this.nbDetectSources - 1; j >= rank; j--) {
-	    		console.log(rank)
 	    		if (j == rank) {
 	    			closestIds[j] = i
 	    		}
