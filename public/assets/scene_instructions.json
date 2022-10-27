@@ -1,0 +1,38 @@
+{
+  "name": "",           // String : name of your simulation
+  "description": "",    // String : description of your simulation
+  "mode": "",           // String : mode you want to use. Now, only 'binaural' and 'ambisonic' modes are working
+  "order": "",          // int : order of the simulation if you are using 'ambisonic' mode
+
+  // The image, you will use
+  "image":
+  {
+    "name": "",                 // Name of your image : the name of the file in 'public\assets' that will be used
+    "offset": [0, 0],           // Position in meter of the top left corner
+    "size": [1, 1],             // Height and with in meter
+    "scale": 1,                 // Scale used
+  },
+
+  // Position of all your receivers
+  "receivers": 
+  {
+    "xyz":[   
+      [0, 0],
+      [1, 1]
+    ],
+
+  // Audio files corresponding to receivers. They have to be placed in 'public/audio_files'
+  "files":[
+      "",
+      ""
+    ]
+  },
+
+  // Position of the sources. That's only for the display
+  "sources_xy": 
+  [
+    [33.0, 30.5],
+    [28.0, 42.3]
+  ]
+
+}

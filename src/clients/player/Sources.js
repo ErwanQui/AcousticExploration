@@ -2,7 +2,7 @@
 /// Sources.js ///
 //////////////////
 
-import Streaming from './Streaming.js'
+import Binaural from './Binaural.js'
 import Ambisonic from './Ambisonic.js'
 import Convolving from './Convolving.js'
 import AmbiConvolving from './AmbiConvolving.js'
@@ -30,14 +30,11 @@ class Sources {
 
 	    // Global parameters
 	    this.nbSources;												// Create the number of sources object
-	    // this.mode = parameters.mode;								// Get the used mode
 	    this.circleDiameter = parameters.circleDiameter;			// Get the circles' diameter
 	    this.nbActiveSources = parameters.nbClosestActivSources;	// Get the number of active sources
 	    this.nbDetectSources = parameters.nbClosestDetectSources;	// Get the number of detect sources
-	    // this.ambiOrder = parameters.order;						// Get the ambisonic's order
 	    this.fileData = {											// Create the fileDatas' storer
 	    	file: parameters.dataFileName,
-	    	// audio: parameters.audioData
 	    }
 	    this.audioSources = []										// Store the audioSources (I will then associate a source to each audioSource)
 	    this.sources = [];											// Create the array of sources' display's elements
@@ -80,8 +77,8 @@ class Sources {
 			switch (this.sourcesData.mode) {
 
 				case 'debug':
-				case 'streaming':
-					this.audioSources.push(new Streaming(this.audioContext, i, this.audioStream, (i < this.nbActiveSources)));
+				case 'binaural':
+					this.audioSources.push(new Binaural(this.audioContext, i, this.audioStream, (i < this.nbActiveSources)));
 					break;
 
 				case 'ambisonic':
@@ -142,11 +139,10 @@ class Sources {
 			// Start sources
 			switch (this.sourcesData.mode) {
 		    	case 'debug':
-		    	case 'streaming':
+		    	case 'binaural':
 
 		    		// Add an event listener to detect that a new audio is ready to be played
 			    	document.addEventListener("audioLoaded" + i, () => {
-			    		// console.log("audioDispatched")
 
 			    		// Remove previous audio from the scheduler
 			    		if (this.syncBuffers[i] != undefined) {
@@ -168,7 +164,6 @@ class Sources {
 
 					// Add an event listener to detect that a new audio is ready to be played
 		    		document.addEventListener("audioLoaded" + i, () => {
-		    			// console.log("audioDispatched")
 
 		    			// Remove previous audio from the scheduler
 			    		if (this.syncBuffers[i] != undefined) {
@@ -207,7 +202,7 @@ class Sources {
   	LoadData() { // Load the data from the json file
 
   		// Get all assets' datas
-	    const data = this.filesystem.get('Assets');
+	    const data = this.filesystem.get('assets');
 
 	    data.children.forEach(leaf => {
 	      	if (leaf.name === this.fileData.file) {
@@ -289,11 +284,11 @@ class Sources {
 					// Change the color of inactive sources to grey
 		          	this.sources[previousClosestSourcesId[i]].style.background = "grey";
 
+		          	console.log("Source " + (previousClosestSourcesId[i] + 1) + " is no more playing")
+
 		          	// Update the playing state of the corresponding audioSource to "inactive"
 			    	this.audioSources[this.audio2Source[i]].ChangePlayingState(false, this.sync.getLocalTime(this.sync.getSyncTime()));
-		          	
-		          	console.log("Source " + i + " is now inactive")
-		          	
+		          			          	
 		          	// Reset the gain of the corresponding audioSource
 		          	this.audioSources[this.audio2Source[i]].UpdateGain(0, 1);
 
@@ -325,7 +320,7 @@ class Sources {
 	    // Store the association's array in the corresponding class' object
 	    this.audio2Source = tempAudio2Source.slice();
 
-	    // Instantite the variable to store the available audio source's id
+	    // Instantiate the variable to store the available audio source's id
 	    var audioSourceId;
 
 	    // Update the audioSources with new sources ('sources2Attribuate') (=create new couples of source and audioSource)
@@ -340,7 +335,7 @@ class Sources {
 	    	// Load and play the new sources in the audioSource objects
 		    switch (this.sourcesData.mode) {
 		    	case "debug":
-		    	case "streaming":
+		    	case "binaural":
 			    	this.audioSources[audioSourceId].loadSample(this.sourcesData.receivers.files[sources2Attribuate[i][0]])
 		    		break;
 
@@ -348,35 +343,32 @@ class Sources {
 		    		this.audioSources[audioSourceId].loadSample(this.sourcesData.receivers.files[sources2Attribuate[i][0]])
 		    		break;
 
-		    	case "convolving":
-			    	this.UpdateEngines(audioSourceId, false)
-			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[i][1]]]])
-			    	this.UpdateEngines(audioSourceId, true)
-			    	break;
+		    	// case "convolving":
+			    // 	this.UpdateEngines(audioSourceId, false)
+			    // 	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data[this.sourcesData.receivers.files.Rirs["source" + audioSourceId][this.closestSourcesId[sources2Attribuate[i][1]]]])
+			    // 	this.UpdateEngines(audioSourceId, true)
+			    // 	break;
 
-		    	case "ambiConvolving":
-			    	this.UpdateEngines(audioSourceId, false)
-			    	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data, this.sourcesData.receivers.files.Rirs, this.closestSourcesId[sources2Attribuate[i][1]])
-			    	this.UpdateEngines(audioSourceId, true)
-			    	break;
+		    	// case "ambiConvolving":
+			    // 	this.UpdateEngines(audioSourceId, false)
+			    // 	this.audioSources[audioSourceId].UpdateAudioSource(this.audioBufferLoader.data, this.sourcesData.receivers.files.Rirs, this.closestSourcesId[sources2Attribuate[i][1]])
+			    // 	this.UpdateEngines(audioSourceId, true)
+			    // 	break;
 
 		    	default:
 		    		console.log("no valid mode");
 		    		break;
 	    	}
-	    }
 
-	    // Update display and gain of activ sources
-	    // console.warn("Current closestIds are:")
-	    // console.warn(this.closestSourcesId)
-	    // console.log("Current corresponding between AudioSources and Sources in closestSourcesId is :")
-	    // console.log(this.audio2Source)
+	    	console.log("Source " + (sources2Attribuate[i][0] + 1) + " is now playing");
+
+	    }
 
 	    // Update sources and audioSources
 	    for (let i = 0; i < this.nbActiveSources; i++) {
 
-		    console.log("AudioSource " + this.audio2Source[i] + " is active with the value " + (this.gainsData.value[i]/this.gainsData.norm) + " and the Source " + (this.closestSourcesId[i] + 1) + " is now playing")
-		    
+		    // console.log("AudioSource " + this.audio2Source[i] + " is active with the value " + (this.gainsData.value[i]/this.gainsData.norm));
+
 		    // Update the coloration of sources
 		    this.UpdateClosestSourcesColor(i);
 
@@ -428,7 +420,6 @@ class Sources {
 
 	    	// Change the closest ids ranking
 	    	for (let j = this.nbDetectSources - 1; j >= rank; j--) {
-	    		console.log(rank)
 	    		if (j == rank) {
 	    			closestIds[j] = i
 	    		}
@@ -457,54 +448,6 @@ class Sources {
 
 	    return (closestIds);
   	}
-
-  	// ClosestSource1(listenerPosition, listOfPoint) { // Get closest sources to the listener
-    
-	  //   // Initialising temporary variables;
-	  //   var closestIds = [];
-	  //   var currentClosestId;
-
-	  //   // Reset variables
-	  //   this.distanceSum = 0;
-	  //   this.gainsData.norm = 0;
-
-	  //   // Get the 'nbClosest' closest ids
-	  //   for (let j = 0; j < this.nbDetectSources; j++) {
-
-		 //    // Set 'undefined' to the currentClosestId to ignore difficulties with initial values
-		 //    currentClosestId = undefined;
-
-		 //    for (let i = 0; i < listOfPoint.length; i++) {
-
-		 //        // Check if the id is not already in the closest ids and then if the source of this id is closest than the previous one
-		 //        if (!this.Index(i, closestIds)[0] && this.Distance(listenerPosition, listOfPoint[i]) < this.Distance(listenerPosition, listOfPoint[currentClosestId])) {
-		          
-		 //        	// Update closest id
-		 //        	currentClosestId = i;
-		 //        }
-		 //    }
-
-		 //    // Check if it's the source is close enough to be playing
-		 //    if (j < this.nbActiveSources) {
-
-		 //        // Get the distance between the listener and the source
-		 //        this.distanceValue[j] = this.Distance(listenerPosition, listOfPoint[currentClosestId]);
-
-		 //        // Increment 'this.distanceSum'
-		 //        this.distanceSum += this.distanceValue[j];
-		 //    }
-
-		 //    // Push the id in the closestId attribute
-		 //    closestIds.push(currentClosestId);
-	  //   }
-
-	  //   // Set the gains and the gains' norm
-	  //   for (let i = 0; i < this.nbActiveSources; i++) {
-		 //    this.gainsData.value[i] = Math.pow((1 - this.distanceValue[i]/this.distanceSum), this.gainsData.exposant);
-		 //    this.gainsData.norm += this.gainsData.value[i];
-	  //   }
-	  //   return (closestIds);
-  	// }
 
   	UpdateSourcesPosition(scale, offset) { // Update the positions of sources circles when the window is resized
 

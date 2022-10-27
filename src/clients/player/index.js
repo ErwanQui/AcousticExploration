@@ -14,12 +14,9 @@ import pluginAudioStreamsFactory from '@soundworks/plugin-audio-streams/client';
 import PlayerExperience from './PlayerExperience.js';
 
 const config = window.soundworksConfig;
-// store experiences of emulated clients
 const experiences = new Set();
-// import path from 'path';
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioContext = new AudioContext();
-// import fs from 'fs';
 
 async function launch($container, index) {
   try {
@@ -28,24 +25,29 @@ async function launch($container, index) {
     // -------------------------------------------------------------------
     // register plugins
     // -------------------------------------------------------------------
+
     client.pluginManager.register('filesystem', pluginFilesystemFactory, {}, []);
+
     client.pluginManager.register('audio-buffer-loader', pluginAudioBufferLoaderFactory, {}, [])
+    
     client.pluginManager.register('sync', pluginSyncFactory, {
-      // choose the clock to synchronize, defaults to:
-      // (where `startTime` is the time at which the plugin is instantiated)
       getTimeFunction: () => audioContext.currentTime,
     }, []);
+
     client.pluginManager.register('platform', pluginPlatformFactory, {
       features: [
         ['web-audio', audioContext],
       ]
     }, []);
+
     client.pluginManager.register('audio-streams', pluginAudioStreamsFactory, {
       audioContext,
     }, ['platform']);
+
     // -------------------------------------------------------------------
     // launch application
     // -------------------------------------------------------------------
+
     await client.init(config);
     initQoS(client);
 

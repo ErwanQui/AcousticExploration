@@ -79,12 +79,12 @@ class Ambisonic {
 	ChangePlayingState(state) { // Change the playing state of the audioSource (active or not)
 
 		if (this.playingState != state) {
-			if (state) {
-			    // console.log("AudioSources " + this.sourceIndex + " is now playing");
-			}
-			else {
-				console.log("AudioSources " + this.sourceIndex + " is no more playing");
-			}
+			// if (state) {
+			//     console.log("AudioSources " + this.sourceIndex + " is now playing");
+			// }
+			// else {
+			// 	console.log("AudioSources " + this.sourceIndex + " is no more playing");
+			// }
 			this.playingState = state;
 		}
 	}
@@ -201,7 +201,7 @@ class Ambisonic {
     	// Check if all 8-channels files of this audioSource are ready to be played.
     	// In this case, dispatch an event in "Sources.js" to update the scheduler
     	if (this.fileObjects.every((file) => file.ready)) {
-		    console.log("AudioSources " + this.sourceIndex + " is now connected");
+		    // console.log("AudioSources " + this.sourceIndex + " is now connected");
    			document.dispatchEvent(new Event("audioLoaded" + this.sourceIndex));
     	}
 	}

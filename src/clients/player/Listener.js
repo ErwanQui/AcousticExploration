@@ -2,9 +2,6 @@
 /// Listener.js ///
 ///////////////////
 
-
-// /!\ Cleaning in progress
-
 // Class to manage the listener on the screen (position, orientation...)
 
 class Listener {
@@ -24,7 +21,7 @@ class Listener {
 	    // Parameter's for the display of user's position
 	    this.display;													// Html element for the display (build in 'start()')
 	    
-	    this.displaySize = parameters.listenerSize;							// Size of the listener's display
+	    this.displaySize = parameters.listenerSize;						// Size of the listener's display
 	    this.circleSpacing = parameters.circleDiameter/2;				// Size of sources to set an offset
 	
 	    // Position
@@ -36,22 +33,22 @@ class Listener {
 	    }, this.Error, {enableHighAccuracy: true});
 
 		// Orientation
-		this.initiateOrientation = true;
-		this.initOrientation = -135;
-		this.offsetOrientation = 90;
+		this.initOrientation = -135;		// Angle added to initial orientation to have a good set up 
+		this.offsetOrientation = 90;		// Offset used to see where the orientation's bug is coming from
 
+		// Create an attribute to store the previous orientation
 		this.previousPosition = {
 	      	x: this.initListenerPosition.x,
 	      	y: this.initListenerPosition.y,
-		}
+		};
 
-		this.targetPosX = this.initListenerPosition.x
-		this.targetPosY = this.initListenerPosition.y
+		// The position the listener is aiming to
+		this.targetPosX = this.initListenerPosition.x;
+		this.targetPosY = this.initListenerPosition.y;
 
-      	this.compass;
-      	this.first = true;
-
-	    // this.pointDegree;
+      	this.compass;			// Store the orientation until the 'direction' attribute is set up
+      	this.direction;			// Store the initial orientation
+      	this.first = true;		// Attribute to tell if the direction has been setting up
 
 	    // Check if operator is IOS ?
 		const isIOS =
@@ -77,18 +74,19 @@ class Listener {
        	this.orientationDisplay.style.background =  "red";
 
       	this.firstAngle = true;				// Attribute to tell if the first angle has been stored
-      	// this.initAngle;
 
+      	// update the orientationof the listener
 		window.addEventListener("deviceorientation", event => {
 
-			// always at 90° when begin ?
-			//
+			// @note: sometimes at 90° when it begins, I don't know why...
+			
+			// Initiate orientation
 			if (this.firstAngle) {
 				this.firstAngle = false;
-				// this.initAngle = event.alpha
 				this.initOrientation += event.alpha
 			}
 
+			// Change the orientation's display
 			this.orientationAbscisse = Math.cos(-Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2
 			this.orientationOrdonnate = Math.sin(-Math.PI*(event.alpha - this.initOrientation)/180)*20 + this.displaySize/2-2
 	      	this.orientationDisplay.style.transform = "translate(" + 
@@ -96,13 +94,12 @@ class Listener {
 	      		this.orientationOrdonnate + "px)";
 		}, true);
 
-		this.posInitialising = true;					// Attribute to tell if the position has to been initialized
+		this.posInitialising = true;	// Attribute to tell if the position has to been initialized
 
-		this.debugCoef = 1;			// used to debug
+		// this.debugCoef = 1;			// used to debug
 	}
 
 	Handler(e) {
-		console.log("wep")
       	this.compass = e.webkitCompassHeading || Math.abs(e.alpha - 360);
       	if (this.first && this.compass != undefined) {
       		this.direction = this.compass;
@@ -197,7 +194,7 @@ class Listener {
 					dpct += 1;
 
 					// Dispatch an event listened in "Sources.js" to tell that the user has moved
-					document.dispatchEvent(new Event("Moving"));
+					document.dispatchEvent(new Event("moving"));
 				}
 				else {
 
@@ -215,12 +212,14 @@ class Listener {
 			this.posInitialising = false;
 
 			// Dispatch an event listened in "Sources.js" to tell that the user has moved
-			document.dispatchEvent(new Event("Moving"));
+			document.dispatchEvent(new Event("moving"));
 		}
 
 		// Get the changes between previous and current position
-		this.updateTargetX = -(Math.cos((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) - Math.sin((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
-   		this.updateTargetY = -(Math.sin((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef
+		// this.updateTargetX = -(Math.cos((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) - Math.sin((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef;
+		// this.updateTargetY = -(Math.sin((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY))/this.debugCoef;
+		this.updateTargetX = -(Math.cos((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) - Math.sin((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY));
+		this.updateTargetY = -(Math.sin((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.latitude - this.posX) + Math.cos((this.direction + this.offsetOrientation)*Math.PI/180)*this.LatLong2Meter(pos.coords.longitude - this.posY));
 
     	// Store new latitude and longitude of the user
     	this.posX = pos.coords.latitude;

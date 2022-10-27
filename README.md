@@ -2,27 +2,34 @@
 
 A web application to explore the acoustic of Notre-Dame
 
-## Using
+## Sub-description
 
-The mode can be changed in "src/clients/player/PlayerExperience.js" at l.30
-Usable modes:
-- "debug": play sources id (1 to 18)
-- "streaming": play binaural 1, 2, 3
-- "ambisonic": play ambisonic 1, 2, 3
-- "convolving": play binaural 1, 2, 3 (or others sounds) with binaural rirs
-- "ambiConvlving": play binaural 1, 2 (or others sounds) with ambisaonic rirs
+This web app enable a user to hear the acoustic of a specific monument as he was really in it.
 
-The files used can be changed in "public/grid_nav_assets" and the corresponding repository or in "public/grid_nav_assets/assets/sounds" for the sounds used with rirs
-Warning: for ambisonic sounds and rirs, the files must be in format '01_08ch' and '09_09ch'
-Warning: only order 2 ambisonic can be used
+This app can work for the acoustic of any monument, as long as corresponding audio files are provided.
 
-You should change the json files in "public/grid_nav_assets/assets" to read the good files
-Warning: in "ambiConvolving", more than 2 sounds seems to not be supported by computer (and 2 sounds is already complicated...)
+## Appropriation
+
+To modify the monument's simulation, you should change the scene.json file. Examples and instructions are in 'public/assets'.
+
+Audio files have to be placed in the "public/audio_files" folder to be read an automatically streamed.
+
+## Event summary
+
+- "dataLoaded", to tell that data have been loaded : dispatched in 'src/clients/player/Sources.js' and listened in 'src/clients/player/PlayerExperience.js'
+- "moving, to tell that user is moving : dispatched in 'src/clients/player/Listener.js' and listened in 'src/clients/player/PlayerExperience.js'
+- "audioLoaded", to tell that audio data have been loaded : dispatched in 'src/clients/player/Binaural.js' or in 'src/clients/player/Ambisonic.js' and listened in 'src/clients/player/Sources.js'
+- "resize", "click", "mousedown", "mousemove", "mouseup", "touchstart", "touchmove", "touchend" : listened in 'src/clients/player/PlayerExperience.js'
+- "deviceorientation" : listened in 'src/clients/player/Listener.js' and 'src/clients/player/Ambisonic.js'
+- "deviceorientationabsolute" : listened in 'src/clients/player/Listener.js'
 
 ## Plugin repository
 
-- [https://github.com/collective-soundworks/soundworks-plugin-audio-buffer-loader](https://github.com/collective-soundworks/soundworks-plugin-audio-buffer-loader)
-- [https://github.com/collective-soundworks/soundworks-plugin-filesystem](https://github.com/collective-soundworks/soundworks-plugin-filesystem)
+- [soundworks-plugin-audio-buffer-loader](https://github.com/collective-soundworks/soundworks-plugin-audio-buffer-loader)
+- [soundworks-plugin-filesystem](https://github.com/collective-soundworks/soundworks-plugin-filesystem)
+- [soundworks-plugin-platform](https://github.com/collective-soundworks/soundworks-plugin-platform)
+- [soundworks-plugin-audio-streams](https://github.com/collective-soundworks/soundworks-plugin-audio-streams)
+- [soundworks-plugin-sync](https://github.com/collective-soundworks/soundworks-plugin-sync)
 
 ## Launching the application
 
