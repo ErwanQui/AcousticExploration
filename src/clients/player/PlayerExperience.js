@@ -99,7 +99,7 @@ class PlayerExperience extends AbstractExperience {
       this.Sources.start(this.Listener.listenerPosition);
 
       // Add an event listener dispatched from "Listener.js" when the position of the user changed
-      document.addEventListener('Moving', () => {
+      document.addEventListener('moving', () => {
         this.Sources.onListenerPositionChanged(this.Listener.listenerPosition);         // Update the sound depending on listener's position
         this.UpdateContainer()
         this.render();

@@ -194,7 +194,7 @@ class Listener {
 					dpct += 1;
 
 					// Dispatch an event listened in "Sources.js" to tell that the user has moved
-					document.dispatchEvent(new Event("Moving"));
+					document.dispatchEvent(new Event("moving"));
 				}
 				else {
 
@@ -212,7 +212,7 @@ class Listener {
 			this.posInitialising = false;
 
 			// Dispatch an event listened in "Sources.js" to tell that the user has moved
-			document.dispatchEvent(new Event("Moving"));
+			document.dispatchEvent(new Event("moving"));
 		}
 
 		// Get the changes between previous and current position
