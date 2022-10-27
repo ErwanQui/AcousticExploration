@@ -51,7 +51,7 @@ server.pluginManager.register('filesystem', pluginFilesystemFactory, {
 }, []);
 
 server.pluginManager.register('audio-streams', pluginAudioStreamsFactory, {
-  directory: 'public/audio_files1',
+  directory: 'public/audio_files',
   cache: true,
   compress: false
 }, []);

@@ -30,7 +30,7 @@ class PlayerExperience extends AbstractExperience {
       gainExposant: 3,                          // Exposant of the gains (to increase contrast)
       circleDiameter: 20,                       // Diameter of sources' display
       listenerSize: 16,                         // Size of listener's display
-      dataFileName: "scene1.json",               // All sources' position and audioDatas' filenames (instantiated in 'start()')
+      dataFileName: "scene.json",               // All sources' position and audioDatas' filenames (instantiated in 'start()')
     }
 
     // Initialisation variables
